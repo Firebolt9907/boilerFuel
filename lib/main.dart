@@ -2,6 +2,7 @@ import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
 import 'package:boiler_fuel/planner.dart';
+import 'package:boiler_fuel/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -118,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  CupertinoPageRoute(builder: (context) => Container()),
+                  CupertinoPageRoute(builder: (context) => WelcomeScreen()),
                 ); // Replace Container() with the other page
               },
               child: const Text('Open Other Page'),

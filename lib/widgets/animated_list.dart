@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 class AnimatedList extends StatefulWidget {
   final List<String> items;
   final Function(String, int) onItemSelect;
@@ -8,6 +9,7 @@ class AnimatedList extends StatefulWidget {
   AnimatedList({
     required this.items,
     required this.onItemSelect,
+
     this.selectedItems = const [],
   });
 
@@ -33,18 +35,20 @@ class _AnimatedListState extends State<AnimatedList>
     );
 
     _scaleAnimations = _controllers
-        .map((controller) => Tween<double>(begin: 0.8, end: 1.0).animate(
-              CurvedAnimation(parent: controller, curve: Curves.elasticOut),
-            ))
+        .map(
+          (controller) => Tween<double>(begin: 0.8, end: 1.0).animate(
+            CurvedAnimation(parent: controller, curve: Curves.elasticOut),
+          ),
+        )
         .toList();
 
     _slideAnimations = _controllers
-        .map((controller) => Tween<Offset>(
-              begin: Offset(0.3, 0),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(parent: controller, curve: Curves.easeOut),
-            ))
+        .map(
+          (controller) => Tween<Offset>(
+            begin: Offset(0.3, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: controller, curve: Curves.easeOut)),
+        )
         .toList();
 
     // Stagger animations
@@ -124,7 +128,9 @@ class _AnimatedListState extends State<AnimatedList>
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.normal,
                         ),
                       ),
                     ],
