@@ -54,15 +54,137 @@ enum EatingHabit { cutting, bulking, maintenance }
 
 enum MealPlan { TenDay, FourteenDay, Unlimited }
 
+enum Gender { Male, Female }
+
+enum FoodPreference {
+  Vegan,
+  Vegetarian,
+  Pescatarian,
+  Halal,
+  Kosher;
+
+  @override
+  String toString() {
+    switch (this) {
+      case FoodPreference.Vegan:
+        return 'Vegan';
+      case FoodPreference.Vegetarian:
+        return 'Vegetarian';
+      case FoodPreference.Pescatarian:
+        return 'Pescatarian';
+      case FoodPreference.Halal:
+        return 'Halal';
+      case FoodPreference.Kosher:
+        return 'Kosher';
+    }
+  }
+
+  static FoodPreference fromString(String value) {
+    switch (value) {
+      case 'Vegan':
+        return FoodPreference.Vegan;
+      case 'Vegetarian':
+        return FoodPreference.Vegetarian;
+      case 'Pescatarian':
+        return FoodPreference.Pescatarian;
+      case 'Halal':
+        return FoodPreference.Halal;
+      case 'Kosher':
+        return FoodPreference.Kosher;
+      default:
+        throw ArgumentError('Invalid food preference: $value');
+    }
+  }
+}
+
+enum FoodAllergy {
+  Gluten,
+  Dairy,
+  Nuts,
+  Shellfish,
+  Soy,
+  Eggs,
+  Peanuts,
+  Wheat,
+  Fish,
+  TreeNuts,
+  Coconut,
+  Sesame;
+
+  @override
+  String toString() {
+    switch (this) {
+      case FoodAllergy.Gluten:
+        return 'Gluten';
+      case FoodAllergy.Dairy:
+        return 'Dairy';
+      case FoodAllergy.Nuts:
+        return 'Nuts';
+      case FoodAllergy.Shellfish:
+        return 'Shellfish';
+      case FoodAllergy.Soy:
+        return 'Soy';
+      case FoodAllergy.Eggs:
+        return 'Eggs';
+      case FoodAllergy.Peanuts:
+        return 'Peanuts';
+      case FoodAllergy.Wheat:
+        return 'Wheat';
+      case FoodAllergy.Fish:
+        return 'Fish';
+      case FoodAllergy.TreeNuts:
+        return 'TreeNuts';
+      case FoodAllergy.Sesame:
+        return 'Sesame';
+      case FoodAllergy.Coconut:
+        return 'Coconut';
+    }
+  }
+
+  static FoodAllergy fromString(String value) {
+    switch (value) {
+      case 'Gluten':
+        return FoodAllergy.Gluten;
+      case 'Dairy':
+        return FoodAllergy.Dairy;
+      case 'Nuts':
+        return FoodAllergy.Nuts;
+      case 'Shellfish':
+        return FoodAllergy.Shellfish;
+      case 'Soy':
+        return FoodAllergy.Soy;
+      case 'Eggs':
+        return FoodAllergy.Eggs;
+      case 'Peanuts':
+        return FoodAllergy.Peanuts;
+      case 'Wheat':
+        return FoodAllergy.Wheat;
+      case 'Fish':
+        return FoodAllergy.Fish;
+      case 'TreeNuts':
+        return FoodAllergy.TreeNuts;
+      case 'Sesame':
+        return FoodAllergy.Sesame;
+      case 'Coconut':
+        return FoodAllergy.Coconut;
+      default:
+        throw ArgumentError('Invalid food allergy: $value');
+    }
+  }
+}
+
 class User {
   final String uid;
   final String name;
   final int weight;
   final int height;
   final EatingHabit eatingHabit;
-  final List<String> foodPreferences;
+  final List<FoodPreference> foodPreferences;
+  final List<FoodAllergy> foodAllergies;
   final MealPlan mealPlan;
   final List<String> diningHallRanking;
+  final int age;
+  final Gender gender;
 
   User({
     required this.uid,
@@ -73,6 +195,9 @@ class User {
     required this.foodPreferences,
     required this.mealPlan,
     required this.diningHallRanking,
+    required this.age,
+    required this.gender,
+    required this.foodAllergies,
   });
 
   Map<String, dynamic> toMap() {
@@ -97,11 +222,22 @@ class User {
       eatingHabit: EatingHabit.values.firstWhere(
         (e) => e.toString().split('.').last == map['eatingHabit'],
       ),
-      foodPreferences: List<String>.from(map['foodPreferences']),
+      foodPreferences: List<FoodPreference>.from(
+        (map['foodPreferences'] as List<dynamic>).map(
+          (e) => FoodPreference.fromString(e as String),
+        ),
+      ),
       mealPlan: MealPlan.values.firstWhere(
         (m) => m.toString().split('.').last == map['mealPlan'],
       ),
       diningHallRanking: List<String>.from(map['diningHallRanking']),
+      age: map['age'],
+      gender: map['gender'],
+      foodAllergies: List<FoodAllergy>.from(
+        (map['foodAllergies'] as List<dynamic>).map(
+          (e) => FoodAllergy.fromString(e as String),
+        ),
+      ),
     );
   }
 }
