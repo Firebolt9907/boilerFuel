@@ -242,34 +242,27 @@ class User {
   }
 }
 
-class Meal {
-  final List<String> breakfast;
-  final List<String> brunch;
-  final List<String> lunch;
-  final List<String> dinner;
+enum MealTime {
+  breakfast,
+  brunch,
+  lunch,
+  lateLunch,
+  dinner
+}
 
-  Meal({
-    required this.breakfast,
-    required this.brunch,
-    required this.lunch,
-    required this.dinner,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'breakfast': breakfast,
-      'brunch': brunch,
-      'lunch': lunch,
-      'dinner': dinner,
-    };
-  }
-
-  factory Meal.fromMap(Map<String, dynamic> map) {
-    return Meal(
-      breakfast: List<String>.from(map['breakfast']),
-      brunch: List<String>.from(map['brunch']),
-      lunch: List<String>.from(map['lunch']),
-      dinner: List<String>.from(map['dinner']),
-    );
+getMealTimeString(MealTime mealTime) {
+  switch (mealTime) {
+    case MealTime.breakfast:
+      return 'breakfast';
+    case MealTime.brunch:
+      return 'brunch';
+    case MealTime.lunch:
+      return 'lunch';
+    case MealTime.lateLunch:
+      return 'lateLunch';
+    case MealTime.dinner:
+      return 'dinner';
+    default:
+      return '';
   }
 }
