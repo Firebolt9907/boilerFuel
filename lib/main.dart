@@ -1,6 +1,7 @@
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
+import 'package:boiler_fuel/planner.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // random code to make the app look good on android
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    systemNavigationBarColor: Colors.transparent,
-    systemNavigationBarContrastEnforced: false,
-    systemNavigationBarDividerColor: Colors.transparent,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
   // init firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
@@ -71,20 +74,34 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  Map<String, dynamic> data = {};
+  List<Food> data = [];
   FirebaseCalls db = FirebaseCalls();
 
   @override
   void initState() {
     super.initState();
+    _incrementCounter(true);
+    testPlanner(176, 70.86614173, 50, Gender.male);
   }
 
-  void _incrementCounter() {
-    db.getIDs("Wiley", DateTime.now(), MealTime.lunch).then((data) {
+  void _incrementCounter([bool initial = false]) {
+    db.getFoodIDsMeal("Wiley", DateTime.now(), MealTime.lunch).then((data) {
       setState(() {
-        this.data = data ?? {};
+        this.data = data ?? [];
+        print("got data");
       });
     });
+  }
+
+  void testPlanner(double weightLbs, double heightIn, int age, Gender sex) {
+    var plan = CalorieMacroCalculator.calculateMacros(
+      weightLbs: weightLbs,
+      heightInches: heightIn,
+      age: age,
+      gender: sex,
+      goal: Goal.lose,
+    );
+    print(plan.toString());
   }
 
   @override
@@ -106,7 +123,10 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Open Other Page'),
             ),
-            Text('$data', style: Theme.of(context).textTheme.headlineMedium),
+            Text(
+              data.toString(),
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
           ],
         ),
       ),

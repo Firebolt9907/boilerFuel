@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirebaseCalls {
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  Future<List<String>?> getFoodIDsMeal(
+  Future<List<Food>?> getFoodIDsMeal(
     String diningCourt,
     DateTime date,
     MealTime mealTime,
@@ -12,49 +12,67 @@ class FirebaseCalls {
     String collection = 'dining-halls';
     String document = diningCourt;
 
-    try {
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await db
-          .collection(collection)
-          .doc(document)
-          .collection('meals')
-          .doc(
-            "${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}-${date.year}",
-          )
-          .get();
-      if (snapshot.exists) {
-        Meals meals = Meals.fromMap(snapshot.data() ?? {});
-        switch (mealTime) {
-          case MealTime.breakfast:
-            return meals.breakfast;
-          case MealTime.brunch:
-            return meals.brunch;
-          case MealTime.lunch:
-            return meals.lunch;
-          case MealTime.lateLunch:
-            return meals.lunch; // Assuming lateLunch uses lunch data
-          case MealTime.dinner:
-            return meals.dinner;
+    // try {
+    DocumentSnapshot<dynamic> snapshot = await db
+        .collection(collection)
+        .doc(document)
+        .collection('meals')
+        .doc(
+          "${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}-${date.year}",
+        )
+        .get();
+    if (snapshot.exists) {
+      Meals meals = Meals.fromMap(snapshot.data() ?? {});
+      List<String> foodIDs;
+      switch (mealTime) {
+        case MealTime.breakfast:
+          foodIDs = meals.breakfast;
+          break;
+        case MealTime.brunch:
+          foodIDs = meals.brunch;
+          break;
+        case MealTime.lunch:
+          foodIDs = meals.lunch;
+          break;
+        // Assuming lateLunch uses lunch data
+        case MealTime.dinner:
+          foodIDs = meals.dinner;
+          break;
+      }
+      List<Food> foods = [];
+      for (String foodID in foodIDs) {
+        //check if foods already contains foodID
+        if (foods.any((food) => food.id == foodID)) {
+          continue;
+        }
+        Food? food = await getFoodByID(foodID);
+        if (food != null) {
+          foods.add(food);
         }
       }
-    } catch (error) {
-      print('Error fetching data: $error');
+      return foods;
     }
+    // } catch (error) {
+    //   print('Error fetching data (getFoodIDsMeal): $error');
+    // }
     return null;
   }
 
-  Future<List<Food>?> getFoods() async {
+  Future<Food?> getFoodByID(String foodID) async {
     String collection = 'foods';
+    String document = foodID;
 
-    try {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await db
-          .collection(collection)
-          .get();
-      if (snapshot.docs.isNotEmpty) {
-        return snapshot.docs.map((doc) => Food.fromMap(doc.data())).toList();
-      }
-    } catch (error) {
-      print('Error fetching data: $error');
+    // try {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await db
+        .collection(collection)
+        .doc(document)
+        .get();
+    if (snapshot.exists) {
+      return Food.fromMap(snapshot.data() ?? {});
     }
+    // } catch (error) {
+    //   print('Error fetching data (getFoodByID): $error');
+    // }
     return null;
   }
 }

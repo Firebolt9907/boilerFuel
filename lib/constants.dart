@@ -35,26 +35,42 @@ class Food {
     };
   }
 
+  @override
+  String toString() {
+    return toMap().toString();
+  }
+
   factory Food.fromMap(Map<String, dynamic> map) {
     return Food(
       name: map['name'],
       id: map['id'],
-      calories: map['calories'],
-      protein: map['protein'],
-      carbs: map['carbs'],
-      fat: map['fat'],
-      sugar: map['sugar'],
+      calories: (map['calories'] ?? -1) * 1.0,
+      protein: (map['protein'] ?? -1) * 1.0,
+      carbs: (map['carbs'] ?? -1) * 1.0,
+      fat: (map['fat'] ?? -1) * 1.0,
+      sugar: (map['sugar'] ?? -1) * 1.0,
       ingredients: map['ingredients'],
-      labels: List<String>.from(map['labels']),
+      labels: List<String>.from(map['labels'] ?? []),
     );
   }
 }
 
-enum EatingHabit { cutting, bulking, maintenance }
-
 enum MealPlan { TenDay, FourteenDay, Unlimited }
 
-enum Gender { Male, Female }
+enum Gender {
+  male,
+  female;
+
+  @override
+  String toString() {
+    switch (this) {
+      case Gender.female:
+        return "female";
+      case Gender.male:
+        return "male";
+    }
+  }
+}
 
 enum FoodPreference {
   Vegan,
@@ -178,7 +194,7 @@ class User {
   final String name;
   final int weight;
   final int height;
-  final EatingHabit eatingHabit;
+  final Goal goal;
   final List<FoodPreference> foodPreferences;
   final List<FoodAllergy> foodAllergies;
   final MealPlan mealPlan;
@@ -191,7 +207,7 @@ class User {
     required this.name,
     required this.weight,
     required this.height,
-    required this.eatingHabit,
+    required this.goal,
     required this.foodPreferences,
     required this.mealPlan,
     required this.diningHallRanking,
@@ -206,7 +222,7 @@ class User {
       'name': name,
       'weight': weight,
       'height': height,
-      'eatingHabit': eatingHabit.toString().split('.').last,
+      'goal': goal.toString().split('.').last,
       'foodPreferences': foodPreferences,
       'mealPlan': mealPlan.toString().split('.').last,
       'diningHallRanking': diningHallRanking,
@@ -219,7 +235,7 @@ class User {
       name: map['name'],
       weight: map['weight'],
       height: map['height'],
-      eatingHabit: EatingHabit.values.firstWhere(
+      goal: Goal.values.firstWhere(
         (e) => e.toString().split('.').last == map['eatingHabit'],
       ),
       foodPreferences: List<FoodPreference>.from(
@@ -246,7 +262,6 @@ enum MealTime {
   breakfast,
   brunch,
   lunch,
-  lateLunch,
   dinner;
 
   @override
@@ -258,8 +273,6 @@ enum MealTime {
         return 'brunch';
       case MealTime.lunch:
         return 'lunch';
-      case MealTime.lateLunch:
-        return 'lateLunch';
       case MealTime.dinner:
         return 'dinner';
     }
@@ -273,8 +286,6 @@ enum MealTime {
         return MealTime.brunch;
       case 'lunch':
         return MealTime.lunch;
-      case 'lateLunch':
-        return MealTime.lateLunch;
       case 'dinner':
         return MealTime.dinner;
       default:
@@ -307,10 +318,57 @@ class Meals {
 
   factory Meals.fromMap(Map<String, dynamic> map) {
     return Meals(
-      breakfast: List<String>.from(map['breakfast'] ?? []),
-      brunch: List<String>.from(map['brunch'] ?? []),
-      lunch: List<String>.from(map['lunch'] ?? []),
-      dinner: List<String>.from(map['dinner'] ?? []),
+      breakfast: List<String>.from(map['Breakfast'] ?? []),
+      brunch: List<String>.from(map['Brunch'] ?? []),
+      lunch: List<String>.from(map['Lunch'] ?? []),
+      dinner: List<String>.from(map['Dinner'] ?? []),
     );
+  }
+}
+
+enum ActivityLevel {
+  sedentary, // Little/no exercise
+  lightly, // Light exercise 1-3 days/week
+  moderately, // Moderate exercise 3-5 days/week
+  very, // Hard exercise 6-7 days/week
+  extremely, // Very hard exercise & physical job
+}
+
+enum Goal {
+  lose, // Weight loss
+  maintain, // Maintain weight
+  gain, // Weight gain
+}
+
+class MacroResult {
+  final double calories;
+  final double protein;
+  final double carbs;
+  final double fat;
+  final double bmr;
+  final double tdee;
+
+  MacroResult({
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fat,
+    required this.bmr,
+    required this.tdee,
+  });
+
+  @override
+  String toString() {
+    return '''
+=== CALORIE & MACRO RESULTS ===
+BMR (Basal Metabolic Rate): ${bmr.round()} calories
+TDEE (Total Daily Energy Expenditure): ${tdee.round()} calories
+Target Calories: ${calories.round()} calories
+
+=== MACRONUTRIENTS ===
+Protein: ${protein.round()}g (${(protein * 4).round()} calories)
+Carbohydrates: ${carbs.round()}g (${(carbs * 4).round()} calories)
+Fat: ${fat.round()}g (${(fat * 9).round()} calories)
+''';
   }
 }
