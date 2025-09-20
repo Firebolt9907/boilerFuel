@@ -195,8 +195,7 @@ class User {
   final int weight;
   final int height;
   final Goal goal;
-  final List<FoodPreference> foodPreferences;
-  final List<FoodAllergy> foodAllergies;
+  final DietaryRestrictions dietaryRestrictions;
   final MealPlan mealPlan;
   final List<String> diningHallRanking;
   final int age;
@@ -208,12 +207,11 @@ class User {
     required this.weight,
     required this.height,
     required this.goal,
-    required this.foodPreferences,
+    required this.dietaryRestrictions,
     required this.mealPlan,
     required this.diningHallRanking,
     required this.age,
     required this.gender,
-    required this.foodAllergies,
   });
 
   Map<String, dynamic> toMap() {
@@ -223,7 +221,7 @@ class User {
       'weight': weight,
       'height': height,
       'goal': goal.toString().split('.').last,
-      'foodPreferences': foodPreferences,
+      'dietaryRestrictions': dietaryRestrictions.toMap(),
       'mealPlan': mealPlan.toString().split('.').last,
       'diningHallRanking': diningHallRanking,
     };
@@ -233,15 +231,13 @@ class User {
     return User(
       uid: map['uid'],
       name: map['name'],
-      weight: map['weight'],
+      weight: map['weig`ht'],
       height: map['height'],
       goal: Goal.values.firstWhere(
         (e) => e.toString().split('.').last == map['eatingHabit'],
       ),
-      foodPreferences: List<FoodPreference>.from(
-        (map['foodPreferences'] as List<dynamic>).map(
-          (e) => FoodPreference.fromString(e as String),
-        ),
+      dietaryRestrictions: DietaryRestrictions.fromMap(
+        map['dietaryRestrictions'],
       ),
       mealPlan: MealPlan.values.firstWhere(
         (m) => m.toString().split('.').last == map['mealPlan'],
@@ -249,13 +245,9 @@ class User {
       diningHallRanking: List<String>.from(map['diningHallRanking']),
       age: map['age'],
       gender: map['gender'],
-      foodAllergies: List<FoodAllergy>.from(
-        (map['foodAllergies'] as List<dynamic>).map(
-          (e) => FoodAllergy.fromString(e as String),
-        ),
-      ),
     );
   }
+
 }
 
 enum MealTime {
@@ -371,4 +363,54 @@ Carbohydrates: ${carbs.round()}g (${(carbs * 4).round()} calories)
 Fat: ${fat.round()}g (${(fat * 9).round()} calories)
 ''';
   }
+}
+
+class DietaryRestrictions {
+  final List<FoodAllergy> allergies;
+  final List<FoodPreference> preferences;
+  final List<String> ingredientPreferences;
+
+  DietaryRestrictions({
+    required this.allergies,
+    required this.preferences,
+    required this.ingredientPreferences,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'allergies': allergies.map((e) => e.toString()).toList(),
+      'preferences': preferences.map((e) => e.toString()).toList(),
+      'ingredientPreferences': ingredientPreferences,
+    };
+  }
+
+  @override
+  String toString() {
+    return toMap().toString();
+  }
+
+  factory DietaryRestrictions.fromMap(Map<String, dynamic> map) {
+    return DietaryRestrictions(
+      allergies: List<FoodAllergy>.from(
+        (map['allergies'] as List<dynamic>).map(
+          (e) => FoodAllergy.fromString(e as String),
+        ),
+      ),
+      preferences: List<FoodPreference>.from(
+        (map['preferences'] as List<dynamic>).map(
+          (e) => FoodPreference.fromString(e as String),
+        ),
+      ),
+      ingredientPreferences: List<String>.from(
+        map['ingredientPreferences'] ?? [],
+      ),
+    );
+  }
+
+
+  bool hasDietaryRestrictions() {
+    return allergies.isNotEmpty || preferences.isNotEmpty || ingredientPreferences.isNotEmpty;
+  }
+
+
 }
