@@ -30,11 +30,19 @@ class FirebaseCalls {
     return null;
   }
 
-  Future<void> addUser(User user) async {
+  Future<List<Map<String, dynamic>>?> getFoods() async {
+    String collection = 'foods';
+
     try {
-      await db.collection('users').doc(user.uid).set(user.toMap());
+      QuerySnapshot<Map<String, dynamic>> snapshot = await db
+          .collection(collection)
+          .get();
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.map((doc) => doc.data()).toList();
+      }
     } catch (error) {
-      print('Error adding user: $error');
+      print('Error fetching data: $error');
     }
+    return null;
   }
 }
