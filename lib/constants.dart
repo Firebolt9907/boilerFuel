@@ -247,7 +247,6 @@ class User {
       gender: map['gender'],
     );
   }
-
 }
 
 enum MealTime {
@@ -407,10 +406,29 @@ class DietaryRestrictions {
     );
   }
 
-
   bool hasDietaryRestrictions() {
-    return allergies.isNotEmpty || preferences.isNotEmpty || ingredientPreferences.isNotEmpty;
+    return allergies.isNotEmpty ||
+        preferences.isNotEmpty ||
+        ingredientPreferences.isNotEmpty;
   }
+}
 
+class Meal {
+  final String name;
+  final double calories;
+  final double protein;
+  final double carbs;
+  final double fat;
+  final List<Food> foods;
+  final String diningHall;
 
+  Meal({
+    required this.name,
+    required this.calories,
+    required this.protein,
+    required this.carbs,
+    required this.fat,
+    required this.foods,
+    required this.diningHall,
+  });
 }

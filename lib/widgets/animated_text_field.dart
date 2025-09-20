@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 class AnimatedTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;
@@ -28,9 +29,10 @@ class _AnimatedTextFieldState extends State<AnimatedTextField>
       duration: Duration(milliseconds: 200),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.02,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -48,7 +50,7 @@ class _AnimatedTextFieldState extends State<AnimatedTextField>
           color: Color(0xFF170d27),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isFocused ? Colors.amber : Colors.transparent,
+            color: _isFocused ? Colors.blue.shade300 : Colors.transparent,
             width: 2,
           ),
         ),
@@ -67,11 +69,12 @@ class _AnimatedTextFieldState extends State<AnimatedTextField>
           decoration: InputDecoration(
             labelText: widget.label,
             labelStyle: TextStyle(
-              color: _isFocused ? Colors.amber : Colors.white70,
+              color: _isFocused ? Colors.blue.shade300 : Colors.white70,
             ),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(16),
           ),
+          cursorColor: Colors.blue.shade300,
         ),
       ),
     );

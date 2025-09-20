@@ -73,8 +73,8 @@ class _AnimatedButtonState extends State<AnimatedButton>
             gradient: widget.isEnabled
                 ? LinearGradient(
                     colors: [
-                      Color(0xFF4C956C),
-                      Color(0xFF2F9B69),
+                      Colors.blue.shade300,
+                      Colors.lightBlueAccent,
                       Color(0xFF61A5C2),
                     ],
                     begin: Alignment.topLeft,
@@ -86,7 +86,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
             boxShadow: widget.isEnabled && !_isPressed
                 ? [
                     BoxShadow(
-                      color: Color(0xFF4C956C).withOpacity(0.4),
+                      color: Colors.blue.shade300.withOpacity(0.4),
                       blurRadius: 20,
                       offset: Offset(0, 8),
                       spreadRadius: 1,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 class AnimatedGoalOption extends StatefulWidget {
   final String text;
   final bool isSelected;
@@ -27,9 +28,10 @@ class _AnimatedGoalOptionState extends State<AnimatedGoalOption>
       duration: Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.98,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -62,15 +64,21 @@ class _AnimatedGoalOptionState extends State<AnimatedGoalOption>
               color: widget.isSelected ? Color(0xFF271e37) : Color(0xFF170d27),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: widget.isSelected ? Colors.amber : Colors.transparent,
+                color: widget.isSelected
+                    ? Colors.blue.shade300
+                    : Colors.transparent,
                 width: 2,
               ),
             ),
             child: Row(
               children: [
                 Icon(
-                  widget.isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                  color: widget.isSelected ? Colors.amber : Colors.white70,
+                  widget.isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  color: widget.isSelected
+                      ? Colors.blue.shade300
+                      : Colors.white70,
                 ),
                 SizedBox(width: 12),
                 Text(
@@ -78,7 +86,9 @@ class _AnimatedGoalOptionState extends State<AnimatedGoalOption>
                   style: TextStyle(
                     color: widget.isSelected ? Colors.white : Colors.white70,
                     fontSize: 16,
-                    fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: widget.isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                   ),
                 ),
               ],

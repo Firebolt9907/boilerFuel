@@ -94,7 +94,9 @@ class _AnimatedListState extends State<AnimatedList>
                   color: isSelected ? Color(0xFF271e37) : Color(0xFF170d27),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected ? Colors.amber : Colors.transparent,
+                    color: isSelected
+                        ? Colors.blue.shade300
+                        : Colors.transparent,
                     width: 2,
                   ),
                 ),
@@ -107,7 +109,7 @@ class _AnimatedListState extends State<AnimatedList>
                           width: 24,
                           height: 24,
                           decoration: BoxDecoration(
-                            color: Colors.amber,
+                            color: Colors.blue.shade300,
                             shape: BoxShape.circle,
                           ),
                           child: Center(

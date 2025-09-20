@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 class RankingItem extends StatelessWidget {
   final int rank;
   final String name;
   final VoidCallback onRemove;
 
-  RankingItem({
-    required this.rank,
-    required this.name,
-    required this.onRemove,
-  });
+  RankingItem({required this.rank, required this.name, required this.onRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +50,7 @@ class RankingItem extends StatelessWidget {
           ),
           GestureDetector(
             onTap: onRemove,
-            child: Icon(
-              Icons.close,
-              color: Colors.white70,
-              size: 16,
-            ),
+            child: Icon(Icons.close, color: Colors.white70, size: 16),
           ),
         ],
       ),

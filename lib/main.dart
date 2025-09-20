@@ -1,12 +1,18 @@
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
+import 'package:boiler_fuel/models/user_model.dart';
+import 'package:boiler_fuel/screens/user_info_screen.dart';
 import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
+
+import 'package:boiler_fuel/styling.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+final Styling styling = Styling();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,7 +95,15 @@ class _MyHomePageState extends State<MyHomePage> {
     db.getFoodIDsMeal("Wiley", DateTime.now(), MealTime.lunch).then((data) {
       setState(() {
         this.data = data ?? [];
-        print("got data");
+        for (var item in this.data) {
+          print({
+            "name": item.name,
+            "calories": item.calories,
+            "protein": item.protein,
+            "carbs": item.carbs,
+            "fats": item.fat,
+          });
+        }
       });
     });
   }
