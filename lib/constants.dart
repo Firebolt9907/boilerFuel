@@ -247,22 +247,38 @@ enum MealTime {
   brunch,
   lunch,
   lateLunch,
-  dinner
-}
+  dinner;
 
-getMealTimeString(MealTime mealTime) {
-  switch (mealTime) {
-    case MealTime.breakfast:
-      return 'breakfast';
-    case MealTime.brunch:
-      return 'brunch';
-    case MealTime.lunch:
-      return 'lunch';
-    case MealTime.lateLunch:
-      return 'lateLunch';
-    case MealTime.dinner:
-      return 'dinner';
-    default:
-      return '';
+  @override
+  String toString() {
+    switch (this) {
+      case MealTime.breakfast:
+        return 'breakfast';
+      case MealTime.brunch:
+        return 'brunch';
+      case MealTime.lunch:
+        return 'lunch';
+      case MealTime.lateLunch:
+        return 'lateLunch';
+      case MealTime.dinner:
+        return 'dinner';
+    }
+  }
+
+  static MealTime fromString(String value) {
+    switch (value) {
+      case 'breakfast':
+        return MealTime.breakfast;
+      case 'brunch':
+        return MealTime.brunch;
+      case 'lunch':
+        return MealTime.lunch;
+      case 'lateLunch':
+        return MealTime.lateLunch;
+      case 'dinner':
+        return MealTime.dinner;
+      default:
+        throw ArgumentError('Invalid meal time: $value');
+    }
   }
 }
