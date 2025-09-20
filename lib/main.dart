@@ -2,6 +2,7 @@ import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -69,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _incrementCounter() {
-    db.getData("Wiley", DateTime.now(), MealTime.lunch).then((data) {
+    db.getIDs("Wiley", DateTime.now(), MealTime.lunch).then((data) {
       setState(() {
         this.data = data ?? {};
       });
@@ -86,6 +87,15 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: ListView(
           children: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => Container()),
+                ); // Replace Container() with the other page
+              },
+              child: const Text('Open Other Page'),
+            ),
             Text('$data', style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
