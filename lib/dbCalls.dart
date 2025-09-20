@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirebaseCalls {
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  Future<Map<String, dynamic>?> getData(
+  Future<Map<String, dynamic>?> getIDs(
     String diningCourt,
     DateTime date,
     MealTime mealTime,
@@ -28,5 +28,13 @@ class FirebaseCalls {
       print('Error fetching data: $error');
     }
     return null;
+  }
+
+  Future<void> addUser(User user) async {
+    try {
+      await db.collection('users').doc(user.uid).set(user.toMap());
+    } catch (error) {
+      print('Error adding user: $error');
+    }
   }
 }
