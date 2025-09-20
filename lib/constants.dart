@@ -105,3 +105,28 @@ class User {
     );
   }
 }
+
+enum MealTime {
+  breakfast,
+  brunch,
+  lunch,
+  lateLunch,
+  dinner
+}
+
+getMealTimeString(MealTime mealTime) {
+  switch (mealTime) {
+    case MealTime.breakfast:
+      return 'breakfast';
+    case MealTime.brunch:
+      return 'brunch';
+    case MealTime.lunch:
+      return 'lunch';
+    case MealTime.lateLunch:
+      return 'lateLunch';
+    case MealTime.dinner:
+      return 'dinner';
+    default:
+      return '';
+  }
+}
