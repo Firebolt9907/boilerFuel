@@ -22,8 +22,7 @@ class FirebaseCalls {
           )
           .get();
       if (snapshot.exists) {
-        return snapshot.data()![getMealTimeString(mealTime)]
-            as Map<String, dynamic>;
+        return snapshot.data() as Map<String, dynamic>;
       }
     } catch (error) {
       print('Error fetching data: $error');
