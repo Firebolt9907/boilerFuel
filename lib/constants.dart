@@ -282,3 +282,35 @@ enum MealTime {
     }
   }
 }
+
+class Meals {
+  final List<String> breakfast;
+  final List<String> brunch;
+  final List<String> lunch;
+  final List<String> dinner;
+
+  Meals({
+    required this.breakfast,
+    required this.brunch,
+    required this.lunch,
+    required this.dinner,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'breakfast': breakfast,
+      'brunch': brunch,
+      'lunch': lunch,
+      'dinner': dinner,
+    };
+  }
+
+  factory Meals.fromMap(Map<String, dynamic> map) {
+    return Meals(
+      breakfast: List<String>.from(map['breakfast'] ?? []),
+      brunch: List<String>.from(map['brunch'] ?? []),
+      lunch: List<String>.from(map['lunch'] ?? []),
+      dinner: List<String>.from(map['dinner'] ?? []),
+    );
+  }
+}

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirebaseCalls {
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  Future<Map<String, dynamic>?> getIDs(
+  Future<List<String>?> getFoodIDsMeal(
     String diningCourt,
     DateTime date,
     MealTime mealTime,
@@ -22,7 +22,19 @@ class FirebaseCalls {
           )
           .get();
       if (snapshot.exists) {
-        return snapshot.data() as Map<String, dynamic>;
+        Meals meals = Meals.fromMap(snapshot.data() ?? {});
+        switch (mealTime) {
+          case MealTime.breakfast:
+            return meals.breakfast;
+          case MealTime.brunch:
+            return meals.brunch;
+          case MealTime.lunch:
+            return meals.lunch;
+          case MealTime.lateLunch:
+            return meals.lunch; // Assuming lateLunch uses lunch data
+          case MealTime.dinner:
+            return meals.dinner;
+        }
       }
     } catch (error) {
       print('Error fetching data: $error');
@@ -30,7 +42,7 @@ class FirebaseCalls {
     return null;
   }
 
-  Future<List<Map<String, dynamic>>?> getFoods() async {
+  Future<List<Food>?> getFoods() async {
     String collection = 'foods';
 
     try {
@@ -38,7 +50,7 @@ class FirebaseCalls {
           .collection(collection)
           .get();
       if (snapshot.docs.isNotEmpty) {
-        return snapshot.docs.map((doc) => doc.data()).toList();
+        return snapshot.docs.map((doc) => Food.fromMap(doc.data())).toList();
       }
     } catch (error) {
       print('Error fetching data: $error');
