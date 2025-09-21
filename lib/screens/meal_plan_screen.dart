@@ -325,23 +325,23 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                       SizedBox(height: 20),
 
                       // Progress indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          4, // Changed from 3 to 4 to show there's another step
-                          (index) => Container(
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            width: index == 2 ? 20 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: index == 2
-                                  ? Colors.green.shade400
-                                  : Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: List.generate(
+                      //     4, // Changed from 3 to 4 to show there's another step
+                      //     (index) => Container(
+                      //       margin: EdgeInsets.symmetric(horizontal: 4),
+                      //       width: index == 2 ? 20 : 8,
+                      //       height: 8,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(4),
+                      //         color: index == 2
+                      //             ? Colors.green.shade400
+                      //             : Colors.white.withOpacity(0.3),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

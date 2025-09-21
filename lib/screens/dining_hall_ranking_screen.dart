@@ -417,23 +417,23 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                       SizedBox(height: 20),
 
                       // Progress indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          5,
-                          (index) => Container(
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            width: index == 1 ? 20 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: index == 1
-                                  ? Colors.orange.shade400
-                                  : Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: List.generate(
+                      //     5,
+                      //     (index) => Container(
+                      //       margin: EdgeInsets.symmetric(horizontal: 4),
+                      //       width: index == 1 ? 20 : 8,
+                      //       height: 8,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(4),
+                      //         color: index == 1
+                      //             ? Colors.orange.shade400
+                      //             : Colors.white.withOpacity(0.3),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

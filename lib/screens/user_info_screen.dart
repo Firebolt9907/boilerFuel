@@ -341,39 +341,53 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                           scale:
                               (_weightController.text.isNotEmpty &&
                                   _heightController.text.isNotEmpty &&
-                                  _selectedGoal != null)
+                                  _selectedGoal != null &&
+                                  _nameController.text.isNotEmpty &&
+                                  _selectedGender != null &&
+                                  _ageController.text.isNotEmpty)
                               ? 1.0
                               : 0.98,
                           child: AnimatedButton(
-                            text: 'Continue Your Journey',
+                            text:
+                                _weightController.text.isNotEmpty &&
+                                    _heightController.text.isNotEmpty &&
+                                    _selectedGoal != null &&
+                                    _nameController.text.isNotEmpty &&
+                                    _selectedGender != null &&
+                                    _ageController.text.isNotEmpty
+                                ? 'Continue Your Journey'
+                                : 'Enter your info',
                             onTap: _continue,
                             isEnabled:
                                 _weightController.text.isNotEmpty &&
                                 _heightController.text.isNotEmpty &&
-                                _selectedGoal != null,
+                                _selectedGoal != null &&
+                                _nameController.text.isNotEmpty &&
+                                _selectedGender != null &&
+                                _ageController.text.isNotEmpty,
                           ),
                         ),
                       ),
                       SizedBox(height: 20),
 
                       // Progress indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          3,
-                          (index) => Container(
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            width: index == 0 ? 20 : 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: index == 0
-                                  ? Colors.blue.shade400
-                                  : Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: List.generate(
+                      //     3,
+                      //     (index) => Container(
+                      //       margin: EdgeInsets.symmetric(horizontal: 4),
+                      //       width: index == 0 ? 20 : 8,
+                      //       height: 8,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(4),
+                      //         color: index == 0
+                      //             ? Colors.blue.shade400
+                      //             : Colors.white.withOpacity(0.3),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

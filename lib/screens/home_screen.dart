@@ -150,13 +150,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       }
       //Sort each meal time's dining halls by user's ranking
 
-      
+      Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
+      for (MealTime mealTime in suggestions.keys) {
+        Map<String, Meal> originalMeals = suggestions[mealTime]!;
+        Map<String, Meal> sortedMeals = {};
+
+        // First, add dining halls in the order of user's ranking
+        for (String rankedHall in _rankedDiningHalls) {
+          if (originalMeals.containsKey(rankedHall)) {
+            sortedMeals[rankedHall] = originalMeals[rankedHall]!;
+          }
+        }
+
+        // Then, add any remaining dining halls that weren't in the user's ranking
+        for (String diningHall in originalMeals.keys) {
+          if (!sortedMeals.containsKey(diningHall)) {
+            sortedMeals[diningHall] = originalMeals[diningHall]!;
+          }
+        }
+
+        sortedSuggestions[mealTime] = sortedMeals;
+      }
 
       setState(() {
-        _suggestedMeals = suggestions!;
+        _suggestedMeals = sortedSuggestions;
       });
     }
-
 
     setState(() {
       _isLoading = false;
@@ -500,7 +519,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _selectedMealTime = newValue;
                     _currentMealIndex =
                         0; // Reset to first meal when changing meal time
-                    _scrollController.jumpToPage(0);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (_scrollController.hasClients) {
+                        _scrollController.jumpToPage(0);
+                      }
+                    });
                   });
                 }
               },

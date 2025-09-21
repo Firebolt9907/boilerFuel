@@ -383,28 +383,26 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                         ),
                       ),
 
-                      SizedBox(height: 20),
-
                       // Progress indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          4, // Updated to match meal plan screen
-                          (index) => Container(
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            width: index == 3
-                                ? 20
-                                : 8, // Changed to index == 3 for final step
-                            height: 8,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: index == 3
-                                  ? Colors.purple.shade400
-                                  : Colors.white.withOpacity(0.3),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: List.generate(
+                      //     4, // Updated to match meal plan screen
+                      //     (index) => Container(
+                      //       margin: EdgeInsets.symmetric(horizontal: 4),
+                      //       width: index == 3
+                      //           ? 20
+                      //           : 8, // Changed to index == 3 for final step
+                      //       height: 8,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(4),
+                      //         color: index == 3
+                      //             ? Colors.purple.shade400
+                      //             : Colors.white.withOpacity(0.3),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
