@@ -1,4 +1,4 @@
-package com.example.boiler_fuel
+package com.njr.boilerFuel
 
 import io.flutter.embedding.android.FlutterActivity
 

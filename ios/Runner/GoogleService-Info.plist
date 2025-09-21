@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.boilerFuel</string>
+	<string>com.nrj.boilerFuel</string>
 	<key>PROJECT_ID</key>
 	<string>boilerfuel-hello-world</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:29513962283:ios:c5000de4e9a11e7cea2b6e</string>
+	<string>1:29513962283:ios:b55998e50f1c97aeea2b6e</string>
 </dict>
 </plist>

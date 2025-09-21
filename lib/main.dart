@@ -1,22 +1,68 @@
+import 'package:boiler_fuel/api_key.dart';
+
+import 'package:boiler_fuel/constants.dart';
+import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
+import 'package:boiler_fuel/local_storage.dart';
+import 'package:boiler_fuel/planner.dart';
+import 'package:boiler_fuel/screens/home_screen.dart';
+import 'package:boiler_fuel/screens/welcome_screen.dart';
+
+import 'package:boiler_fuel/styling.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+
+final Styling styling = Styling();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // random code to make the app look good on android
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
+  // init firebase
+  Gemini.init(apiKey: ApiKeys.geminiApiKey);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  User? user = null;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    LocalDB.getUser().then((value) {
+      print("Fetched user from local DB: ${value?.name}");
+      setState(() {
+        user = value;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -35,7 +81,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: user == null ? WelcomeScreen() : HomeScreen(user: user!),
     );
   }
 }
@@ -59,69 +105,116 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<Food> data = [];
+  String value = "";
+  FirebaseDB db = FirebaseDB();
+  late DietaryRestrictions dietaryRestrictions;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  @override
+  void initState() {
+    super.initState();
+    // dietaryRestrictions = DietaryRestrictions(
+    //   allergies: <FoodAllergy>[FoodAllergy.TreeNuts, FoodAllergy.Peanuts],
+    //   preferences: <FoodPreference>[FoodPreference.Halal],
+    //   ingredientPreferences: [],
+    // );
+    // getFoodData(true);
+    // testPlanner(176, 70.86614173, 50, Gender.male);
+    // MealPlanner.generateMeal(
+    //   targetCalories: 757,
+    //   targetProtein: 47.5,
+    //   targetCarbs: 94.5,
+    //   targetFat: 21,
+    //   availableFoods: data,
+    //   diningHall: "Wiley",
+    // ).then((meal) {
+    //   print("Generated Meal:");
+    //   print(meal.toString());
+    // });
+  }
+
+  void getFoodData([bool initial = false]) {
+    db.getFoodIDsMeal("Ford", DateTime.now(), MealTime.lunch).then((data) {
+      setState(() {
+        this.data = data ?? [];
+        List<List<Food>> temp = dietaryRestrictions.filterFoodList(this.data);
+        List<Food> allowedFood = temp[0];
+        List<Food> restrictedFood = temp[1];
+        print("\nAllowed Food:");
+        for (var item in allowedFood) {
+          print({
+            "name": item.name,
+            "calories": item.calories,
+            "protein": item.protein,
+            "carbs": item.carbs,
+            "fats": item.fat,
+            "allergens": item.labels,
+          });
+        }
+        print("\nRestricted Food:");
+        for (var item in restrictedFood) {
+          print({
+            "name": item.name,
+            "calories": item.calories,
+            "protein": item.protein,
+            "carbs": item.carbs,
+            "fats": item.fat,
+            "allergens": item.labels,
+            "rejectedReason": item.rejectedReason,
+          });
+        }
+      });
     });
+  }
+
+  void testPlanner(double weightLbs, double heightIn, int age, Gender sex) {
+    var plan = CalorieMacroCalculator.calculateMacros(
+      weightLbs: weightLbs,
+      heightInches: heightIn,
+      age: age,
+      gender: sex,
+      goal: Goal.lose,
+    );
+    print(plan.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => WelcomeScreen()),
+                ); // Replace Container() with the other page
+              },
+              child: const Text('Open Other Page'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => HomeScreen()),
+                ); // Replace Container() with the other page
+              },
+              child: const Text('Home Page'),
+            ),
+            Text(value, style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: getFoodData,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
