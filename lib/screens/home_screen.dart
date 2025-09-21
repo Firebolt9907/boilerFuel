@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../planner.dart';
+import 'meal_details_screen.dart';
 import 'dart:math' as math;
 
 class HomeScreen extends StatefulWidget {
@@ -117,7 +118,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         Map<MealTime, Map<String, Meal>> suggestions = {};
         for (MealTime mealTime in MealTime.values) {
           Map<String, Meal> diningHallMeals = {};
-          for (String diningHall in _diningHalls) {
+          // Run meal generation for all dining halls in parallel
+          final mealFutures = _diningHalls.map((diningHall) async {
             List<Meal> meals = await MealPlanner.generateDiningHallMeal(
               diningHall: diningHall,
               mealTime: mealTime,
@@ -127,8 +129,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               targetFat: mealFat,
             );
             if (meals.isNotEmpty) {
-              diningHallMeals[diningHall] =
-                  meals.first; // Take the first suggested meal
+              return MapEntry(diningHall, meals.first);
+            }
+            return null;
+          }).toList();
+
+          final results = await Future.wait(mealFutures);
+          for (final entry in results) {
+            if (entry != null) {
+              diningHallMeals[entry.key] = entry.value;
             }
           }
           suggestions[mealTime] = diningHallMeals;
@@ -249,8 +258,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               _buildLoadingView(context)
                             else ...[
                               // Dining Hall Rankings
-                              // _buildDiningHallRankings(),
-                              // SizedBox(height: 32),
+                              _buildDiningHallRankings(),
+                              SizedBox(height: 32),
 
                               // Suggested Meal Plan
                               _buildSuggestedMealPlan(),
@@ -276,8 +285,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       children: [
         Row(
           children: [
-            Icon(Icons.home, color: Colors.white, size: 28),
-            SizedBox(width: 12),
+            // Icon(Icons.home, color: Colors.white, size: 28),
+            // SizedBox(width: 12),
             ShaderMask(
               shaderCallback: (bounds) => LinearGradient(
                 colors: [
@@ -495,7 +504,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 return DropdownMenuItem<MealTime>(
                   value: value,
                   child: Text(
-                    value.toString().split('.').last.toUpperCase(),
+                    value.toString().substring(0, 1).toUpperCase() +
+                        value.toString().substring(1),
                     style: TextStyle(color: Colors.white),
                   ),
                 );
@@ -555,63 +565,87 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   final diningHall = diningHallMeals.keys.elementAt(index);
                   final meal = diningHallMeals[diningHall]!;
 
-                  return Container(
-                    margin: EdgeInsets.symmetric(horizontal: 8),
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white.withOpacity(0.08),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.15),
-                        width: 1,
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => MealDetailsScreen(
+                            meal: meal,
+                            diningHall: diningHall,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 8),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white.withOpacity(0.08),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.15),
+                          width: 1,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          meal.name,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          "At $diningHall",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withOpacity(0.6),
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Expanded(
-                          child: Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
                             children: [
-                              _buildNutritionChip(
-                                '${meal.calories.round()} cal',
-                                Colors.blue,
+                              Expanded(
+                                child: Text(
+                                  meal.name,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              _buildNutritionChip(
-                                '${meal.protein.round()}g Protein',
-                                Colors.green,
-                              ),
-                              _buildNutritionChip(
-                                '${meal.carbs.round()}g Carbs',
-                                Colors.orange,
-                              ),
-                              _buildNutritionChip(
-                                '${meal.fat.round()}g Fat',
-                                Colors.purple,
+                              Icon(
+                                CupertinoIcons.chevron_right,
+                                color: Colors.white.withOpacity(0.5),
+                                size: 16,
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          Text(
+                            "At $diningHall",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.6),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Expanded(
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                _buildNutritionChip(
+                                  '${meal.calories.round()} cal',
+                                  Colors.blue,
+                                ),
+                                _buildNutritionChip(
+                                  '${meal.protein.round()}g Protein',
+                                  Colors.green,
+                                ),
+                                _buildNutritionChip(
+                                  '${meal.carbs.round()}g Carbs',
+                                  Colors.orange,
+                                ),
+                                _buildNutritionChip(
+                                  '${meal.fat.round()}g Fat',
+                                  Colors.purple,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
