@@ -91,24 +91,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    dietaryRestrictions = DietaryRestrictions(
-      allergies: <FoodAllergy>[FoodAllergy.TreeNuts, FoodAllergy.Peanuts],
-      preferences: <FoodPreference>[FoodPreference.Halal],
-      ingredientPreferences: [],
-    );
-    getFoodData(true);
-    testPlanner(176, 70.86614173, 50, Gender.male);
-    MealPlanner.generateMeal(
-      targetCalories: 757,
-      targetProtein: 47.5,
-      targetCarbs: 94.5,
-      targetFat: 21,
-      availableFoods: data,
-      diningHall: "Wiley",
-    ).then((meal) {
-      print("Generated Meal:");
-      print(meal.toString());
-    });
+    // dietaryRestrictions = DietaryRestrictions(
+    //   allergies: <FoodAllergy>[FoodAllergy.TreeNuts, FoodAllergy.Peanuts],
+    //   preferences: <FoodPreference>[FoodPreference.Halal],
+    //   ingredientPreferences: [],
+    // );
+    // getFoodData(true);
+    // testPlanner(176, 70.86614173, 50, Gender.male);
+    // MealPlanner.generateMeal(
+    //   targetCalories: 757,
+    //   targetProtein: 47.5,
+    //   targetCarbs: 94.5,
+    //   targetFat: 21,
+    //   availableFoods: data,
+    //   diningHall: "Wiley",
+    // ).then((meal) {
+    //   print("Generated Meal:");
+    //   print(meal.toString());
+    // });
   }
 
   void getFoodData([bool initial = false]) {

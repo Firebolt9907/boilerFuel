@@ -97,6 +97,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
 
   void _addIngredient(String ingredient) {
     final trimmedIngredient = ingredient.trim().toLowerCase();
+    print("Adding ingredient: $trimmedIngredient");
     if (trimmedIngredient.isNotEmpty &&
         !_customIngredients.contains(trimmedIngredient)) {
       setState(() {
@@ -107,8 +108,9 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
   }
 
   void _removeIngredient(String ingredient) {
+    print("Removing ingredient: $ingredient");
     setState(() {
-      _customIngredients.remove(ingredient);
+      _customIngredients.remove(ingredient.trim().toLowerCase());
     });
   }
 
@@ -328,9 +330,17 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                                   ),
                                   child: IconButton(
                                     icon: Icon(Icons.add, color: Colors.white),
-                                    onPressed: () => _addIngredient(
-                                      _ingredientController.text,
-                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _suggestionChips.add(
+                                          _ingredientController.text
+                                              .toUpperCase(),
+                                        );
+                                      });
+                                      _addIngredient(
+                                        _ingredientController.text,
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
@@ -369,7 +379,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                               runSpacing: 8,
                               children: _suggestionChips.map((suggestion) {
                                 final isSelected = _customIngredients.contains(
-                                  suggestion,
+                                  suggestion.trim().toLowerCase(),
                                 );
                                 return GestureDetector(
                                   onTap: () => isSelected

@@ -86,7 +86,10 @@ class _AnimatedListState extends State<AnimatedList>
             position: _slideAnimations[index],
             child: ScaleTransition(
               scale: _scaleAnimations[index],
-              child: AnimatedContainer(
+              child: GestureDetector(
+                onTap: () => widget.onItemSelect(item, index),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
                 margin: EdgeInsets.only(bottom: 12),
                 padding: EdgeInsets.all(16),
@@ -98,10 +101,9 @@ class _AnimatedListState extends State<AnimatedList>
                         ? Colors.blue.shade300
                         : Colors.transparent,
                     width: 2,
+                  )
                   ),
-                ),
-                child: GestureDetector(
-                  onTap: () => widget.onItemSelect(item, index),
+                
                   child: Row(
                     children: [
                       if (isSelected) ...[

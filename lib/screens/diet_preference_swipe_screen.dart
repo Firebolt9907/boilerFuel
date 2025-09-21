@@ -80,17 +80,17 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
       vsync: this,
     );
     _pulseController = AnimationController(
-      duration: Duration(milliseconds: 2200),
+      duration: Duration(milliseconds: 2500),
       vsync: this,
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    _floatingAnimation = Tween<double>(begin: -18.0, end: 18.0).animate(
+    _floatingAnimation = Tween<double>(begin: -15.0, end: 15.0).animate(
       CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut),
     );
-    _pulseAnimation = Tween<double>(begin: 0.7, end: 1.3).animate(
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
@@ -344,6 +344,87 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
                       ),
                     ),
 
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //Swap the order if swapSides is true
+                        children: [
+                          // Reject hint
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.red.withOpacity(0.2),
+                              border: Border.all(
+                                color: Colors.red.withOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.arrow_left,
+                                  color: Colors.red.shade300,
+                                  size: 16,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'No Preference',
+                                  style: TextStyle(
+                                    color: Colors.red.shade300,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Accept hint
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.green.withOpacity(0.2),
+                              border: Border.all(
+                                color: Colors.green.withOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Preferered',
+                                  style: TextStyle(
+                                    color: Colors.green.shade300,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(
+                                  Icons.arrow_right,
+                                  color: Colors.green.shade300,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                     // Bottom section
                     if (isCompleted) _buildBottomButtons(),
                     if (isCompleted) SizedBox(height: 24),
@@ -361,9 +442,11 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Background cards - show current and next 2 cards
         for (
-          int i = math.min(_currentIndex + 2, _preferences.length - 1);
+          int i = math.min(
+            _currentIndex + _preferences.length,
+            _preferences.length - 1,
+          );
           i >= _currentIndex;
           i--
         )

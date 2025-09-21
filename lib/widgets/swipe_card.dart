@@ -249,9 +249,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
           child: Transform.rotate(
             angle: currentRotation,
             child: Transform.scale(
-              scale: widget.isTopCard
-                  ? _scaleAnimation.value * _pulseAnimation.value
-                  : 0.95,
+              scale: widget.isTopCard ? 0.85 : 0.85,
               child: GestureDetector(
                 onPanStart: _onPanStart,
                 onPanUpdate: _onPanUpdate,
@@ -365,95 +363,17 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
                             color: _overlayColor,
                           ),
                           child: Center(
-                            child: Icon(
-                              _overlayIcon,
-                              size: 80,
-                              color: Colors.white,
-                            ),
+                            child: _overlayIcon == null
+                                ? Container()
+                                : Icon(
+                                    _overlayIcon,
+                                    size: 80,
+                                    color: Colors.white,
+                                  ),
                           ),
                         ),
 
                       // Bottom swipe hints (only on top card)
-                      if (widget.isTopCard && _dragOffset == Offset.zero)
-                        Positioned(
-                          bottom: 20,
-                          left: 0,
-                          right: 0,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              // Reject hint
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.red.withOpacity(0.2),
-                                  border: Border.all(
-                                    color: Colors.red.withOpacity(0.5),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.close,
-                                      color: Colors.red.shade300,
-                                      size: 16,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Swipe left',
-                                      style: TextStyle(
-                                        color: Colors.red.shade300,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              // Accept hint
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.green.withOpacity(0.2),
-                                  border: Border.all(
-                                    color: Colors.green.withOpacity(0.5),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Swipe right',
-                                      style: TextStyle(
-                                        color: Colors.green.shade300,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.green.shade300,
-                                      size: 16,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                     ],
                   ),
                 ),

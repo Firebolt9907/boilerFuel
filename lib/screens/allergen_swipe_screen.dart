@@ -359,6 +359,87 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                       ),
                     ),
 
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        //Swap the order if swapSides is true
+                        children: [
+                          // Accept hint (swapped to left)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.green.withOpacity(0.2),
+                              border: Border.all(
+                                color: Colors.green.withOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.arrow_left,
+                                  color: Colors.green.shade300,
+                                  size: 16,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Not Allergic',
+                                  style: TextStyle(
+                                    color: Colors.green.shade300,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Reject hint (swapped to right)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.red.withOpacity(0.2),
+                              border: Border.all(
+                                color: Colors.red.withOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Allergic',
+                                  style: TextStyle(
+                                    color: Colors.red.shade300,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(
+                                  Icons.arrow_right,
+                                  color: Colors.red.shade300,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                     // Bottom section
                     if (isCompleted) _buildBottomButtons(),
                     if (isCompleted) SizedBox(height: 24),
@@ -376,7 +457,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Background cards - show current and next 2 cards
+
         for (
           int i = math.min(
             _currentIndex + _allergens.length,
