@@ -33,7 +33,7 @@ void main() async {
   // init firebase
   Gemini.init(apiKey: ApiKeys.geminiApiKey);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(kDebugMode ? MyApp() : WelcomeScreen());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -44,7 +44,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  User? user;
+  User? user = null;
 
   @override
   void initState() {

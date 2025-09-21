@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:29513962283:android:a85a61d68048563dea2b6e",
+        "mobilesdk_app_id": "1:29513962283:android:dfa212019d615349ea2b6e",
         "android_client_info": {
-          "package_name": "com.example.boiler_fuel"
+          "package_name": "com.njr.boilerFuel"
         }
       },
       "oauth_client": [],

@@ -7,8 +7,8 @@ class LocalDB {
   static String userKey = "USER_KEY";
   static String mealsKey = "MEALS_KEYSSSS";
 
-  static User? user;
-  static String? userString;
+  static User? user = null;
+  static String? userString = null;
 
   static Future<void> saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
