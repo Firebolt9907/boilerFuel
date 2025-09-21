@@ -396,65 +396,72 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                               ),
                             ),
                             SizedBox(height: 16),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: _suggestionChips.map((suggestion) {
-                                final isSelected = _customIngredients.contains(
-                                  suggestion.trim().toLowerCase(),
-                                );
-                                return GestureDetector(
-                                  onTap: () => isSelected
-                                      ? _removeIngredient(suggestion)
-                                      : _addFromSuggestion(suggestion),
-                                  child: AnimatedContainer(
-                                    duration: Duration(milliseconds: 200),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: isSelected
-                                          ? Colors.orange.withOpacity(0.3)
-                                          : Colors.white.withOpacity(0.1),
-                                      border: Border.all(
+                            SizedBox(
+                              width: double.infinity,
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _suggestionChips.map((suggestion) {
+                                  final isSelected = _customIngredients
+                                      .contains(
+                                        suggestion.trim().toLowerCase(),
+                                      );
+                                  return GestureDetector(
+                                    onTap: () => isSelected
+                                        ? _removeIngredient(suggestion)
+                                        : _addFromSuggestion(suggestion),
+                                    child: AnimatedContainer(
+                                      duration: Duration(milliseconds: 200),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
                                         color: isSelected
-                                            ? Colors.orange.withOpacity(0.7)
-                                            : Colors.white.withOpacity(0.3),
-                                        width: 1,
+                                            ? Colors.orange.withOpacity(0.3)
+                                            : Colors.white.withOpacity(0.1),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? Colors.orange.withOpacity(0.7)
+                                              : Colors.white.withOpacity(0.3),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (isSelected) ...[
+                                            Icon(
+                                              Icons.check,
+                                              size: 16,
+                                              color: Colors.orange.shade300,
+                                            ),
+                                            SizedBox(width: 4),
+                                          ],
+                                          Text(
+                                            suggestion,
+                                            style: TextStyle(
+                                              color: isSelected
+                                                  ? Colors.orange.shade200
+                                                  : Colors.white.withOpacity(
+                                                      0.8,
+                                                    ),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (isSelected) ...[
-                                          Icon(
-                                            Icons.check,
-                                            size: 16,
-                                            color: Colors.orange.shade300,
-                                          ),
-                                          SizedBox(width: 4),
-                                        ],
-                                        Text(
-                                          suggestion,
-                                          style: TextStyle(
-                                            color: isSelected
-                                                ? Colors.orange.shade200
-                                                : Colors.white.withOpacity(0.8),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ],
                         ),
                       ),
+
                       SizedBox(height: 32),
 
                       // Current restrictions
@@ -561,8 +568,6 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                       // Bottom buttons
                       AnimatedButton(text: 'Save', onTap: _continue),
                       SizedBox(height: 12),
-
-                      SizedBox(height: 40),
                     ],
                   ),
                 ),

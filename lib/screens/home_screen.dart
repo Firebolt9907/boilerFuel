@@ -337,7 +337,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Icon(Icons.restaurant, color: Colors.orange.shade300, size: 24),
               SizedBox(width: 12),
               Text(
-                'Your Dining Hall Rankings',
+                'Your Rankings',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

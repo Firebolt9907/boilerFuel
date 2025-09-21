@@ -370,6 +370,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                         ),
                       ),
                       SizedBox(height: 16),
+                      Center(child:
                       TextButton(
                         onPressed: _skipAll,
                         child: Text(
@@ -379,6 +380,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                             fontSize: 16,
                           ),
                         ),
+                      ),
                       ),
 
                       SizedBox(height: 20),
