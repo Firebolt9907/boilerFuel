@@ -66,6 +66,13 @@ class _AnimatedTextFieldState extends State<AnimatedTextField>
             setState(() => _isFocused = false);
             _controller.reverse();
           },
+          onTapOutside: (event) {
+            setState(() {
+              _isFocused = false;
+              _controller.reverse();
+            });
+          },
+
           decoration: InputDecoration(
             labelText: widget.label,
             labelStyle: TextStyle(

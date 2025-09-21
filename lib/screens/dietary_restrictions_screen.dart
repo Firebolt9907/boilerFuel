@@ -89,9 +89,9 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     );
 
     // After allergen screen, automatically start preference flow
-    if (result != null) {
-      _startPreferenceFlow();
-    }
+    // if (result != null) {
+    //   _startPreferenceFlow();
+    // }
   }
 
   void _startPreferenceFlow() async {
@@ -109,10 +109,10 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
       ),
     );
 
-    // After preference screen, automatically start custom ingredients flow
-    if (result != null) {
-      _startCustomIngredientsFlow();
-    }
+    // // After preference screen, automatically start custom ingredients flow
+    // if (result != null) {
+    //   _startCustomIngredientsFlow();
+    // }
   }
 
   void _startCustomIngredientsFlow() async {
@@ -131,9 +131,9 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     );
 
     // After custom ingredients screen, complete the setup
-    if (result != null) {
-      _completeSetup();
-    }
+    // if (result != null) {
+    //   _completeSetup();
+    // }
   }
 
   void _completeSetup() async {
@@ -143,23 +143,23 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
       ingredientPreferences: _customIngredients,
     );
 
-  // User user = (await LocalDB.getUser())!;
+    // User user = (await LocalDB.getUser())!;
 
-  //   LocalDB.saveUser(
-  //     User(
-  //       uid: "uid",
-  //       name: ,
-  //       dietaryRestrictions: dietaryRestrictions,
-  //       uid: '',
-  //       weight: null,
-  //       height: null,
-  //       goal: null,
-  //       mealPlan: null,
-  //       diningHallRank: [],
-  //       age: null,
-  //       gender: null,
-  //     ),
-  //   );
+    //   LocalDB.saveUser(
+    //     User(
+    //       uid: "uid",
+    //       name: ,
+    //       dietaryRestrictions: dietaryRestrictions,
+    //       uid: '',
+    //       weight: null,
+    //       height: null,
+    //       goal: null,
+    //       mealPlan: null,
+    //       diningHallRank: [],
+    //       age: null,
+    //       gender: null,
+    //     ),
+    //   );
 
     widget.onComplete(dietaryRestrictions);
   }
@@ -364,23 +364,23 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                           child: AnimatedButton(
                             text: 'Save',
                             onTap: () {
-                              Navigator.pop(context, );
+                              _completeSetup();
                             },
                           ),
                         ),
                       ),
                       SizedBox(height: 16),
-                      Center(child:
-                      TextButton(
-                        onPressed: _skipAll,
-                        child: Text(
-                          'Skip for now',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 16,
+                      Center(
+                        child: TextButton(
+                          onPressed: _skipAll,
+                          child: Text(
+                            'Skip for now',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.6),
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ),
                       ),
 
                       SizedBox(height: 20),

@@ -157,7 +157,12 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
 
   void _continue() {
     widget.onAllergiesSelected(_selectedAllergies);
-    
+    setState(() {
+      _allergens = FoodAllergy.values.toList();
+
+      _currentIndex = 0;
+    });
+
     Navigator.pop(context, true); // Return success
   }
 

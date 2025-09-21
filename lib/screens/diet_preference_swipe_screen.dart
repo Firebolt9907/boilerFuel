@@ -320,7 +320,7 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
                                   ),
                                 ),
                                 child: Text(
-                                  '${math.min(_currentIndex + 1, _preferences.length)}/${_preferences.length}',
+                                  '${_currentIndex}/${_preferences.length}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.green.shade300,
@@ -548,7 +548,7 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
               });
             },
             child: Text(
-              'Reset Preferences',
+              'Restart Preferences',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.6),
                 fontSize: 16,

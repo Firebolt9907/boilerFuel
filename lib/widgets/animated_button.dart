@@ -109,21 +109,25 @@ class _AnimatedButtonState extends State<AnimatedButton>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                widget.text,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.3),
-                      offset: Offset(1, 1),
-                      blurRadius: 2,
-                    ),
-                  ],
+              Flexible(
+                child: Text(
+                  widget.text,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible,
+                  softWrap: true,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.3),
+                        offset: Offset(1, 1),
+                        blurRadius: 2,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -133,4 +137,3 @@ class _AnimatedButtonState extends State<AnimatedButton>
     );
   }
 }
-

@@ -82,8 +82,8 @@ class _UserInfoScreenState extends State<UserInfoScreen>
         _selectedGender != null &&
         _ageController.text.isNotEmpty) {
       User user = User(
-        uid: _nameController.text,
-        name: '',
+        uid: '',
+        name: _nameController.text,
         weight: int.tryParse(_weightController.text)!,
         height: int.tryParse(_heightController.text)!,
         goal: _selectedGoal!,

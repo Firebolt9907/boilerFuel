@@ -11,6 +11,8 @@ class LocalDB {
   static Future<void> saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(userKey, jsonEncode(user.toMap()));
+    LocalDB.user = user;
+    userString = jsonEncode(user.toMap());
   }
 
   static Future<User?> getUser() async {

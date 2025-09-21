@@ -284,11 +284,11 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                                   ),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    color: rankedHalls.length >= 3
+                                    color: rankedHalls.length >= 5
                                         ? Colors.green.withOpacity(0.2)
                                         : Colors.orange.withOpacity(0.2),
                                     border: Border.all(
-                                      color: rankedHalls.length >= 3
+                                      color: rankedHalls.length >= 5
                                           ? Colors.green.withOpacity(0.5)
                                           : Colors.orange.withOpacity(0.5),
                                       width: 1,

@@ -66,7 +66,48 @@ enum MealPlan {
   unset,
   FortyBlock,
   EightyBlock,
-  SevenDay,
+  SevenDay;
+
+  @override
+  String toString() {
+    switch (this) {
+      case MealPlan.TenDay:
+        return '10 Day';
+      case MealPlan.FourteenDay:
+        return '14 Day';
+      case MealPlan.Unlimited:
+        return 'Unlimited';
+      case MealPlan.unset:
+        return 'Unset';
+      case MealPlan.FortyBlock:
+        return '40 Block';
+      case MealPlan.EightyBlock:
+        return '80 Block';
+      case MealPlan.SevenDay:
+        return '7 Day';
+    }
+  }
+
+  static MealPlan fromString(String value) {
+    switch (value) {
+      case '10 Day':
+        return MealPlan.TenDay;
+      case '14 Day':
+        return MealPlan.FourteenDay;
+      case 'Unlimited':
+        return MealPlan.Unlimited;
+      case 'Unset':
+        return MealPlan.unset;
+      case '40 Block':
+        return MealPlan.FortyBlock;
+      case '80 Block':
+        return MealPlan.EightyBlock;
+      case '7 Day':
+        return MealPlan.SevenDay;
+      default:
+        return MealPlan.unset;
+    }
+  }
 }
 
 enum Gender {
@@ -80,6 +121,17 @@ enum Gender {
         return "female";
       case Gender.male:
         return "male";
+    }
+  }
+
+  static Gender fromString(String value) {
+    switch (value) {
+      case "female":
+        return Gender.female;
+      case "male":
+        return Gender.male;
+      default:
+        throw ArgumentError('Invalid Gender: $value');
     }
   }
 }
@@ -207,7 +259,7 @@ class User {
   final int weight;
   final int height;
   final Goal goal;
-  final DietaryRestrictions dietaryRestrictions;
+  DietaryRestrictions dietaryRestrictions;
   MealPlan mealPlan;
   List<String> diningHallRank;
   final int age;
@@ -232,10 +284,12 @@ class User {
       'name': name,
       'weight': weight,
       'height': height,
-      'goal': goal.toString().split('.').last,
+      'goal': goal.toString(),
       'dietaryRestrictions': dietaryRestrictions.toMap(),
-      'mealPlan': mealPlan.toString().split('.').last,
+      'mealPlan': mealPlan.toString(),
       'diningHallRank': diningHallRank,
+      'age': age,
+      'gender': gender.toString(),
     };
   }
 
@@ -243,20 +297,16 @@ class User {
     return User(
       uid: map['uid'],
       name: map['name'],
-      weight: map['weig`ht'],
+      weight: map['weight'],
       height: map['height'],
-      goal: Goal.values.firstWhere(
-        (e) => e.toString().split('.').last == map['eatingHabit'],
-      ),
+      goal: Goal.fromString(map['goal']),
       dietaryRestrictions: DietaryRestrictions.fromMap(
         map['dietaryRestrictions'],
       ),
-      mealPlan: MealPlan.values.firstWhere(
-        (m) => m.toString().split('.').last == map['mealPlan'],
-      ),
+      mealPlan: MealPlan.fromString(map['mealPlan']),
       diningHallRank: List<String>.from(map['diningHallRank']),
-      age: map['age'],
-      gender: map['gender'],
+      age: map['age'] ?? 19,
+      gender: Gender.fromString(map['gender']) ?? Gender.male,
     );
   }
 }

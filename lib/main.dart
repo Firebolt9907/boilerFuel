@@ -3,6 +3,7 @@ import 'package:boiler_fuel/api_key.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
+import 'package:boiler_fuel/local_storage.dart';
 import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/home_screen.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
@@ -35,8 +36,27 @@ void main() async {
   runApp(kDebugMode ? MyApp() : WelcomeScreen());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  User? user;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    LocalDB.getUser().then((value) {
+      print("Fetched user from local DB: ${value?.name}");
+      setState(() {
+        user = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +80,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: user == null ? WelcomeScreen() : HomeScreen(user: user!),
     );
   }
 }

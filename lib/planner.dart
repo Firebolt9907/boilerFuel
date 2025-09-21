@@ -190,13 +190,13 @@ Given this information for the food available, ignore the dips and sauces also i
 
  ${availableFoods.map((f) => f.toString()).join(", ")}
 
-Create ONE meal for college student with the nutrition goals for one meal as follows :
+Create ONE meal with the nutrition goals for one meal as follows :
 Calories: ${targetCalories}kcal
 Protein: ${targetProtein}g
 Carbs: ${targetCarbs}g
 Fat: ${targetFat}g
 
-The Name should be related to the ingredients used
+The NAME should be related to the ingredients used in the meal!
 
 Return as a JSON as formatted as 
 {
@@ -207,6 +207,8 @@ Return as a JSON as formatted as
    totalCarbs: number,
    foods: List[] formatted as {name: string, calories: number, protein: number, carbs: number, fats: number, id: string, sugar: number}
 }
+
+DO NOT include any other text outside of the JSON block.
 """;
 
     // Call Gemini API with the prompt and parse response
@@ -270,24 +272,28 @@ Return as a JSON as formatted as
     required double targetProtein,
     required double targetCarbs,
     required double targetFat,
-
+    required MealTime mealTime,
     required String diningHall,
   }) async {
     List<Meal> meals = [];
     User user = (await LocalDB.getUser())!;
+
     List<Food> food =
         await FirebaseDB().getFoodIDsMeal(
           diningHall,
           new DateTime.now(),
-          MealTime.lunch,
+          mealTime,
         ) ??
         [];
+    print("Fetched ${food.length} food items for $diningHall at $mealTime");
+    print("User dietary restrictions: ${user.dietaryRestrictions.toMap()}");
     List<List<Food>> availableFoods = user.dietaryRestrictions.filterFoodList(
       food,
     );
     List<Food> availableFood = availableFoods.isNotEmpty
         ? availableFoods[0]
         : [];
+    print("Filtered to ${availableFood.length} available food items");
     if (availableFood.isEmpty) {
       return meals;
     }

@@ -1,4 +1,5 @@
 import 'package:boiler_fuel/constants.dart';
+import 'package:boiler_fuel/local_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,35 +100,14 @@ class _MealPlanScreenState extends State<MealPlanScreen>
             onComplete: (dietaryRestrictions) {
               // Save dietary restrictions to user preferences
               // For now, just navigate to home screen with current user
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  backgroundColor: Color(0xFF271e37),
-                  title: Text(
-                    'Setup Complete!',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  content: Text(
-                    'Welcome to BoilerFuel! Your preferences have been saved.',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => HomeScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Start Using App',
-                        style: TextStyle(color: Colors.amber),
-                      ),
-                    ),
-                  ],
+              widget.user.dietaryRestrictions = dietaryRestrictions;
+              LocalDB.saveUser(widget.user);
+              Navigator.pushAndRemoveUntil(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => HomeScreen(user: widget.user),
                 ),
+                (route) => false,
               );
             },
           ),

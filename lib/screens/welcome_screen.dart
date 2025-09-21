@@ -24,6 +24,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   late Animation<double> _pulseAnimation;
   late Animation<double> _rotationAnimation;
 
+  bool _isDisposed = false; // Add this flag to track disposal
+
   @override
   void initState() {
     super.initState();
@@ -64,20 +66,29 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       CurvedAnimation(parent: _rotationController, curve: Curves.linear),
     );
 
-    // Start animations with delays for staggered effect
-    _fadeController.forward();
+    // Start animations with disposal checks
+    if (!_isDisposed) {
+      _fadeController.forward();
+    }
+
     Future.delayed(Duration(milliseconds: 300), () {
-      _scaleController.forward();
+      if (!_isDisposed && mounted) {
+        _scaleController.forward();
+      }
     });
+
     Future.delayed(Duration(milliseconds: 600), () {
-      _floatingController.repeat(reverse: true);
-      _pulseController.repeat(reverse: true);
-      _rotationController.repeat();
+      if (!_isDisposed && mounted) {
+        _floatingController.repeat(reverse: true);
+        _pulseController.repeat(reverse: true);
+        _rotationController.repeat();
+      }
     });
   }
 
   @override
   void dispose() {
+    _isDisposed = true; // Set flag before disposing
     _fadeController.dispose();
     _scaleController.dispose();
     _floatingController.dispose();
@@ -274,6 +285,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                             AnimatedButton(
                               text: 'Get Started',
                               onTap: () {
+                                HapticFeedback.lightImpact();
                                 Navigator.push(
                                   context,
                                   CupertinoPageRoute(
@@ -299,31 +311,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ),
                     ),
                     Spacer(),
-
-                    // Bottom floating indicators
-                    // AnimatedBuilder(
-                    //   animation: _floatingAnimation,
-                    //   builder: (context, child) => Transform.translate(
-                    //     offset: Offset(0, _floatingAnimation.value * 0.3),
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: List.generate(
-                    //         3,
-                    //         (index) => Container(
-                    //           margin: EdgeInsets.symmetric(horizontal: 4),
-                    //           width: 8,
-                    //           height: 8,
-                    //           decoration: BoxDecoration(
-                    //             shape: BoxShape.circle,
-                    //             color: Colors.white.withOpacity(
-                    //               0.3 + index * 0.1,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(height: 24),
                   ],
                 ),

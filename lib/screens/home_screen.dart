@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/local_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,10 +23,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
 
+  User? _currentUser = null;
+
   List<String> _rankedDiningHalls = [];
-  List<Meal> _suggestedMeals = [];
+  Map<MealTime, Map<String, Meal>> _suggestedMeals = {};
   bool _isLoading = true;
   MacroResult? _userMacros;
+
+  MealTime _selectedMealTime = MealTime.lunch;
+  final List<String> _diningHalls = [
+    "Wiley",
+    "Hillenbrand",
+    "Windsor",
+    "Earhart",
+    "Ford",
+  ];
+  int _currentMealIndex = 0;
 
   @override
   void initState() {
@@ -73,32 +86,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future<void> _loadHomeData() async {
     try {
-      // Create a default user if none provided
-      final user =
-          widget.user ??
-          User(
-            uid: 'default',
-            name: 'User',
-            age: 20,
-            weight: 150,
-            height: 68,
-            gender: Gender.male,
-            goal: Goal.maintain,
-            dietaryRestrictions: DietaryRestrictions(
-              allergies: [],
-              preferences: [],
-              ingredientPreferences: [],
-            ),
-            mealPlan: MealPlan.Unlimited,
-            diningHallRank: [
-              'Earhart',
-              'Ford',
-              'Hillenbrand',
-              'Wiley',
-              'Windsor',
-            ],
-          );
-
+      User? user = widget.user;
+      if (user == null) {
+        user = (await LocalDB.getUser())!;
+      }
+      setState(() {
+        _currentUser = user;
+      });
       // Get user data and calculate macros
       _userMacros = CalorieMacroCalculator.calculateMacros(
         age: user.age,
@@ -111,23 +105,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       // Use user's dining hall ranking from their profile
       _rankedDiningHalls = List.from(user.diningHallRank);
 
-      // Generate meal suggestions for the top dining hall
-      if (_rankedDiningHalls.isNotEmpty) {
-        String topDiningHall = _rankedDiningHalls.first;
+      // Generate meal suggestions for all dining halls
+      if (_diningHalls.isNotEmpty) {
+        // Calculate per-meal macros (assuming 2 meals per day)
+        double mealCalories = _userMacros!.calories / 2;
+        double mealProtein = _userMacros!.protein / 2;
+        double mealCarbs = _userMacros!.carbs / 2;
+        double mealFat = _userMacros!.fat / 2;
 
-        // Calculate per-meal macros (assuming 3 meals per day)
-        double mealCalories = _userMacros!.calories / 3;
-        double mealProtein = _userMacros!.protein / 3;
-        double mealCarbs = _userMacros!.carbs / 3;
-        double mealFat = _userMacros!.fat / 3;
-
-        _suggestedMeals = await MealPlanner.generateDiningHallMeal(
-          targetCalories: mealCalories,
-          targetProtein: mealProtein,
-          targetCarbs: mealCarbs,
-          targetFat: mealFat,
-          diningHall: topDiningHall,
-        );
+        // Fetch meal suggestions for each meal time and dining hall
+        Map<MealTime, Map<String, Meal>> suggestions = {};
+        for (MealTime mealTime in MealTime.values) {
+          Map<String, Meal> diningHallMeals = {};
+          for (String diningHall in _diningHalls) {
+            List<Meal> meals = await MealPlanner.generateDiningHallMeal(
+              diningHall: diningHall,
+              mealTime: mealTime,
+              targetCalories: mealCalories,
+              targetProtein: mealProtein,
+              targetCarbs: mealCarbs,
+              targetFat: mealFat,
+            );
+            if (meals.isNotEmpty) {
+              diningHallMeals[diningHall] =
+                  meals.first; // Take the first suggested meal
+            }
+          }
+          suggestions[mealTime] = diningHallMeals;
+        }
+        setState(() {
+          _suggestedMeals = suggestions;
+        });
       }
 
       setState(() {
@@ -216,38 +224,46 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
 
             // Main content
-            SafeArea(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header
-                      _buildHeader(),
-                      SizedBox(height: 32),
+            _currentUser == null
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.blue.shade300,
+                      ),
+                    ),
+                  )
+                : SafeArea(
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Header
+                            _buildHeader(),
+                            SizedBox(height: 32),
 
-                      // Loading or content
-                      if (_isLoading)
-                        _buildLoadingView()
-                      else ...[
-                        // Dining Hall Rankings
-                        _buildDiningHallRankings(),
-                        SizedBox(height: 32),
+                            // Loading or content
+                            if (_isLoading)
+                              _buildLoadingView(context)
+                            else ...[
+                              // Dining Hall Rankings
+                              // _buildDiningHallRankings(),
+                              // SizedBox(height: 32),
 
-                        // Suggested Meal Plan
-                        _buildSuggestedMealPlan(),
-                        SizedBox(height: 32),
+                              // Suggested Meal Plan
+                              _buildSuggestedMealPlan(),
+                              SizedBox(height: 32),
 
-                        // Daily Macros Overview
-                        if (_userMacros != null) _buildMacrosOverview(),
-                      ],
-                    ],
+                              // Daily Macros Overview
+                              if (_userMacros != null) _buildMacrosOverview(),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -286,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         SizedBox(height: 8),
         Text(
-          'Welcome back, ${widget.user?.name ?? 'User'}!',
+          'Welcome back, ${_currentUser!.name}!',
           style: TextStyle(
             fontSize: 16,
             color: Colors.white.withOpacity(0.8),
@@ -297,9 +313,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildLoadingView() {
+  Widget _buildLoadingView(BuildContext context) {
     return Container(
-      height: 200,
+      height: MediaQuery.of(context).size.height * 0.75,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -419,6 +435,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildSuggestedMealPlan() {
+    final diningHallMeals = _suggestedMeals[_selectedMealTime] ?? {};
+
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -443,18 +461,51 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ],
           ),
-          SizedBox(height: 8),
-          Text(
-            _rankedDiningHalls.isNotEmpty
-                ? 'From ${_rankedDiningHalls.first}'
-                : 'Personalized recommendations',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.6),
+          SizedBox(height: 16),
+
+          // Meal time dropdown
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.white.withOpacity(0.1),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: DropdownButton<MealTime>(
+              value: _selectedMealTime,
+              dropdownColor: Color(0xFF1B263B),
+              style: TextStyle(color: Colors.white, fontSize: 14),
+              underline: Container(),
+              icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+              onChanged: (MealTime? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _selectedMealTime = newValue;
+                    _currentMealIndex =
+                        0; // Reset to first meal when changing meal time
+                  });
+                }
+              },
+              items: MealTime.values.map<DropdownMenuItem<MealTime>>((
+                MealTime value,
+              ) {
+                return DropdownMenuItem<MealTime>(
+                  value: value,
+                  child: Text(
+                    value.toString().split('.').last.toUpperCase(),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                );
+              }).toList(),
             ),
           ),
+
           SizedBox(height: 16),
-          if (_suggestedMeals.isEmpty)
+
+          if (diningHallMeals.isEmpty)
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -489,80 +540,105 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
             )
-          else
-            ...List.generate(_suggestedMeals.length, (index) {
-              final meal = _suggestedMeals[index];
-              return Container(
-                margin: EdgeInsets.only(bottom: 16),
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.white.withOpacity(0.05),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.1),
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      meal.name,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+          else ...[
+            // Horizontal scrolling meal cards
+            Container(
+              height: 200,
+              child: PageView.builder(
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentMealIndex = index;
+                  });
+                },
+                itemCount: diningHallMeals.length,
+                itemBuilder: (context, index) {
+                  final diningHall = diningHallMeals.keys.elementAt(index);
+                  final meal = diningHallMeals[diningHall]!;
+
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 8),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white.withOpacity(0.08),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.15),
+                        width: 1,
                       ),
                     ),
-                    SizedBox(height: 12),
-                    Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildNutritionChip(
-                          '${meal.calories.round()} cal',
-                          Colors.blue,
+                        Text(
+                          meal.name,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(width: 8),
-                        _buildNutritionChip(
-                          '${meal.protein.round()}g P',
-                          Colors.green,
+                        Text(
+                          "At $diningHall",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withOpacity(0.6),
+                          ),
                         ),
-                        SizedBox(width: 8),
-                        _buildNutritionChip(
-                          '${meal.carbs.round()}g C',
-                          Colors.orange,
-                        ),
-                        SizedBox(width: 8),
-                        _buildNutritionChip(
-                          '${meal.fat.round()}g F',
-                          Colors.purple,
+                        SizedBox(height: 12),
+                        Expanded(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              _buildNutritionChip(
+                                '${meal.calories.round()} cal',
+                                Colors.blue,
+                              ),
+                              _buildNutritionChip(
+                                '${meal.protein.round()}g Protein',
+                                Colors.green,
+                              ),
+                              _buildNutritionChip(
+                                '${meal.carbs.round()}g Carbs',
+                                Colors.orange,
+                              ),
+                              _buildNutritionChip(
+                                '${meal.fat.round()}g Fat',
+                                Colors.purple,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    if (meal.foods.isNotEmpty) ...[
-                      SizedBox(height: 12),
-                      Text(
-                        'Includes:',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.7),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        meal.foods.map((f) => f.name).join(', '),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.white.withOpacity(0.6),
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
+                  );
+                },
+              ),
+            ),
+
+            SizedBox(height: 16),
+
+            // Status bar (page indicator)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                diningHallMeals.length,
+                (index) => Container(
+                  margin: EdgeInsets.symmetric(horizontal: 4),
+                  width: _currentMealIndex == index ? 24 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: _currentMealIndex == index
+                        ? Colors.green.shade400
+                        : Colors.white.withOpacity(0.3),
+                  ),
                 ),
-              );
-            }),
+              ),
+            ),
+          ],
         ],
       ),
     );
