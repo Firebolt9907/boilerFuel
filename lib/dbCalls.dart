@@ -22,8 +22,13 @@ class FirebaseDB {
         )
         .get();
     if (snapshot.exists) {
+      print(
+        "Fetched meal data for $diningCourt on ${date.month}-${date.day}-${date.year}",
+      );
       Meals meals = Meals.fromMap(snapshot.data() ?? {});
-      List<String> foodIDs;
+      print(snapshot.data());
+      List<Map<String, dynamic>> foodIDs;
+
       switch (mealTime) {
         case MealTime.breakfast:
           foodIDs = meals.breakfast;
@@ -39,14 +44,17 @@ class FirebaseDB {
           foodIDs = meals.dinner;
           break;
       }
+      print("Found ${foodIDs.length} food items for $mealTime");
+
       List<Food> foods = [];
-      for (String foodID in foodIDs) {
+      for (dynamic foodID in foodIDs) {
         //check if foods already contains foodID
-        if (foods.any((food) => food.id == foodID)) {
+        if (foods.any((food) => food.id == foodID["id"])) {
           continue;
         }
-        Food? food = await getFoodByID(foodID);
+        Food? food = await getFoodByID(foodID["id"]);
         if (food != null) {
+          food.station = foodID["station"] ?? "";
           foods.add(food);
         }
       }

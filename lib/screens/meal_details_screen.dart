@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants.dart';
+import '../styling.dart';
 import 'dart:math' as math;
 
 class MealDetailsScreen extends StatefulWidget {
@@ -73,27 +74,43 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: Color(0xFF1B263B).withOpacity(0.9),
-        border: Border(
-          bottom: BorderSide(color: Colors.white.withOpacity(0.2), width: 0.5),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Color(0xFF1B263B),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).pop();
+          },
         ),
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: Icon(CupertinoIcons.back, color: CupertinoColors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        middle: Text(
+        title: Text(
           'Meal Details',
           style: TextStyle(
-            color: CupertinoColors.white,
+            color: Colors.white,
             fontFamily: '.SF Pro Display',
             fontWeight: FontWeight.w600,
+            fontSize: 18,
+            decoration: TextDecoration.none,
           ),
         ),
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: Container(
+            height: 0.5,
+            color: Color(0xFF415A77).withOpacity(0.3),
+          ),
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.light,
+          statusBarColor: Colors.transparent,
+        ),
       ),
-      child: Container(
+      extendBodyBehindAppBar: false,
+      body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -178,15 +195,15 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                       SizedBox(height: 24),
 
                       // Detailed Macros
-                      _buildDetailedMacros(),
-                      SizedBox(height: 24),
+                      // _buildDetailedMacros(),
+                      // SizedBox(height: 24),
 
                       // Individual Foods/Ingredients
                       _buildFoodsSection(),
                       SizedBox(height: 24),
 
                       // Quick Actions
-                      _buildQuickActions(),
+                      // _buildQuickActions(),
                     ],
                   ),
                 ),
@@ -247,6 +264,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         fontFamily: '.SF Pro Display',
+                        decoration: TextDecoration.none,
                       ),
                     ),
                     SizedBox(height: 4),
@@ -256,6 +274,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                         fontSize: 16,
                         color: Colors.white.withOpacity(0.7),
                         fontFamily: '.SF Pro Text',
+                        decoration: TextDecoration.none,
                       ),
                     ),
                   ],
@@ -286,6 +305,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                     fontFamily: '.SF Pro Text',
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ],
@@ -322,6 +342,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontFamily: '.SF Pro Display',
+                  decoration: TextDecoration.none,
                 ),
               ),
             ],
@@ -399,6 +420,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontFamily: '.SF Pro Display',
+              decoration: TextDecoration.none,
             ),
           ),
           Text(
@@ -407,6 +429,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
               fontSize: 12,
               color: Colors.white.withOpacity(0.7),
               fontFamily: '.SF Pro Text',
+              decoration: TextDecoration.none,
             ),
           ),
         ],
@@ -445,6 +468,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontFamily: '.SF Pro Display',
+                  decoration: TextDecoration.none,
                 ),
               ),
             ],
@@ -486,6 +510,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                 color: Colors.white.withOpacity(0.8),
                 fontWeight: FontWeight.w500,
                 fontFamily: '.SF Pro Text',
+                decoration: TextDecoration.none,
               ),
             ),
             Text(
@@ -494,6 +519,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                 fontSize: 12,
                 color: Colors.white.withOpacity(0.6),
                 fontFamily: '.SF Pro Text',
+                decoration: TextDecoration.none,
               ),
             ),
           ],
@@ -546,6 +572,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontFamily: '.SF Pro Display',
+                  decoration: TextDecoration.none,
                 ),
               ),
             ],
@@ -597,6 +624,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                       fontFamily: '.SF Pro Text',
+                      decoration: TextDecoration.none,
                     ),
                   ),
                 ),
@@ -613,6 +641,18 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                         fontFamily: '.SF Pro Text',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    Text(
+                      food.station.isNotEmpty
+                          ? food.station
+                          : "Unknown Station",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withOpacity(0.6),
+                        fontFamily: '.SF Pro Text',
+                        decoration: TextDecoration.none,
                       ),
                     ),
                     if (food.ingredients.isNotEmpty) ...[
@@ -623,6 +663,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                           fontSize: 12,
                           color: Colors.white.withOpacity(0.6),
                           fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -669,6 +710,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                           fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ),
@@ -696,6 +738,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
           fontSize: 11,
           fontWeight: FontWeight.w500,
           fontFamily: '.SF Pro Text',
+          decoration: TextDecoration.none,
         ),
       ),
     );
@@ -719,6 +762,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
               fontWeight: FontWeight.bold,
               color: Colors.white,
               fontFamily: '.SF Pro Display',
+              decoration: TextDecoration.none,
             ),
           ),
           SizedBox(height: 16),
@@ -745,6 +789,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ],
@@ -773,6 +818,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ],

@@ -7,6 +7,7 @@ class Food {
   final double fat;
   final double sugar;
   final String ingredients;
+  String station;
   final List<String> labels;
   String rejectedReason;
 
@@ -21,6 +22,7 @@ class Food {
     required this.ingredients,
     required this.labels,
     this.rejectedReason = "",
+    this.station = "",
   });
 
   Map<String, dynamic> toMap() {
@@ -35,6 +37,7 @@ class Food {
       'ingredients': ingredients,
       'labels': labels,
       'rejectedReason': rejectedReason,
+      'station': station,
     };
   }
 
@@ -54,6 +57,7 @@ class Food {
       sugar: (map['sugar'] ?? -1) * 1.0,
       ingredients: map['ingredients'],
       labels: List<String>.from(map['labels'] ?? []),
+      station: map['station'] ?? "",
       rejectedReason: map['rejectedReason'] ?? "",
     );
   }
@@ -348,10 +352,10 @@ enum MealTime {
 }
 
 class Meals {
-  final List<String> breakfast;
-  final List<String> brunch;
-  final List<String> lunch;
-  final List<String> dinner;
+  final List<Map<String, dynamic>> breakfast;
+  final List<Map<String, dynamic>> brunch;
+  final List<Map<String, dynamic>> lunch;
+  final List<Map<String, dynamic>> dinner;
 
   Meals({
     required this.breakfast,
@@ -371,10 +375,10 @@ class Meals {
 
   factory Meals.fromMap(Map<String, dynamic> map) {
     return Meals(
-      breakfast: List<String>.from(map['Breakfast'] ?? []),
-      brunch: List<String>.from(map['Brunch'] ?? []),
-      lunch: List<String>.from(map['Lunch'] ?? []),
-      dinner: List<String>.from(map['Dinner'] ?? []),
+      breakfast: List<Map<String, dynamic>>.from(map['Breakfast'] ?? []),
+      brunch: List<Map<String, dynamic>>.from(map['Brunch'] ?? []),
+      lunch: List<Map<String, dynamic>>.from(map['Lunch'] ?? []),
+      dinner: List<Map<String, dynamic>>.from(map['Dinner'] ?? []),
     );
   }
 }
@@ -581,7 +585,7 @@ class Meal {
   final double carbs;
   final double fat;
   final List<Food> foods;
-  final String diningHall;
+  String diningHall;
 
   Meal({
     required this.name,
@@ -603,5 +607,33 @@ Fat: ${fat.round()}g
 Foods:
 ${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}g C, ${f.fat}g F)").join("\n")}
 ''';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'calories': calories,
+      'protein': protein,
+      'carbs': carbs,
+      'fat': fat,
+      'foods': foods.map((f) => f.toMap()).toList(),
+      'diningHall': diningHall,
+    };
+  }
+
+  factory Meal.fromMap(Map<String, dynamic> map) {
+    return Meal(
+      name: map['name'],
+      calories: (map['calories'] ?? -1) * 1.0,
+      protein: (map['protein'] ?? -1) * 1.0,
+      carbs: (map['carbs'] ?? -1) * 1.0,
+      fat: (map['fat'] ?? -1) * 1.0,
+      foods: List<Food>.from(
+        (map['foods'] as List<dynamic>).map(
+          (f) => Food.fromMap(f as Map<String, dynamic>),
+        ),
+      ),
+      diningHall: map['diningHall'],
+    );
   }
 }

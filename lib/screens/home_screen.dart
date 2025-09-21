@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _fadeAnimation;
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
+  PageController _scrollController = PageController();
 
   User? _currentUser = null;
 
@@ -86,36 +87,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _loadHomeData() async {
-    try {
-      User? user = widget.user;
-      if (user == null) {
-        user = (await LocalDB.getUser())!;
-      }
-      setState(() {
-        _currentUser = user;
-      });
-      // Get user data and calculate macros
-      _userMacros = CalorieMacroCalculator.calculateMacros(
-        age: user.age,
-        weightLbs: user.weight.toDouble(),
-        heightInches: user.height.toDouble(),
-        gender: user.gender,
-        goal: user.goal,
-      );
+    User? user = widget.user;
+    if (user == null) {
+      user = (await LocalDB.getUser())!;
+    }
+    setState(() {
+      _currentUser = user;
+    });
+    // Get user data and calculate macros
+    _userMacros = CalorieMacroCalculator.calculateMacros(
+      age: user.age,
+      weightLbs: user.weight.toDouble(),
+      heightInches: user.height.toDouble(),
+      gender: user.gender,
+      goal: user.goal,
+    );
 
-      // Use user's dining hall ranking from their profile
-      _rankedDiningHalls = List.from(user.diningHallRank);
+    // Use user's dining hall ranking from their profile
+    _rankedDiningHalls = List.from(user.diningHallRank);
 
-      // Generate meal suggestions for all dining halls
-      if (_diningHalls.isNotEmpty) {
-        // Calculate per-meal macros (assuming 2 meals per day)
-        double mealCalories = _userMacros!.calories / 2;
-        double mealProtein = _userMacros!.protein / 2;
-        double mealCarbs = _userMacros!.carbs / 2;
-        double mealFat = _userMacros!.fat / 2;
+    // Generate meal suggestions for all dining halls
+    if (_diningHalls.isNotEmpty) {
+      // Calculate per-meal macros (assuming 2 meals per day)
+      double mealCalories = _userMacros!.calories / 2;
+      double mealProtein = _userMacros!.protein / 2;
+      double mealCarbs = _userMacros!.carbs / 2;
+      double mealFat = _userMacros!.fat / 2;
 
-        // Fetch meal suggestions for each meal time and dining hall
-        Map<MealTime, Map<String, Meal>> suggestions = {};
+      // Fetch meal suggestions for each meal time and dining hall
+      Map<MealTime, Map<String, Meal>>? suggestions =
+          await LocalDB.getDaysMeals();
+      if (suggestions == null) {
+        print("Getting new meal suggestions");
+        suggestions = {};
         for (MealTime mealTime in MealTime.values) {
           Map<String, Meal> diningHallMeals = {};
           // Run meal generation for all dining halls in parallel
@@ -142,20 +146,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           }
           suggestions[mealTime] = diningHallMeals;
         }
-        setState(() {
-          _suggestedMeals = suggestions;
-        });
+        await LocalDB.saveDaysMeals(suggestions);
       }
+      //Sort each meal time's dining halls by user's ranking
+
+      
 
       setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error loading home data: $e');
-      setState(() {
-        _isLoading = false;
+        _suggestedMeals = suggestions!;
       });
     }
+
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -258,8 +263,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               _buildLoadingView(context)
                             else ...[
                               // Dining Hall Rankings
-                              _buildDiningHallRankings(),
-                              SizedBox(height: 32),
+                              // _buildDiningHallRankings(),
+                              // SizedBox(height: 32),
 
                               // Suggested Meal Plan
                               _buildSuggestedMealPlan(),
@@ -495,6 +500,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _selectedMealTime = newValue;
                     _currentMealIndex =
                         0; // Reset to first meal when changing meal time
+                    _scrollController.jumpToPage(0);
                   });
                 }
               },
@@ -560,6 +566,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _currentMealIndex = index;
                   });
                 },
+                controller: _scrollController,
                 itemCount: diningHallMeals.length,
                 itemBuilder: (context, index) {
                   final diningHall = diningHallMeals.keys.elementAt(index);
