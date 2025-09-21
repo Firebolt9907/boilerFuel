@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart' hide AnimatedList;
 import 'package:flutter/material.dart' hide AnimatedList;
-import 'package:flutter/services.dart';
 // Add these imports for your custom code:
 import '../../models/user_model.dart';
 import '../../widgets/animated_list.dart';
-import '../../widgets/ranking_item.dart';
 import '../../widgets/animated_button.dart';
 import 'meal_plan_screen.dart';
 import 'dart:math' as math;

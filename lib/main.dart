@@ -1,14 +1,13 @@
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
-import 'package:boiler_fuel/models/user_model.dart';
-import 'package:boiler_fuel/screens/user_info_screen.dart';
 import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
 
 import 'package:boiler_fuel/styling.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -28,7 +27,7 @@ void main() async {
   );
   // init firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(kDebugMode ? MyApp() : WelcomeScreen());
 }
 
 class MyApp extends StatelessWidget {
@@ -80,28 +79,54 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   List<Food> data = [];
   FirebaseCalls db = FirebaseCalls();
+  late DietaryRestrictions dietaryRestrictions;
 
   @override
   void initState() {
     super.initState();
-    _incrementCounter(true);
+    dietaryRestrictions = DietaryRestrictions(
+      allergies: <FoodAllergy>[
+        FoodAllergy.Nuts,
+        FoodAllergy.TreeNuts,
+        FoodAllergy.Peanuts,
+      ],
+      preferences: <FoodPreference>[],
+      ingredientPreferences: ["beef", "pork"],
+    );
+    getFoodData(true);
     testPlanner(176, 70.86614173, 50, Gender.male);
   }
 
-  void _incrementCounter([bool initial = false]) {
-    db.getFoodIDsMeal("Wiley", DateTime.now(), MealTime.lunch).then((data) {
+  void getFoodData([bool initial = false]) {
+    db.getFoodIDsMeal("Ford", DateTime.now(), MealTime.lunch).then((data) {
       setState(() {
         this.data = data ?? [];
-        for (var item in this.data) {
+        List<List<Food>> temp = dietaryRestrictions.filterFoodList(this.data);
+        List<Food> allowedFood = temp[0];
+        List<Food> restrictedFood = temp[1];
+        print("\nAllowed Food:");
+        for (var item in allowedFood) {
           print({
             "name": item.name,
             "calories": item.calories,
             "protein": item.protein,
             "carbs": item.carbs,
             "fats": item.fat,
+            "allergens": item.labels,
+          });
+        }
+        print("\nRestricted Food:");
+        for (var item in restrictedFood) {
+          print({
+            "name": item.name,
+            "calories": item.calories,
+            "protein": item.protein,
+            "carbs": item.carbs,
+            "fats": item.fat,
+            "allergens": item.labels,
+            "rejectedReason": item.rejectedReason,
           });
         }
       });
@@ -146,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: getFoodData,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),

@@ -8,6 +8,7 @@ class Food {
   final double sugar;
   final String ingredients;
   final List<String> labels;
+  String rejectedReason;
 
   Food({
     required this.name,
@@ -19,6 +20,7 @@ class Food {
     required this.sugar,
     required this.ingredients,
     required this.labels,
+    this.rejectedReason = "",
   });
 
   Map<String, dynamic> toMap() {
@@ -32,6 +34,7 @@ class Food {
       'sugar': sugar,
       'ingredients': ingredients,
       'labels': labels,
+      'rejectedReason': rejectedReason,
     };
   }
 
@@ -51,6 +54,7 @@ class Food {
       sugar: (map['sugar'] ?? -1) * 1.0,
       ingredients: map['ingredients'],
       labels: List<String>.from(map['labels'] ?? []),
+      rejectedReason: map['rejectedReason'] ?? "",
     );
   }
 }
@@ -411,7 +415,81 @@ class DietaryRestrictions {
         preferences.isNotEmpty ||
         ingredientPreferences.isNotEmpty;
   }
+
+  bool isFoodSuitable(Food food) {
+    // Check allergies
+    for (var allergy in allergies) {
+      if (food.labels.contains(allergy.toString())) {
+        food.rejectedReason = "Contains allergen: ${allergy.toString()}";
+        return false;
+      }
+    }
+
+    // Check preferences
+    for (var preference in preferences) {
+      if (!food.labels.contains(preference.toString())) {
+        food.rejectedReason =
+            "Does not meet preference: ${preference.toString()}";
+        return false;
+      }
+    }
+
+    // Check ingredient preferences
+    for (var i = 0; i < ingredientPreferences.length; i++) {
+      var ingredient = ingredientPreferences[i];
+
+      // Expand aliases
+      if (ingredientAliases[ingredient] != null) {
+        ingredientPreferences.addAll(ingredientAliases[ingredient]!);
+      }
+
+      // Check food name for restricted ingredients
+      if (food.name.toLowerCase().contains(ingredient.toLowerCase())) {
+        bool falsePositive = false;
+        if (ingredientAliasFalsePositives[ingredient] != null) {
+          food.rejectedReason = "Is dispreferred ingredient: $ingredient";
+          return false;
+        }
+      }
+
+      // Check ingredients list for restricted ingredients
+      if (food.ingredients.toLowerCase().contains(ingredient.toLowerCase())) {
+        food.rejectedReason = "Contains dispreferred ingredient: $ingredient";
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  List<List<Food>> filterFoodList(List<Food> allFoods) {
+    return [
+      allFoods.where((food) => isFoodSuitable(food)).toList(),
+      allFoods.where((food) => !isFoodSuitable(food)).toList(),
+    ];
+  }
 }
+
+// Map of ingredient to its common aliases
+var ingredientAliases = {
+  "shellfish": [
+    "shrimp",
+    "prawn",
+    "prawns",
+    "crab",
+    "lobster",
+    "crayfish",
+    "scallop",
+    "oyster",
+  ],
+  "pork": ["bacon", "ham", "sausage", "salami", "prosciutto", "chorizo"],
+  "beef": ["steak", "ribs", "brisket", "birria"],
+  "chicken": ["pollo"],
+};
+
+var ingredientAliasFalsePositives = {
+  "pork": ["bun"],
+};
 
 class Meal {
   final String name;
