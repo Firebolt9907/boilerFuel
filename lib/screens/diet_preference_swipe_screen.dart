@@ -540,21 +540,23 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
       padding: EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          AnimatedButton(
-            text: 'Continue to Custom Restrictions',
-            onTap: _continue,
-          ),
-          SizedBox(height: 12),
           TextButton(
-            onPressed: _skipPreferences,
+            onPressed: () {
+              setState(() {
+                _selectedPreferences.clear();
+                _currentIndex = 0;
+              });
+            },
             child: Text(
-              'Skip diet preferences',
+              'Reset Preferences',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.6),
                 fontSize: 16,
               ),
             ),
           ),
+          AnimatedButton(text: 'Save & Continue', onTap: _continue),
+          SizedBox(height: 12),
         ],
       ),
     );

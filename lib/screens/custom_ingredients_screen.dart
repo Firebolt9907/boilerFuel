@@ -559,20 +559,9 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                       // ],
 
                       // Bottom buttons
-                      AnimatedButton(text: 'Complete Setup', onTap: _continue),
+                      AnimatedButton(text: 'Save', onTap: _continue),
                       SizedBox(height: 12),
-                      Center(
-                        child: TextButton(
-                          onPressed: _skip,
-                          child: Text(
-                            'Skip custom restrictions',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
+
                       SizedBox(height: 40),
                     ],
                   ),

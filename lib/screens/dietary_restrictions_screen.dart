@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/local_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
@@ -135,12 +136,30 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     }
   }
 
-  void _completeSetup() {
+  void _completeSetup() async {
     final dietaryRestrictions = DietaryRestrictions(
       allergies: _selectedAllergies,
       preferences: _selectedPreferences,
       ingredientPreferences: _customIngredients,
     );
+
+  // User user = (await LocalDB.getUser())!;
+
+  //   LocalDB.saveUser(
+  //     User(
+  //       uid: "uid",
+  //       name: ,
+  //       dietaryRestrictions: dietaryRestrictions,
+  //       uid: '',
+  //       weight: null,
+  //       height: null,
+  //       goal: null,
+  //       mealPlan: null,
+  //       diningHallRank: [],
+  //       age: null,
+  //       gender: null,
+  //     ),
+  //   );
 
     widget.onComplete(dietaryRestrictions);
   }
@@ -343,27 +362,25 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                         builder: (context, child) => Transform.scale(
                           scale: _pulseAnimation.value,
                           child: AnimatedButton(
-                            text: 'Start Your Food Journey',
-                            onTap: _startAllergenFlow,
+                            text: 'Save',
+                            onTap: () {
+                              Navigator.pop(context, );
+                            },
                           ),
                         ),
                       ),
                       SizedBox(height: 16),
-
-                      // Skip option
-                      Center(
-                        child: TextButton(
-                          onPressed: _skipAll,
-                          child: Text(
-                            'Skip for now - I\'ll add restrictions later',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 16,
-                              decoration: TextDecoration.underline,
-                            ),
+                      TextButton(
+                        onPressed: _skipAll,
+                        child: Text(
+                          'Skip for now',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 16,
                           ),
                         ),
                       ),
+
                       SizedBox(height: 20),
 
                       // Progress indicator

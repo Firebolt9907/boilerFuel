@@ -157,13 +157,14 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
 
   void _continue() {
     widget.onAllergiesSelected(_selectedAllergies);
+    
     Navigator.pop(context, true); // Return success
   }
 
-  void _skipAllergies() {
-    widget.onAllergiesSelected([]);
-    Navigator.pop(context, true); // Return success
-  }
+  // void _skipAllergies() {
+  //   widget.onAllergiesSelected([]);
+  //   Navigator.pop(context, true); // Return success
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -357,84 +358,86 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                             : _buildCardStack(),
                       ),
                     ),
-                    if (!isCompleted)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        //Swap the order if swapSides is true
-                        children: [
-                          // Reject hint
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.red.withOpacity(0.2),
-                              border: Border.all(
-                                color: Colors.red.withOpacity(0.5),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.arrow_left,
-                                  color: Colors.red.shade300,
-                                  size: 16,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Not Allergic',
-                                  style: TextStyle(
-                                    color: Colors.red.shade300,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
 
-                          // Accept hint
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.green.withOpacity(0.2),
-                              border: Border.all(
-                                color: Colors.green.withOpacity(0.5),
-                                width: 1,
+                    if (isCompleted)
+                      if (!isCompleted)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          //Swap the order if swapSides is true
+                          children: [
+                            // Reject hint
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.red.withOpacity(0.2),
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(0.5),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.arrow_left,
+                                    color: Colors.red.shade300,
+                                    size: 16,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Not Allergic',
+                                    style: TextStyle(
+                                      color: Colors.red.shade300,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Allergic',
-                                  style: TextStyle(
-                                    color: Colors.green.shade300,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+
+                            // Accept hint
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.green.withOpacity(0.2),
+                                border: Border.all(
+                                  color: Colors.green.withOpacity(0.5),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Allergic',
+                                    style: TextStyle(
+                                      color: Colors.green.shade300,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(
-                                  Icons.arrow_right,
-                                  color: Colors.green.shade300,
-                                  size: 16,
-                                ),
-                              ],
+                                  SizedBox(width: 8),
+                                  Icon(
+                                    Icons.arrow_right,
+                                    color: Colors.green.shade300,
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    else
-                      SizedBox(height: 24),
+                          ],
+                        )
+                      else
+                        SizedBox(height: 24),
 
                     // Bottom section
                     if (isCompleted) _buildBottomButtons(),
@@ -513,6 +516,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
             SizedBox(height: 12),
             ListView(
               shrinkWrap: true,
+              clipBehavior: Clip.hardEdge,
 
               children: [
                 Wrap(
@@ -567,21 +571,24 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
       padding: EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          AnimatedButton(
-            text: 'Continue to Diet Preferences',
-            onTap: _continue,
-          ),
-          SizedBox(height: 12),
           TextButton(
-            onPressed: _skipAllergies,
+            onPressed: () {
+              setState(() {
+                _currentIndex = 0;
+                _selectedAllergies.clear();
+              });
+            },
             child: Text(
-              'Skip allergies',
+              'Restart Allergies',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.6),
                 fontSize: 16,
+                decoration: TextDecoration.underline,
               ),
             ),
           ),
+          AnimatedButton(text: 'Save & Continue', onTap: _continue),
+          SizedBox(height: 12),
         ],
       ),
     );
