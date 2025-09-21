@@ -71,7 +71,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
     super.dispose();
   }
 
-  void _finish() {
+  void _finish() async {
     if (_selectedPlan != null) {
       // Convert string to MealPlan enum
       MealPlan mealPlan;
@@ -91,27 +91,13 @@ class _MealPlanScreenState extends State<MealPlanScreen>
       }
 
       widget.user.mealPlan = mealPlan;
+      await LocalDB.saveUser(widget.user);
 
       // Navigate to dietary restrictions flow
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
-        CupertinoPageRoute(
-          builder: (context) => DietaryRestrictionsScreen(
-            onComplete: (dietaryRestrictions) {
-              // Save dietary restrictions to user preferences
-              // For now, just navigate to home screen with current user
-              widget.user.dietaryRestrictions = dietaryRestrictions;
-              LocalDB.saveUser(widget.user);
-              Navigator.pushAndRemoveUntil(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) => HomeScreen(user: widget.user),
-                ),
-                (route) => false,
-              );
-            },
-          ),
-        ),
+        MaterialPageRoute(builder: (context) => HomeScreen(user: widget.user)),
+        (route) => false,
       );
     }
   }
@@ -316,7 +302,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                           child: AnimatedButton(
                             text: (_selectedPlan == null)
                                 ? 'Select a meal plan'
-                                : 'Continue to Dietary Preferences',
+                                : 'Get Started',
                             onTap: _finish,
                             isEnabled: _selectedPlan != null,
                           ),

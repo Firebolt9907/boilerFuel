@@ -1,4 +1,6 @@
 import 'package:boiler_fuel/local_storage.dart';
+import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
+import 'package:boiler_fuel/screens/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
@@ -9,9 +11,9 @@ import 'custom_ingredients_screen.dart';
 import 'dart:math' as math;
 
 class DietaryRestrictionsScreen extends StatefulWidget {
-  final Function(DietaryRestrictions) onComplete;
+  final User user;
 
-  const DietaryRestrictionsScreen({Key? key, required this.onComplete})
+  const DietaryRestrictionsScreen({Key? key, required this.user})
     : super(key: key);
 
   @override
@@ -161,17 +163,29 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     //     ),
     //   );
 
-    widget.onComplete(dietaryRestrictions);
+    widget.user.dietaryRestrictions = dietaryRestrictions;
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => DiningHallRankingScreen(user: widget.user),
+      ),
+    );
   }
 
-  void _skipAll() {
+  void _skipAll() async {
     final emptyRestrictions = DietaryRestrictions(
       allergies: [],
       preferences: [],
       ingredientPreferences: [],
     );
 
-    widget.onComplete(emptyRestrictions);
+    widget.user.dietaryRestrictions = emptyRestrictions;
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => DiningHallRankingScreen(user: widget.user),
+      ),
+    );
   }
 
   @override

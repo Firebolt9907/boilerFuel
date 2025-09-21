@@ -18,26 +18,34 @@ class AnimatedButton extends StatefulWidget {
 
 class _AnimatedButtonState extends State<AnimatedButton>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
   bool _isPressed = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 150),
+    _pulseController = AnimationController(
+      duration: Duration(milliseconds: 2000),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.95,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    _pulseAnimation = Tween<double>(begin: 0.9, end: 1).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+    if (!widget.isEnabled) {
+      _pulseController.stop();
+      _pulseController.value = 0.9;
+    }
+    Future.delayed(Duration(milliseconds: 500), () {
+      _pulseController.repeat(reverse: true);
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -48,91 +56,98 @@ class _AnimatedButtonState extends State<AnimatedButton>
       onTapDown: widget.isEnabled
           ? (_) {
               setState(() => _isPressed = true);
-              _controller.forward();
+
               HapticFeedback.lightImpact();
             }
           : null,
       onTapUp: widget.isEnabled
           ? (_) {
               setState(() => _isPressed = false);
-              _controller.reverse();
+
               widget.onTap();
             }
           : null,
       onTapCancel: widget.isEnabled
           ? () {
               setState(() => _isPressed = false);
-              _controller.reverse();
             }
           : null,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-          decoration: BoxDecoration(
-            gradient: widget.isEnabled
-                ? LinearGradient(
-                    colors: [
-                      Colors.blue.shade300,
-                      Colors.lightBlueAccent,
-                      Color(0xFF61A5C2),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
-                : LinearGradient(colors: [Colors.grey, Colors.grey]),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
-            boxShadow: widget.isEnabled && !_isPressed
-                ? [
-                    BoxShadow(
-                      color: Colors.blue.shade300.withOpacity(0.4),
-                      blurRadius: 20,
-                      offset: Offset(0, 8),
-                      spreadRadius: 1,
-                    ),
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: Offset(0, 2),
-                    ),
-                  ]
-                : [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  widget.text,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.visible,
-                  softWrap: true,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withOpacity(0.3),
-                        offset: Offset(1, 1),
-                        blurRadius: 2,
-                      ),
-                    ],
-                  ),
+      child: AnimatedBuilder(
+        animation: _pulseController,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: widget.isEnabled ? _pulseAnimation.value : 1.0,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+              decoration: BoxDecoration(
+                gradient: widget.isEnabled
+                    ? LinearGradient(
+                        colors: [
+                          Colors.blue.shade300,
+                          Colors.lightBlueAccent,
+                          Color(0xFF61A5C2),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : LinearGradient(colors: [Colors.grey, Colors.grey]),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
                 ),
+                boxShadow: widget.isEnabled && !_isPressed
+                    ? [
+                        BoxShadow(
+                          color: Colors.blue.shade300.withOpacity(0.4),
+                          blurRadius: 20,
+                          offset: Offset(0, 8),
+                          spreadRadius: 1,
+                        ),
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: Offset(0, 2),
+                        ),
+                      ]
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
               ),
-            ],
-          ),
-        ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text(
+                      widget.text,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      softWrap: true,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withOpacity(0.3),
+                            offset: Offset(1, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

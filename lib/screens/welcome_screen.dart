@@ -1,4 +1,3 @@
-import 'package:boiler_fuel/models/user_model.dart';
 import 'package:boiler_fuel/screens/user_info_screen.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,7 +21,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
-  late Animation<double> _rotationAnimation;
 
   bool _isDisposed = false; // Add this flag to track disposal
 
@@ -61,9 +59,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
     _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-    _rotationAnimation = Tween<double>(begin: 0.0, end: 2 * math.pi).animate(
-      CurvedAnimation(parent: _rotationController, curve: Curves.linear),
     );
 
     // Start animations with disposal checks
@@ -188,37 +183,30 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           children: [
                             // Animated icon with rotation and glow
                             AnimatedBuilder(
-                              animation: _rotationAnimation,
-                              builder: (context, child) => Transform.rotate(
-                                angle: _rotationAnimation.value * 0.1,
-                                child: AnimatedBuilder(
-                                  animation: _pulseAnimation,
-                                  builder: (context, child) => Container(
-                                    padding: EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: RadialGradient(
-                                        colors: [
-                                          Colors.amber.withOpacity(0.3),
-                                          Colors.amber.withOpacity(0.1),
-                                          Colors.transparent,
-                                        ],
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.amber.withOpacity(0.4),
-                                          blurRadius:
-                                              30 * _pulseAnimation.value,
-                                          spreadRadius: 5,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Icon(
-                                      Icons.restaurant_menu,
-                                      size: 80,
-                                      color: Colors.amber,
-                                    ),
+                              animation: _pulseAnimation,
+                              builder: (context, child) => Container(
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      Colors.amber.withOpacity(0.3),
+                                      Colors.amber.withOpacity(0.1),
+                                      Colors.transparent,
+                                    ],
                                   ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.amber.withOpacity(0.4),
+                                      blurRadius: 30 * _pulseAnimation.value,
+                                      spreadRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Icons.restaurant_menu,
+                                  size: 80,
+                                  color: Colors.amber,
                                 ),
                               ),
                             ),
