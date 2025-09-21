@@ -1,15 +1,17 @@
+import 'package:boiler_fuel/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../models/user_model.dart' as UserModel;
+
 import 'package:boiler_fuel/widgets/animated_goal_option.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
 import 'dietary_restrictions_screen.dart';
+import 'home_screen.dart';
 import 'dart:math' as math;
 
 // Make sure 'boiler_fuel' matches your project's package name
 class MealPlanScreen extends StatefulWidget {
-  final UserModel.User user;
+  final User user;
 
   MealPlanScreen({required this.user});
 
@@ -70,7 +72,24 @@ class _MealPlanScreenState extends State<MealPlanScreen>
 
   void _finish() {
     if (_selectedPlan != null) {
-      widget.user.mealPlan = _selectedPlan;
+      // Convert string to MealPlan enum
+      MealPlan mealPlan;
+      switch (_selectedPlan) {
+        case '10 Day Plan':
+          mealPlan = MealPlan.TenDay;
+          break;
+        case '14 Day Plan':
+          mealPlan = MealPlan.FourteenDay;
+          break;
+        case 'Unlimited Plan':
+          mealPlan = MealPlan.Unlimited;
+          break;
+        default:
+          mealPlan = MealPlan.Unlimited; // Default fallback
+          break;
+      }
+
+      widget.user.mealPlan = mealPlan;
 
       // Navigate to dietary restrictions flow
       Navigator.push(
@@ -78,8 +97,8 @@ class _MealPlanScreenState extends State<MealPlanScreen>
         CupertinoPageRoute(
           builder: (context) => DietaryRestrictionsScreen(
             onComplete: (dietaryRestrictions) {
-              // Handle completion of dietary restrictions
-              // For now, just show completion dialog
+              // Save dietary restrictions to user preferences
+              // For now, just navigate to home screen with current user
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
@@ -95,7 +114,12 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.popUntil(context, (route) => route.isFirst);
+                        Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
                       },
                       child: Text(
                         'Start Using App',

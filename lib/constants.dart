@@ -59,7 +59,15 @@ class Food {
   }
 }
 
-enum MealPlan { TenDay, FourteenDay, Unlimited }
+enum MealPlan {
+  TenDay,
+  FourteenDay,
+  Unlimited,
+  unset,
+  FortyBlock,
+  EightyBlock,
+  SevenDay,
+}
 
 enum Gender {
   male,
@@ -200,8 +208,8 @@ class User {
   final int height;
   final Goal goal;
   final DietaryRestrictions dietaryRestrictions;
-  final MealPlan mealPlan;
-  final List<String> diningHallRanking;
+  MealPlan mealPlan;
+  List<String> diningHallRank;
   final int age;
   final Gender gender;
 
@@ -213,7 +221,7 @@ class User {
     required this.goal,
     required this.dietaryRestrictions,
     required this.mealPlan,
-    required this.diningHallRanking,
+    required this.diningHallRank,
     required this.age,
     required this.gender,
   });
@@ -227,7 +235,7 @@ class User {
       'goal': goal.toString().split('.').last,
       'dietaryRestrictions': dietaryRestrictions.toMap(),
       'mealPlan': mealPlan.toString().split('.').last,
-      'diningHallRanking': diningHallRanking,
+      'diningHallRank': diningHallRank,
     };
   }
 
@@ -246,7 +254,7 @@ class User {
       mealPlan: MealPlan.values.firstWhere(
         (m) => m.toString().split('.').last == map['mealPlan'],
       ),
-      diningHallRanking: List<String>.from(map['diningHallRanking']),
+      diningHallRank: List<String>.from(map['diningHallRank']),
       age: map['age'],
       gender: map['gender'],
     );
@@ -332,7 +340,32 @@ enum ActivityLevel {
 enum Goal {
   lose, // Weight loss
   maintain, // Maintain weight
-  gain, // Weight gain
+  gain; // Weight gain
+
+  @override
+  String toString() {
+    switch (this) {
+      case Goal.lose:
+        return "Cutting";
+      case Goal.maintain:
+        return "Maintain";
+      case Goal.gain:
+        return "Bulking";
+    }
+  }
+
+  static Goal fromString(String value) {
+    switch (value) {
+      case 'Cutting':
+        return Goal.lose;
+      case 'Maintain':
+        return Goal.maintain;
+      case 'Bulking':
+        return Goal.gain;
+      default:
+        throw ArgumentError('Invalid goal: $value');
+    }
+  }
 }
 
 class MacroResult {

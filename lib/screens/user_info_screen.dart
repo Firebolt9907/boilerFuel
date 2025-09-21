@@ -1,6 +1,7 @@
-import 'package:boiler_fuel/models/user_model.dart';
+import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
+import 'package:boiler_fuel/widgets/animated_dropdown_menu.dart';
 import 'package:boiler_fuel/widgets/animated_goal_option.dart';
 import 'package:boiler_fuel/widgets/animated_text_field.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,9 +10,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 class UserInfoScreen extends StatefulWidget {
-  final User user;
-
-  UserInfoScreen({required this.user});
+  UserInfoScreen({Key? key}) : super(key: key);
 
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
@@ -21,13 +20,16 @@ class _UserInfoScreenState extends State<UserInfoScreen>
     with TickerProviderStateMixin {
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
-  String? _selectedGoal;
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
+  Goal? _selectedGoal;
   late AnimationController _animationController;
   late AnimationController _floatingController;
   late AnimationController _pulseController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
+  Gender? _selectedGender;
 
   @override
   void initState() {
@@ -75,15 +77,31 @@ class _UserInfoScreenState extends State<UserInfoScreen>
   void _continue() {
     if (_weightController.text.isNotEmpty &&
         _heightController.text.isNotEmpty &&
-        _selectedGoal != null) {
-      widget.user.weight = double.tryParse(_weightController.text);
-      widget.user.height = double.tryParse(_heightController.text);
-      widget.user.eatingHabits = _selectedGoal;
+        _selectedGoal != null &&
+        _nameController.text.isNotEmpty &&
+        _selectedGender != null &&
+        _ageController.text.isNotEmpty) {
+      User user = User(
+        uid: _nameController.text,
+        name: '',
+        weight: int.tryParse(_weightController.text)!,
+        height: int.tryParse(_heightController.text)!,
+        goal: _selectedGoal!,
+        dietaryRestrictions: DietaryRestrictions(
+          allergies: [],
+          preferences: [],
+          ingredientPreferences: [],
+        ),
+        mealPlan: MealPlan.unset,
+        diningHallRank: [],
+        age: int.tryParse(_ageController.text)!,
+        gender: _selectedGender!,
+      );
 
       Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => DiningHallRankingScreen(user: widget.user),
+          builder: (context) => DiningHallRankingScreen(user: user),
         ),
       );
     }
@@ -230,14 +248,46 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         ),
                       ),
                       SizedBox(height: 40),
-
+                      AnimatedTextField(
+                        controller: _nameController,
+                        label: 'Name',
+                        keyboardType: TextInputType.text,
+                      ),
+                      SizedBox(height: 12),
+                      AnimatedTextField(
+                        controller: _ageController,
+                        label: 'Age',
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 12),
+                      AnimatedDropdownMenu<Gender>(
+                        value: _selectedGender,
+                        label: "Sex",
+                        hint: "Choose your sex",
+                        items: [
+                          DropdownMenuItem(
+                            value: Gender.male,
+                            child: Text("Male"),
+                          ),
+                          DropdownMenuItem(
+                            value: Gender.female,
+                            child: Text("Female"),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedGender = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 12),
                       // Enhanced input fields
                       AnimatedTextField(
                         controller: _weightController,
                         label: 'Weight (lbs)',
                         keyboardType: TextInputType.number,
                       ),
-                      SizedBox(height: 24),
+                      SizedBox(height: 12),
                       AnimatedTextField(
                         controller: _heightController,
                         label: 'Height (inches)',
@@ -272,9 +322,10 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                             ...['Cutting', 'Maintain', 'Bulking'].map(
                               (goal) => AnimatedGoalOption(
                                 text: goal,
-                                isSelected: _selectedGoal == goal,
-                                onTap: () =>
-                                    setState(() => _selectedGoal = goal),
+                                isSelected: _selectedGoal.toString() == goal,
+                                onTap: () => setState(
+                                  () => _selectedGoal = Goal.fromString(goal),
+                                ),
                               ),
                             ),
                           ],

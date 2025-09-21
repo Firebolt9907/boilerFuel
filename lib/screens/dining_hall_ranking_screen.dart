@@ -1,7 +1,8 @@
+import 'package:boiler_fuel/constants.dart';
 import 'package:flutter/cupertino.dart' hide AnimatedList;
 import 'package:flutter/material.dart' hide AnimatedList;
 // Add these imports for your custom code:
-import '../../models/user_model.dart';
+
 import '../../widgets/animated_list.dart';
 import '../../widgets/animated_button.dart';
 import 'meal_plan_screen.dart';
@@ -86,8 +87,8 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
   }
 
   void _continue() {
-    if (rankedHalls.length >= 3) {
-      widget.user.diningHallsRank = rankedHalls;
+    if (rankedHalls.length == 5) {
+      widget.user.diningHallRank = rankedHalls;
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -239,7 +240,7 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                           ),
                         ),
                         child: Text(
-                          'Select at least 3 dining halls in order of preference',
+                          'Select all 5 dining halls in order of preference',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white.withOpacity(0.8),
@@ -294,10 +295,10 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                                     ),
                                   ),
                                   child: Text(
-                                    '${rankedHalls.length}/3 minimum',
+                                    '${rankedHalls.length}/5',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: rankedHalls.length >= 3
+                                      color: rankedHalls.length == 5
                                           ? Colors.green.shade300
                                           : Colors.orange.shade300,
                                       fontWeight: FontWeight.w500,
@@ -403,13 +404,13 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                       AnimatedBuilder(
                         animation: _pulseAnimation,
                         builder: (context, child) => Transform.scale(
-                          scale: (rankedHalls.length >= 3) ? 1.0 : 0.98,
+                          scale: (rankedHalls.length == 5) ? 1.0 : 0.98,
                           child: AnimatedButton(
-                            text: rankedHalls.length < 3
+                            text: rankedHalls.length < 5
                                 ? 'Select more to continue'
                                 : 'Continue to Meal Plans',
                             onTap: _continue,
-                            isEnabled: rankedHalls.length >= 3,
+                            isEnabled: rankedHalls.length == 5,
                           ),
                         ),
                       ),
@@ -419,7 +420,7 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
-                          3,
+                          5,
                           (index) => Container(
                             margin: EdgeInsets.symmetric(horizontal: 4),
                             width: index == 1 ? 20 : 8,

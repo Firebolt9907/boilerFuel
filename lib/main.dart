@@ -4,6 +4,7 @@ import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
 import 'package:boiler_fuel/planner.dart';
+import 'package:boiler_fuel/screens/home_screen.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
 
 import 'package:boiler_fuel/styling.dart';
@@ -174,6 +175,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 ); // Replace Container() with the other page
               },
               child: const Text('Open Other Page'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => HomeScreen()),
+                ); // Replace Container() with the other page
+              },
+              child: const Text('Home Page'),
             ),
             Text(value, style: Theme.of(context).textTheme.headlineMedium),
           ],

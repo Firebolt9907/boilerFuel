@@ -90,20 +90,20 @@ class _AnimatedListState extends State<AnimatedList>
                 onTap: () => widget.onItemSelect(item, index),
                 behavior: HitTestBehavior.opaque,
                 child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                margin: EdgeInsets.only(bottom: 12),
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isSelected ? Color(0xFF271e37) : Color(0xFF170d27),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.blue.shade300
-                        : Colors.transparent,
-                    width: 2,
-                  )
+                  duration: Duration(milliseconds: 200),
+                  margin: EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isSelected ? Color(0xFF271e37) : Color(0xFF170d27),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.blue.shade300
+                          : Colors.transparent,
+                      width: 2,
+                    ),
                   ),
-                
+
                   child: Row(
                     children: [
                       if (isSelected) ...[

@@ -130,13 +130,12 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
     }
 
     // Move to next card after a delay
-    Future.delayed(Duration(milliseconds: 300), () {
-      if (mounted) {
-        setState(() {
-          _currentIndex++;
-        });
-      }
-    });
+
+    if (mounted) {
+      setState(() {
+        _currentIndex++;
+      });
+    }
   }
 
   void _continue() {
@@ -343,12 +342,8 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
                             : _buildCardStack(),
                       ),
                     ),
-
-                    Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: Row(
+                    if (!isCompleted)
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         //Swap the order if swapSides is true
                         children: [
@@ -423,11 +418,10 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
                           ),
                         ],
                       ),
-                    ),
 
                     // Bottom section
                     if (isCompleted) _buildBottomButtons(),
-                    if (isCompleted) SizedBox(height: 24),
+                    SizedBox(height: 24),
                   ],
                 ),
               ),
