@@ -1,3 +1,5 @@
+import 'package:boiler_fuel/api_key.dart';
+
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/dbCalls.dart';
 import 'package:boiler_fuel/firebase_options.dart';
@@ -10,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 final Styling styling = Styling();
 
@@ -26,6 +29,7 @@ void main() async {
     ),
   );
   // init firebase
+  Gemini.init(apiKey: ApiKeys.geminiApiKey);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(kDebugMode ? MyApp() : WelcomeScreen());
 }
@@ -80,23 +84,31 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Food> data = [];
-  FirebaseCalls db = FirebaseCalls();
+  String value = "";
+  FirebaseDB db = FirebaseDB();
   late DietaryRestrictions dietaryRestrictions;
 
   @override
   void initState() {
     super.initState();
     dietaryRestrictions = DietaryRestrictions(
-      allergies: <FoodAllergy>[
-        FoodAllergy.Nuts,
-        FoodAllergy.TreeNuts,
-        FoodAllergy.Peanuts,
-      ],
-      preferences: <FoodPreference>[],
-      ingredientPreferences: ["beef", "pork"],
+      allergies: <FoodAllergy>[FoodAllergy.TreeNuts, FoodAllergy.Peanuts],
+      preferences: <FoodPreference>[FoodPreference.Halal],
+      ingredientPreferences: [],
     );
     getFoodData(true);
     testPlanner(176, 70.86614173, 50, Gender.male);
+    MealPlanner.generateMeal(
+      targetCalories: 757,
+      targetProtein: 47.5,
+      targetCarbs: 94.5,
+      targetFat: 21,
+      availableFoods: data,
+      diningHall: "Wiley",
+    ).then((meal) {
+      print("Generated Meal:");
+      print(meal.toString());
+    });
   }
 
   void getFoodData([bool initial = false]) {
@@ -163,10 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('Open Other Page'),
             ),
-            Text(
-              data.toString(),
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(value, style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
       ),

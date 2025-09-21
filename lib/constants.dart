@@ -153,7 +153,7 @@ enum FoodAllergy {
       case FoodAllergy.Fish:
         return 'Fish';
       case FoodAllergy.TreeNuts:
-        return 'TreeNuts';
+        return 'Tree Nuts';
       case FoodAllergy.Sesame:
         return 'Sesame';
       case FoodAllergy.Coconut:
@@ -181,7 +181,7 @@ enum FoodAllergy {
         return FoodAllergy.Wheat;
       case 'Fish':
         return FoodAllergy.Fish;
-      case 'TreeNuts':
+      case 'Tree Nuts':
         return FoodAllergy.TreeNuts;
       case 'Sesame':
         return FoodAllergy.Sesame;
@@ -509,4 +509,16 @@ class Meal {
     required this.foods,
     required this.diningHall,
   });
+
+  @override
+  String toString() {
+    return '''=== ${name.toUpperCase()} at $diningHall ===
+Total Calories: ${calories.round()} kcal
+Protein: ${protein.round()}g
+Carbs: ${carbs.round()}g
+Fat: ${fat.round()}g
+Foods:
+${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}g C, ${f.fat}g F)").join("\n")}
+''';
+  }
 }

@@ -3,6 +3,7 @@ import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
 import 'package:boiler_fuel/widgets/animated_goal_option.dart';
 import 'package:boiler_fuel/widgets/animated_text_field.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
@@ -81,20 +82,8 @@ class _UserInfoScreenState extends State<UserInfoScreen>
 
       Navigator.push(
         context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, _) =>
-              DiningHallRankingScreen(user: widget.user),
-          transitionsBuilder: (context, animation, _, child) {
-            return SlideTransition(
-              position: animation.drive(
-                Tween(
-                  begin: Offset(1.0, 0.0),
-                  end: Offset.zero,
-                ).chain(CurveTween(curve: Curves.easeInOut)),
-              ),
-              child: child,
-            );
-          },
+        CupertinoPageRoute(
+          builder: (context) => DiningHallRankingScreen(user: widget.user),
         ),
       );
     }

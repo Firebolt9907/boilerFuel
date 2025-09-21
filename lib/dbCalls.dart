@@ -1,7 +1,7 @@
 import 'package:boiler_fuel/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FirebaseCalls {
+class FirebaseDB {
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
   Future<List<Food>?> getFoodIDsMeal(

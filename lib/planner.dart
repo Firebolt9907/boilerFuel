@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:boiler_fuel/constants.dart';
+import 'package:boiler_fuel/dbCalls.dart';
+import 'package:boiler_fuel/local_storage.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
 class CalorieMacroCalculator {
   /// Calculate BMR using Mifflin-St Jeor Equation
@@ -167,5 +171,136 @@ class CalorieMacroCalculator {
       bmr: bmr,
       tdee: tdee,
     );
+  }
+}
+
+class MealPlanner {
+  static Future<Meal> generateMeal({
+    required double targetCalories,
+    required double targetProtein,
+    required double targetCarbs,
+    required double targetFat,
+    required List<Food> availableFoods,
+    required String diningHall,
+  }) async {
+    // Placeholder implementation
+    String geminiPrompt =
+        """
+Given this information for the food available, ignore the dips and sauces also if value is -1, the nutrition information isn't available just treat it as 0:
+
+ ${availableFoods.map((f) => f.toString()).join(", ")}
+
+Create ONE meal for college student with the nutrition goals for one meal as follows :
+Calories: ${targetCalories}kcal
+Protein: ${targetProtein}g
+Carbs: ${targetCarbs}g
+Fat: ${targetFat}g
+
+The Name should be related to the ingredients used
+
+Return as a JSON as formatted as 
+{
+   mealName: string,
+   totalCals: number,
+   totalProtein: number,
+   totalFat: number,
+   totalCarbs: number,
+   foods: List[] formatted as {name: string, calories: number, protein: number, carbs: number, fats: number, id: string, sugar: number}
+}
+""";
+
+    // Call Gemini API with the prompt and parse response
+    String response =
+        (await Gemini.instance.prompt(
+          parts: [Part.text(geminiPrompt)],
+        ))!.output ??
+        "{}";
+    print("Gemini response: $response");
+    // Parse response and create Meal object
+    response = response
+        .replaceAll('\n', '')
+        .replaceAll('```', '')
+        .replaceAll("json", "");
+    print("Cleaned response: $response");
+    try {
+      var decoded = jsonDecode(response);
+      List<Food> foods = (decoded['foods'] as List).map((f) {
+        return availableFoods.firstWhere(
+          (food) => food.id == f['id'],
+          orElse: () {
+            return Food(
+              id: f['id'] ?? '',
+              name: f['name'] ?? 'Unknown',
+              calories: (f['calories'] ?? 0).toDouble(),
+              protein: (f['protein'] ?? 0).toDouble(),
+              fat: (f['fats'] ?? 0).toDouble(),
+              carbs: (f['carbs'] ?? 0).toDouble(),
+              sugar: (f['sugar'] ?? 0).toDouble(),
+              ingredients: "",
+              labels: [],
+            );
+          },
+        );
+      }).toList();
+      return Meal(
+        name: decoded['mealName'] ?? 'Generated Meal',
+        calories: (decoded['totalCals'] ?? 0).toDouble(),
+        protein: (decoded['totalProtein'] ?? 0).toDouble(),
+        fat: (decoded['totalFat'] ?? 0).toDouble(),
+        carbs: (decoded['totalCarbs'] ?? 0).toDouble(),
+        diningHall: diningHall, // Could be set based on food sources
+        foods: foods,
+      );
+    } catch (e) {
+      print("Error parsing response: $e");
+      return Meal(
+        name: "Error Meal",
+        calories: 0,
+        protein: 0,
+        fat: 0,
+        carbs: 0,
+        diningHall: "",
+        foods: [],
+      );
+    }
+  }
+
+  static Future<List<Meal>> generateDiningHallMeal({
+    required double targetCalories,
+    required double targetProtein,
+    required double targetCarbs,
+    required double targetFat,
+
+    required String diningHall,
+  }) async {
+    List<Meal> meals = [];
+    User user = (await LocalDB.getUser())!;
+    List<Food> food =
+        await FirebaseDB().getFoodIDsMeal(
+          diningHall,
+          new DateTime.now(),
+          MealTime.lunch,
+        ) ??
+        [];
+    List<List<Food>> availableFoods = user.dietaryRestrictions.filterFoodList(
+      food,
+    );
+    List<Food> availableFood = availableFoods.isNotEmpty
+        ? availableFoods[0]
+        : [];
+    if (availableFood.isEmpty) {
+      return meals;
+    }
+    Meal meal = await generateMeal(
+      targetCalories: targetCalories,
+      targetProtein: targetProtein,
+      targetCarbs: targetCarbs,
+      targetFat: targetFat,
+      availableFoods: availableFood,
+      diningHall: diningHall,
+    );
+    meals.add(meal);
+
+    return meals;
   }
 }

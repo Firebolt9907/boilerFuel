@@ -1,13 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../models/user_model.dart';
+import '../../models/user_model.dart' as UserModel;
 import 'package:boiler_fuel/widgets/animated_goal_option.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
+import 'dietary_restrictions_screen.dart';
 import 'dart:math' as math;
 
 // Make sure 'boiler_fuel' matches your project's package name
 class MealPlanScreen extends StatefulWidget {
-  final User user;
+  final UserModel.User user;
 
   MealPlanScreen({required this.user});
 
@@ -69,27 +71,42 @@ class _MealPlanScreenState extends State<MealPlanScreen>
   void _finish() {
     if (_selectedPlan != null) {
       widget.user.mealPlan = _selectedPlan;
-      // Navigate to main app or show completion
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: Color(0xFF271e37),
-          title: Text('Setup Complete!', style: TextStyle(color: Colors.white)),
-          content: Text(
-            'Welcome to BoilerFuel! Your preferences have been saved.',
-            style: TextStyle(color: Colors.white70),
+
+      // Navigate to dietary restrictions flow
+      Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => DietaryRestrictionsScreen(
+            onComplete: (dietaryRestrictions) {
+              // Handle completion of dietary restrictions
+              // For now, just show completion dialog
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: Color(0xFF271e37),
+                  title: Text(
+                    'Setup Complete!',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  content: Text(
+                    'Welcome to BoilerFuel! Your preferences have been saved.',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                      },
+                      child: Text(
+                        'Start Using App',
+                        style: TextStyle(color: Colors.amber),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.popUntil(context, (route) => route.isFirst);
-              },
-              child: Text(
-                'Start Using App',
-                style: TextStyle(color: Colors.amber),
-              ),
-            ),
-          ],
         ),
       );
     }
@@ -295,7 +312,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                           child: AnimatedButton(
                             text: (_selectedPlan == null)
                                 ? 'Select a meal plan'
-                                : 'Start Exploring',
+                                : 'Continue to Dietary Preferences',
                             onTap: _finish,
                             isEnabled: _selectedPlan != null,
                           ),
@@ -307,7 +324,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
-                          3,
+                          4, // Changed from 3 to 4 to show there's another step
                           (index) => Container(
                             margin: EdgeInsets.symmetric(horizontal: 4),
                             width: index == 2 ? 20 : 8,
