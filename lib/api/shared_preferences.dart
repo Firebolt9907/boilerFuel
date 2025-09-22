@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:boiler_fuel/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LocalDB {
+class SharedPrefs {
   static String userKey = "USER_KEY";
   static String mealsKey = "MEALS_KEYSSSS";
+  static String resetLocalDBKey = "RESET_LOCAL_DB_KEY";
 
   static User? user = null;
   static String? userString = null;
@@ -13,7 +14,7 @@ class LocalDB {
   static Future<void> saveUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(userKey, jsonEncode(user.toMap()));
-    LocalDB.user = user;
+    SharedPrefs.user = user;
     userString = jsonEncode(user.toMap());
   }
 
@@ -84,5 +85,21 @@ class LocalDB {
       meals[mealTime]![meal.diningHall] = meal;
     }
     return meals;
+  }
+
+  static Future<int> getResetLocalData() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(resetLocalDBKey) ?? 0;
+  }
+
+  static Future<void> incrementResetLocalData() async {
+    final prefs = await SharedPreferences.getInstance();
+    int current = prefs.getInt(resetLocalDBKey) ?? 0;
+    await prefs.setInt(resetLocalDBKey, current + 1);
+  }
+
+  static Future<void> setResetLocalData(int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(resetLocalDBKey, value);
   }
 }

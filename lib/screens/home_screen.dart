@@ -1,10 +1,14 @@
-import 'package:boiler_fuel/local_storage.dart';
+import 'dart:async';
+
+import 'package:boiler_fuel/api/local_database.dart';
+import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../planner.dart';
 import 'meal_details_screen.dart';
+import 'dining_hall_menu_screen.dart';
 import 'dart:math' as math;
 
 class HomeScreen extends StatefulWidget {
@@ -26,6 +30,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _statusBarController;
   late Animation<double> _statusBarAnimation;
   PageController _scrollController = PageController();
+
+  StreamController<Map<MealTime, Map<String, Meal>>> _mealStreamController =
+      StreamController.broadcast();
 
   User? _currentUser = null;
 
@@ -95,13 +102,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _floatingController.dispose();
     _pulseController.dispose();
     _statusBarController.dispose();
+    _mealStreamController.close();
     super.dispose();
   }
 
   Future<void> _loadHomeData() async {
     User? user = widget.user;
     if (user == null) {
-      user = (await LocalDB.getUser())!;
+      user = (await LocalDatabase().getUser())!;
     }
     setState(() {
       _currentUser = user;
@@ -120,78 +128,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // Generate meal suggestions for all dining halls
     if (_diningHalls.isNotEmpty) {
-      // Calculate per-meal macros (assuming 2 meals per day)
-      double mealCalories = _userMacros!.calories / 2;
-      double mealProtein = _userMacros!.protein / 2;
-      double mealCarbs = _userMacros!.carbs / 2;
-      double mealFat = _userMacros!.fat / 2;
-
-      // Fetch meal suggestions for each meal time and dining hall
-      Map<MealTime, Map<String, Meal>>? suggestions =
-          await LocalDB.getDaysMeals();
-      if (suggestions == null) {
-        print("Getting new meal suggestions");
-        suggestions = {};
-        for (MealTime mealTime in MealTime.values) {
-          Map<String, Meal> diningHallMeals = {};
-          // Run meal generation for all dining halls in parallel
-          final mealFutures = _diningHalls.map((diningHall) async {
-            List<Meal> meals = await MealPlanner.generateDiningHallMeal(
-              diningHall: diningHall,
-              mealTime: mealTime,
-              targetCalories: mealCalories,
-              targetProtein: mealProtein,
-              targetCarbs: mealCarbs,
-              targetFat: mealFat,
-            );
-            if (meals.isNotEmpty) {
-              return MapEntry(diningHall, meals.first);
-            }
-            return null;
-          }).toList();
-
-          final results = await Future.wait(mealFutures);
-          for (final entry in results) {
-            if (entry != null) {
-              diningHallMeals[entry.key] = entry.value;
-            }
-          }
-          suggestions[mealTime] = diningHallMeals;
-        }
-        await LocalDB.saveDaysMeals(suggestions);
-      }
-      //Sort each meal time's dining halls by user's ranking
-
-      Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
-      for (MealTime mealTime in suggestions.keys) {
-        Map<String, Meal> originalMeals = suggestions[mealTime]!;
-        Map<String, Meal> sortedMeals = {};
-
-        // First, add dining halls in the order of user's ranking
-        for (String rankedHall in _rankedDiningHalls) {
-          if (originalMeals.containsKey(rankedHall)) {
-            sortedMeals[rankedHall] = originalMeals[rankedHall]!;
-          }
-        }
-
-        // Then, add any remaining dining halls that weren't in the user's ranking
-        for (String diningHall in originalMeals.keys) {
-          if (!sortedMeals.containsKey(diningHall)) {
-            sortedMeals[diningHall] = originalMeals[diningHall]!;
-          }
-        }
-
-        sortedSuggestions[mealTime] = sortedMeals;
-      }
-
       setState(() {
-        _suggestedMeals = sortedSuggestions;
+        _isLoading = false;
       });
-    }
+      // Fetch meal suggestions for each meal time and dining hall
 
-    setState(() {
-      _isLoading = false;
-    });
+      await LocalDatabase().listenToDayMeals(_mealStreamController);
+      _mealStreamController.stream.listen((meals) {
+        Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
+        for (MealTime mealTime in meals.keys) {
+          Map<String, Meal> originalMeals = meals[mealTime]!;
+          Map<String, Meal> sortedMeals = {};
+
+          // First, add dining halls in the order of user's ranking
+          for (String rankedHall in _rankedDiningHalls) {
+            if (originalMeals.containsKey(rankedHall)) {
+              sortedMeals[rankedHall] = originalMeals[rankedHall]!;
+            }
+          }
+
+          // Then, add any remaining dining halls that weren't in the user's ranking
+          for (String diningHall in originalMeals.keys) {
+            if (!sortedMeals.containsKey(diningHall)) {
+              sortedMeals[diningHall] = originalMeals[diningHall]!;
+            }
+          }
+
+          sortedSuggestions[mealTime] = sortedMeals;
+        }
+
+        setState(() {
+          _suggestedMeals = sortedSuggestions;
+        });
+      });
+      //Sort each meal time's dining halls by user's ranking
+    }
   }
 
   @override
@@ -294,11 +265,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               _buildLoadingView(context)
                             else ...[
                               // Dining Hall Rankings
-                              // _buildDiningHallRankings(),
-                              // SizedBox(height: 32),
 
                               // Suggested Meal Plan
                               _buildSuggestedMealPlan(),
+                              SizedBox(height: 32),
+                              _buildDiningHallRankings(),
                               SizedBox(height: 32),
 
                               // Daily Macros Overview
@@ -398,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Icon(Icons.restaurant, color: Colors.orange.shade300, size: 24),
               SizedBox(width: 12),
               Text(
-                'Your Rankings',
+                'Dining Halls',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -418,59 +389,72 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             )
           else
             ...List.generate(_rankedDiningHalls.length, (index) {
-              return Container(
-                margin: EdgeInsets.only(bottom: 12),
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: index == 0
-                      ? Colors.green.withOpacity(0.2)
-                      : Colors.white.withOpacity(0.05),
-                  border: Border.all(
-                    color: index == 0
-                        ? Colors.green.withOpacity(0.5)
-                        : Colors.white.withOpacity(0.1),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: index == 0
-                            ? Colors.green.shade400
-                            : Colors.white.withOpacity(0.2),
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => DiningHallMenuScreen(
+                        diningHall: _rankedDiningHalls[index],
+                        user: _currentUser!,
                       ),
-                      child: Center(
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 12),
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white.withOpacity(0.05),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Container(
+                      //   width: 24,
+                      //   height: 24,
+                      //   decoration: BoxDecoration(
+                      //     shape: BoxShape.circle,
+                      //     color: index == 0
+                      //         ? Colors.green.shade400
+                      //         : Colors.white.withOpacity(0.2),
+                      //   ),
+                      //   child: Center(
+                      //     child: Text(
+                      //       '${index + 1}',
+                      //       style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontWeight: FontWeight.bold,
+                      //         fontSize: 12,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // SizedBox(width: 12),
+                      Expanded(
                         child: Text(
-                          '${index + 1}',
+                          _rankedDiningHalls[index],
                           style: TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 16,
+                            fontWeight: index == 0
+                                ? FontWeight.w600
+                                : FontWeight.w400,
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _rankedDiningHalls[index],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: index == 0
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-                        ),
+                      // if (index == 0)
+                      Icon(
+                        Icons.arrow_forward,
+                        color: Colors.amber.shade400,
+                        size: 20,
                       ),
-                    ),
-                    if (index == 0)
-                      Icon(Icons.star, color: Colors.amber.shade400, size: 20),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }),

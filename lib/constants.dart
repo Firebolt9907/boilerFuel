@@ -61,6 +61,51 @@ class Food {
       rejectedReason: map['rejectedReason'] ?? "",
     );
   }
+
+  factory Food.fromGraphQL(Map<String, dynamic> data) {
+    List<String> labels = [];
+    if (data['traits'] != null) {
+      for (var trait in data['traits']) {
+        if (trait['name'] != null) {
+          labels.add(trait['name']);
+        }
+      }
+    }
+
+    double calories = -1;
+    double protein = -1;
+    double carbs = -1;
+    double fat = -1;
+    double sugar = -1;
+
+    if (data['nutritionFacts'] != null) {
+      for (var fact in data['nutritionFacts']) {
+        if (fact['name'] == 'Calories') {
+          calories = (fact['value'] ?? 0).toDouble();
+        } else if (fact['name'] == 'Protein') {
+          protein = (fact['value'] ?? 0).toDouble();
+        } else if (fact['name'] == 'Total Carbohydrate') {
+          carbs = (fact['value'] ?? 0).toDouble();
+        } else if (fact['name'] == 'Total Fat') {
+          fat = (fact['value'] ?? 0).toDouble();
+        } else if (fact['name'] == 'Sugars') {
+          sugar = (fact['value'] ?? 0).toDouble();
+        }
+      }
+    }
+
+    return Food(
+      name: data['name'] ?? 'Unknown',
+      id: data['itemId'] ?? '',
+      calories: calories,
+      protein: protein,
+      carbs: carbs,
+      fat: fat,
+      sugar: sugar,
+      ingredients: data['ingredients'] ?? '',
+      labels: labels,
+    );
+  }
 }
 
 enum MealPlan {

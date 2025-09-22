@@ -1,20 +1,25 @@
+import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FirebaseDB {
-  final FirebaseFirestore db = FirebaseFirestore.instance;
+class FBDatabase {
+  final String? uid;
+  FBDatabase({this.uid});
+
+  final CollectionReference foodCollection = FirebaseFirestore.instance
+      .collection("foods");
+  final CollectionReference diningHallsCollection = FirebaseFirestore.instance
+      .collection("dining-halls");
 
   Future<List<Food>?> getFoodIDsMeal(
     String diningCourt,
     DateTime date,
     MealTime mealTime,
   ) async {
-    String collection = 'dining-halls';
     String document = diningCourt;
 
     // try {
-    DocumentSnapshot<dynamic> snapshot = await db
-        .collection(collection)
+    DocumentSnapshot<dynamic> snapshot = await diningHallsCollection
         .doc(document)
         .collection('meals')
         .doc(
@@ -52,11 +57,13 @@ class FirebaseDB {
         if (foods.any((food) => food.id == foodID["id"])) {
           continue;
         }
-        Food? food = await getFoodByID(foodID["id"]);
-        if (food != null) {
-          food.station = foodID["station"] ?? "";
-          foods.add(food);
-        }
+        print(
+          "Fetcing from dining hall: ${diningCourt}, foodID: ${foodID["id"]}, station: ${foodID["station"]}",
+        );
+        Food food = await Database().getFoodByID(foodID["id"]);
+
+        food.station = foodID["station"] ?? "";
+        foods.add(food);
       }
       return foods;
     }
@@ -67,14 +74,12 @@ class FirebaseDB {
   }
 
   Future<Food?> getFoodByID(String foodID) async {
-    String collection = 'foods';
     String document = foodID;
 
     // try {
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await db
-        .collection(collection)
-        .doc(document)
-        .get();
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await foodCollection.doc(document).get()
+            as DocumentSnapshot<Map<String, dynamic>>;
     if (snapshot.exists) {
       return Food.fromMap(snapshot.data() ?? {});
     }

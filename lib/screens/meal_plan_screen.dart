@@ -1,5 +1,7 @@
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
-import 'package:boiler_fuel/local_storage.dart';
+import 'package:boiler_fuel/api/shared_preferences.dart';
+import 'package:boiler_fuel/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -91,7 +93,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
       }
 
       widget.user.mealPlan = mealPlan;
-      await LocalDB.saveUser(widget.user);
+      await LocalDatabase().saveUser(widget.user);
 
       // Navigate to dietary restrictions flow
       Navigator.pushAndRemoveUntil(

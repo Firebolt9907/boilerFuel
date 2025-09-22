@@ -1,4 +1,6 @@
-import 'package:boiler_fuel/local_storage.dart';
+import 'package:boiler_fuel/api/local_database.dart';
+import 'package:boiler_fuel/api/shared_preferences.dart';
+import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
 import 'package:boiler_fuel/screens/home_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,6 +36,13 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
 
+  final List<String> _diningHalls = [
+    "Wiley",
+    "Hillenbrand",
+    "Windsor",
+    "Earhart",
+    "Ford",
+  ];
   @override
   void initState() {
     super.initState();
@@ -164,6 +173,32 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     //   );
 
     widget.user.dietaryRestrictions = dietaryRestrictions;
+    final _userMacros = CalorieMacroCalculator.calculateMacros(
+      age: widget.user.age,
+      weightLbs: widget.user.weight.toDouble(),
+      heightInches: widget.user.height.toDouble(),
+      gender: widget.user.gender,
+      goal: widget.user.goal,
+    );
+    double mealCalories = _userMacros.calories / 2;
+    double mealProtein = _userMacros.protein / 2;
+    double mealCarbs = _userMacros.carbs / 2;
+    double mealFat = _userMacros.fat / 2;
+    for (MealTime mealTime in MealTime.values) {
+      // Run meal generation for all dining halls in parallel
+      _diningHalls.forEach((diningHall) async {
+        MealPlanner.generateDiningHallMeal(
+          diningHall: diningHall,
+          mealTime: mealTime,
+          targetCalories: mealCalories,
+          targetProtein: mealProtein,
+          targetCarbs: mealCarbs,
+          targetFat: mealFat,
+          user: widget.user,
+        );
+      });
+    }
+
     Navigator.push(
       context,
       CupertinoPageRoute(
@@ -180,6 +215,34 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     );
 
     widget.user.dietaryRestrictions = emptyRestrictions;
+
+    print("Getting new meal suggestions");
+    final _userMacros = CalorieMacroCalculator.calculateMacros(
+      age: widget.user.age,
+      weightLbs: widget.user.weight.toDouble(),
+      heightInches: widget.user.height.toDouble(),
+      gender: widget.user.gender,
+      goal: widget.user.goal,
+    );
+    double mealCalories = _userMacros!.calories / 2;
+    double mealProtein = _userMacros!.protein / 2;
+    double mealCarbs = _userMacros!.carbs / 2;
+    double mealFat = _userMacros!.fat / 2;
+    for (MealTime mealTime in MealTime.values) {
+      // Run meal generation for all dining halls in parallel
+      _diningHalls.forEach((diningHall) async {
+        MealPlanner.generateDiningHallMeal(
+          diningHall: diningHall,
+          mealTime: mealTime,
+          targetCalories: mealCalories,
+          targetProtein: mealProtein,
+          targetCarbs: mealCarbs,
+          targetFat: mealFat,
+          user: widget.user,
+        );
+      });
+    }
+
     Navigator.push(
       context,
       CupertinoPageRoute(

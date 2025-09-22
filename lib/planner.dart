@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:boiler_fuel/api/database.dart';
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
-import 'package:boiler_fuel/dbCalls.dart';
-import 'package:boiler_fuel/local_storage.dart';
+import 'package:boiler_fuel/api/firebase_database.dart';
+import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
 class CalorieMacroCalculator {
@@ -267,19 +269,17 @@ DO NOT include any other text outside of the JSON block.
     }
   }
 
-  static Future<List<Meal>> generateDiningHallMeal({
+  static Future<Meal?> generateDiningHallMeal({
     required double targetCalories,
     required double targetProtein,
     required double targetCarbs,
     required double targetFat,
     required MealTime mealTime,
     required String diningHall,
+    required User user,
   }) async {
-    List<Meal> meals = [];
-    User user = (await LocalDB.getUser())!;
-
     List<Food> food =
-        await FirebaseDB().getFoodIDsMeal(
+        await Database().getDiningCourtMeal(
           diningHall,
           new DateTime.now(),
           mealTime,
@@ -295,7 +295,7 @@ DO NOT include any other text outside of the JSON block.
         : [];
     print("Filtered to ${availableFood.length} available food items");
     if (availableFood.isEmpty) {
-      return meals;
+      return null;
     }
     Meal meal = await generateMeal(
       targetCalories: targetCalories,
@@ -305,8 +305,9 @@ DO NOT include any other text outside of the JSON block.
       availableFoods: availableFood,
       diningHall: diningHall,
     );
-    meals.add(meal);
 
-    return meals;
+    await LocalDatabase().addMeal(meal, mealTime);
+
+    return meal;
   }
 }

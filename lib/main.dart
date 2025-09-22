@@ -1,9 +1,10 @@
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/api_key.dart';
 
 import 'package:boiler_fuel/constants.dart';
-import 'package:boiler_fuel/dbCalls.dart';
+import 'package:boiler_fuel/api/firebase_database.dart';
 import 'package:boiler_fuel/firebase_options.dart';
-import 'package:boiler_fuel/local_storage.dart';
+import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/home_screen.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
 final Styling styling = Styling();
+AppDb localDb = AppDb();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +52,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    LocalDB.getUser().then((value) {
+    LocalDatabase().getUser().then((value) {
       print("Fetched user from local DB: ${value?.name}");
       setState(() {
         user = value;
@@ -107,7 +109,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Food> data = [];
   String value = "";
-  FirebaseDB db = FirebaseDB();
+
   late DietaryRestrictions dietaryRestrictions;
 
   @override
@@ -131,51 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
     //   print("Generated Meal:");
     //   print(meal.toString());
     // });
-  }
-
-  void getFoodData([bool initial = false]) {
-    db.getFoodIDsMeal("Ford", DateTime.now(), MealTime.lunch).then((data) {
-      setState(() {
-        this.data = data ?? [];
-        List<List<Food>> temp = dietaryRestrictions.filterFoodList(this.data);
-        List<Food> allowedFood = temp[0];
-        List<Food> restrictedFood = temp[1];
-        print("\nAllowed Food:");
-        for (var item in allowedFood) {
-          print({
-            "name": item.name,
-            "calories": item.calories,
-            "protein": item.protein,
-            "carbs": item.carbs,
-            "fats": item.fat,
-            "allergens": item.labels,
-          });
-        }
-        print("\nRestricted Food:");
-        for (var item in restrictedFood) {
-          print({
-            "name": item.name,
-            "calories": item.calories,
-            "protein": item.protein,
-            "carbs": item.carbs,
-            "fats": item.fat,
-            "allergens": item.labels,
-            "rejectedReason": item.rejectedReason,
-          });
-        }
-      });
-    });
-  }
-
-  void testPlanner(double weightLbs, double heightIn, int age, Gender sex) {
-    var plan = CalorieMacroCalculator.calculateMacros(
-      weightLbs: weightLbs,
-      heightInches: heightIn,
-      age: age,
-      gender: sex,
-      goal: Goal.lose,
-    );
-    print(plan.toString());
   }
 
   @override
@@ -209,11 +166,6 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(value, style: Theme.of(context).textTheme.headlineMedium),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: getFoodData,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
