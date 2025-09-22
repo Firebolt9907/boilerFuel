@@ -396,13 +396,33 @@ enum MealTime {
   }
 }
 
-class Meals {
-  final List<Map<String, dynamic>> breakfast;
-  final List<Map<String, dynamic>> brunch;
-  final List<Map<String, dynamic>> lunch;
-  final List<Map<String, dynamic>> dinner;
+class MiniFood {
+  final String id;
+  final String station;
 
-  Meals({
+  MiniFood({required this.id, required this.station});
+
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'station': station};
+  }
+
+  @override
+  String toString() {
+    return toMap().toString();
+  }
+
+  factory MiniFood.fromMap(Map<String, dynamic> map) {
+    return MiniFood(id: map['id'], station: map['station'] ?? "");
+  }
+}
+
+class DiningHallMeals {
+  final List<MiniFood> breakfast;
+  final List<MiniFood> brunch;
+  final List<MiniFood> lunch;
+  final List<MiniFood> dinner;
+
+  DiningHallMeals({
     required this.breakfast,
     required this.brunch,
     required this.lunch,
@@ -411,19 +431,35 @@ class Meals {
 
   Map<String, dynamic> toMap() {
     return {
-      'breakfast': breakfast,
-      'brunch': brunch,
-      'lunch': lunch,
-      'dinner': dinner,
+      'breakfast': breakfast.map((f) => f.toMap()).toList(),
+      'brunch': brunch.map((f) => f.toMap()).toList(),
+      'lunch': lunch.map((f) => f.toMap()).toList(),
+      'dinner': dinner.map((f) => f.toMap()).toList(),
     };
   }
 
-  factory Meals.fromMap(Map<String, dynamic> map) {
-    return Meals(
-      breakfast: List<Map<String, dynamic>>.from(map['Breakfast'] ?? []),
-      brunch: List<Map<String, dynamic>>.from(map['Brunch'] ?? []),
-      lunch: List<Map<String, dynamic>>.from(map['Lunch'] ?? []),
-      dinner: List<Map<String, dynamic>>.from(map['Dinner'] ?? []),
+  factory DiningHallMeals.fromMap(Map<String, dynamic> map) {
+    return DiningHallMeals(
+      breakfast: List<MiniFood>.from(
+        (map['Breakfast'] as List<dynamic>).map(
+          (f) => MiniFood.fromMap(f as Map<String, dynamic>),
+        ),
+      ),
+      brunch: List<MiniFood>.from(
+        (map['Brunch'] as List<dynamic>).map(
+          (f) => MiniFood.fromMap(f as Map<String, dynamic>),
+        ),
+      ),
+      lunch: List<MiniFood>.from(
+        (map['Lunch'] as List<dynamic>).map(
+          (f) => MiniFood.fromMap(f as Map<String, dynamic>),
+        ),
+      ),
+      dinner: List<MiniFood>.from(
+        (map['Dinner'] as List<dynamic>).map(
+          (f) => MiniFood.fromMap(f as Map<String, dynamic>),
+        ),
+      ),
     );
   }
 }
@@ -555,6 +591,10 @@ class DietaryRestrictions {
         food.rejectedReason = "Contains allergen: ${allergy.toString()}";
         return false;
       }
+      if (food.labels.contains("Milk") && allergy == FoodAllergy.Dairy) {
+        food.rejectedReason = "Contains allergen: ${allergy.toString()}";
+        return false;
+      }
     }
 
     // Check preferences
@@ -631,6 +671,7 @@ class Meal {
   final double fat;
   final List<Food> foods;
   String diningHall;
+  MealTime? mealTime;
 
   Meal({
     required this.name,

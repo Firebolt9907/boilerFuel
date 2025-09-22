@@ -177,6 +177,13 @@ class CalorieMacroCalculator {
 }
 
 class MealPlanner {
+  static List<String> _diningHalls = [
+    "Wiley",
+    "Hillenbrand",
+    "Windsor",
+    "Earhart",
+    "Ford",
+  ];
   static Future<Meal> generateMeal({
     required double targetCalories,
     required double targetProtein,
@@ -306,8 +313,57 @@ DO NOT include any other text outside of the JSON block.
       diningHall: diningHall,
     );
 
-    await LocalDatabase().addMeal(meal, mealTime);
+    meal.mealTime = mealTime;
 
     return meal;
+  }
+
+  static Future<void> generateDayMealPlan({required User user}) async {
+    final _userMacros = CalorieMacroCalculator.calculateMacros(
+      age: user.age,
+      weightLbs: user.weight.toDouble(),
+      heightInches: user.height.toDouble(),
+      gender: user.gender,
+      goal: user.goal,
+    );
+    double mealCalories = _userMacros!.calories / 2;
+    double mealProtein = _userMacros!.protein / 2;
+    double mealCarbs = _userMacros!.carbs / 2;
+    double mealFat = _userMacros!.fat / 2;
+
+    // Create a list to hold all the meal generation futures
+    List<Future<Meal?>> mealGenerationTasks = [];
+
+    for (MealTime mealTime in MealTime.values) {
+      // Add meal generation for all dining halls to the task list
+      for (String diningHall in _diningHalls) {
+        mealGenerationTasks.add(
+          MealPlanner.generateDiningHallMeal(
+            diningHall: diningHall,
+            mealTime: mealTime,
+            targetCalories: mealCalories,
+            targetProtein: mealProtein,
+            targetCarbs: mealCarbs,
+            targetFat: mealFat,
+            user: user,
+          ),
+        );
+      }
+    }
+
+    // Wait for all meal generation tasks to complete in parallel
+    try {
+      List<Meal?> generatedMeals = await Future.wait(mealGenerationTasks);
+      for (Meal? meal in generatedMeals) {
+        if (meal != null) {
+          await LocalDatabase().addMeal(meal, meal.mealTime!);
+        }
+      }
+      print(
+        "Generated ${generatedMeals.where((meal) => meal != null).length} meals successfully",
+      );
+    } catch (e) {
+      print("Error generating meals in parallel: $e");
+    }
   }
 }

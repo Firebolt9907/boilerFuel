@@ -69,7 +69,7 @@ flutter_launcher_icons:
   remove_alpha_ios: true
 
 flutter_native_splash:
-  background_image: "assets/splash/splash.png"
+  background_image: "assets/splash/splash_1.png"
 # The following section is specific to Flutter packages.
 flutter:
   # The following line ensures that the Material Icons font is

@@ -173,31 +173,32 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     //   );
 
     widget.user.dietaryRestrictions = dietaryRestrictions;
-    final _userMacros = CalorieMacroCalculator.calculateMacros(
-      age: widget.user.age,
-      weightLbs: widget.user.weight.toDouble(),
-      heightInches: widget.user.height.toDouble(),
-      gender: widget.user.gender,
-      goal: widget.user.goal,
-    );
-    double mealCalories = _userMacros.calories / 2;
-    double mealProtein = _userMacros.protein / 2;
-    double mealCarbs = _userMacros.carbs / 2;
-    double mealFat = _userMacros.fat / 2;
-    for (MealTime mealTime in MealTime.values) {
-      // Run meal generation for all dining halls in parallel
-      _diningHalls.forEach((diningHall) async {
-        MealPlanner.generateDiningHallMeal(
-          diningHall: diningHall,
-          mealTime: mealTime,
-          targetCalories: mealCalories,
-          targetProtein: mealProtein,
-          targetCarbs: mealCarbs,
-          targetFat: mealFat,
-          user: widget.user,
-        );
-      });
-    }
+    // final _userMacros = CalorieMacroCalculator.calculateMacros(
+    //   age: widget.user.age,
+    //   weightLbs: widget.user.weight.toDouble(),
+    //   heightInches: widget.user.height.toDouble(),
+    //   gender: widget.user.gender,
+    //   goal: widget.user.goal,
+    // );
+    // double mealCalories = _userMacros.calories / 2;
+    // double mealProtein = _userMacros.protein / 2;
+    // double mealCarbs = _userMacros.carbs / 2;
+    // double mealFat = _userMacros.fat / 2;
+    // for (MealTime mealTime in MealTime.values) {
+    //   // Run meal generation for all dining halls in parallel
+    //   _diningHalls.forEach((diningHall) async {
+    //     MealPlanner.generateDiningHallMeal(
+    //       diningHall: diningHall,
+    //       mealTime: mealTime,
+    //       targetCalories: mealCalories,
+    //       targetProtein: mealProtein,
+    //       targetCarbs: mealCarbs,
+    //       targetFat: mealFat,
+    //       user: widget.user,
+    //     );
+    //   });
+    // }
+    MealPlanner.generateDayMealPlan(user: widget.user);
 
     Navigator.push(
       context,
@@ -217,31 +218,32 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     widget.user.dietaryRestrictions = emptyRestrictions;
 
     print("Getting new meal suggestions");
-    final _userMacros = CalorieMacroCalculator.calculateMacros(
-      age: widget.user.age,
-      weightLbs: widget.user.weight.toDouble(),
-      heightInches: widget.user.height.toDouble(),
-      gender: widget.user.gender,
-      goal: widget.user.goal,
-    );
-    double mealCalories = _userMacros!.calories / 2;
-    double mealProtein = _userMacros!.protein / 2;
-    double mealCarbs = _userMacros!.carbs / 2;
-    double mealFat = _userMacros!.fat / 2;
-    for (MealTime mealTime in MealTime.values) {
-      // Run meal generation for all dining halls in parallel
-      _diningHalls.forEach((diningHall) async {
-        MealPlanner.generateDiningHallMeal(
-          diningHall: diningHall,
-          mealTime: mealTime,
-          targetCalories: mealCalories,
-          targetProtein: mealProtein,
-          targetCarbs: mealCarbs,
-          targetFat: mealFat,
-          user: widget.user,
-        );
-      });
-    }
+    // final _userMacros = CalorieMacroCalculator.calculateMacros(
+    //   age: widget.user.age,
+    //   weightLbs: widget.user.weight.toDouble(),
+    //   heightInches: widget.user.height.toDouble(),
+    //   gender: widget.user.gender,
+    //   goal: widget.user.goal,
+    // );
+    // double mealCalories = _userMacros!.calories / 2;
+    // double mealProtein = _userMacros!.protein / 2;
+    // double mealCarbs = _userMacros!.carbs / 2;
+    // double mealFat = _userMacros!.fat / 2;
+    // for (MealTime mealTime in MealTime.values) {
+    //   // Run meal generation for all dining halls in parallel
+    //   _diningHalls.forEach((diningHall) async {
+    //     MealPlanner.generateDiningHallMeal(
+    //       diningHall: diningHall,
+    //       mealTime: mealTime,
+    //       targetCalories: mealCalories,
+    //       targetProtein: mealProtein,
+    //       targetCarbs: mealCarbs,
+    //       targetFat: mealFat,
+    //       user: widget.user,
+    //     );
+    //   });
+    // }
+    MealPlanner.generateDayMealPlan(user: widget.user);
 
     Navigator.push(
       context,

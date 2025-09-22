@@ -25,11 +25,46 @@ class Database {
     DateTime date,
     MealTime mealTime,
   ) async {
-    List<Food>? foods = await FBDatabase().getFoodIDsMeal(
+    List<MiniFood>? foodIDs = await LocalDatabase().getDiningHallMeals(
       diningCourt,
       date,
       mealTime,
     );
+    if (foodIDs == null) {
+      print(
+        "No local meal data found, fetching from Firebase $diningCourt on"
+        " ${date.month}-${date.day}-${date.year} for $mealTime",
+      );
+      List<MiniFood>? foods = await FBDatabase().getFoodIDsMeal(
+        diningCourt,
+        date,
+        mealTime,
+      );
+
+      await LocalDatabase().addDiningHallMeal(
+        foods ?? [],
+        diningCourt,
+        date,
+        mealTime,
+      );
+
+      foodIDs = foods;
+    }
+    List<Food> foods = [];
+    for (MiniFood foodID in foodIDs ?? []) {
+      //check if foods already contains foodID
+      if (foods.any((food) => food.id == foodID.id)) {
+        continue;
+      }
+      print(
+        "Fetcing from dining hall: ${diningCourt}, foodID: ${foodID.id}, station: ${foodID.station}",
+      );
+      Food food = await Database().getFoodByID(foodID.id);
+
+      food.station = foodID.station;
+      foods.add(food);
+    }
+
     return foods;
   }
 }

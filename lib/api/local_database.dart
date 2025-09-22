@@ -60,7 +60,19 @@ class FoodsTable extends Table {
   IntColumn get lastUpdated => integer()();
 }
 
-@DriftDatabase(tables: [UsersTable, MealsTable, FoodsTable])
+class DiningHallFoodsTable extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get diningHall => text()();
+  TextColumn get date => text()();
+  TextColumn get mealTime => text()();
+  TextColumn get miniFood => text()();
+
+  IntColumn get lastUpdated => integer()();
+}
+
+@DriftDatabase(
+  tables: [UsersTable, MealsTable, FoodsTable, DiningHallFoodsTable],
+)
 class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
@@ -75,10 +87,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB < 12) {
+      if (resetLocalDB <= 15) {
         print("Deleting old database");
         await file.delete();
-        await SharedPrefs.setResetLocalData(13);
+        await SharedPrefs.setResetLocalData(16);
         // print("Deleted old database");
         // await LocalDatabase().deleteOldResponse();
         // print("Deleted old responses");
@@ -403,5 +415,101 @@ class LocalDatabase {
       print("No food found with ID: $foodId");
       return null;
     }
+  }
+
+  Future<void> addDiningHallMeal(
+    List<MiniFood> miniFoods,
+    String diningHall,
+    DateTime date,
+    MealTime mealTime,
+  ) async {
+    DateTime now = DateTime.now();
+    String dateStr = "${date.year}-${date.month}-${date.day}";
+
+    for (MiniFood miniFood in miniFoods) {
+      final dhfRes =
+          await (localDb.select(localDb.diningHallFoodsTable)
+                ..where((tbl) => tbl.diningHall.equals(diningHall))
+                ..where((tbl) => tbl.date.equals(dateStr))
+                ..where((tbl) => tbl.mealTime.equals(mealTime.toString()))
+                ..where(
+                  (tbl) => tbl.miniFood.equals(jsonEncode(miniFood.toMap())),
+                ))
+              .get();
+
+      if (dhfRes.isEmpty) {
+        // Insert new dining hall food entry
+        await localDb
+            .into(localDb.diningHallFoodsTable)
+            .insert(
+              DiningHallFoodsTableCompanion(
+                diningHall: Value(diningHall),
+                date: Value(dateStr),
+                mealTime: Value(mealTime.toString()),
+                miniFood: Value(jsonEncode(miniFood.toMap())),
+                lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+              ),
+            );
+        print(
+          "Dining hall food inserted: ${miniFood.id} at $diningHall for $mealTime on $dateStr",
+        );
+      }
+    }
+    if (miniFoods.isEmpty) {
+      print(
+        "No dining hall foods to add for $diningHall on $dateStr for $mealTime",
+      );
+      // Still add an entry to indicate that the meal was checked but had no items
+      await localDb
+          .into(localDb.diningHallFoodsTable)
+          .insert(
+            DiningHallFoodsTableCompanion(
+              diningHall: Value(diningHall),
+              date: Value(dateStr),
+              mealTime: Value(mealTime.toString()),
+              miniFood: Value(
+                jsonEncode(MiniFood(id: "none", station: "none").toMap()),
+              ),
+              lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+            ),
+          );
+      print(
+        "Inserted placeholder entry for $diningHall on $dateStr for $mealTime",
+      );
+    }
+  }
+
+  Future<List<MiniFood>?> getDiningHallMeals(
+    String diningCourt,
+    DateTime date,
+    MealTime mealTime,
+  ) async {
+    String dateStr = "${date.year}-${date.month}-${date.day}";
+
+    final dhfRes =
+        await (localDb.select(localDb.diningHallFoodsTable)
+              ..where((tbl) => tbl.diningHall.equals(diningCourt))
+              ..where((tbl) => tbl.date.equals(dateStr))
+              ..where((tbl) => tbl.mealTime.equals(mealTime.toString())))
+            .get();
+
+    if (dhfRes.isEmpty) {
+      print("No dining hall foods found for $diningCourt on $dateStr");
+      return null;
+    }
+
+    List<MiniFood> miniFoods = [];
+    for (var row in dhfRes) {
+      MiniFood miniFood = MiniFood.fromMap(jsonDecode(row.miniFood));
+      if (miniFood.id == "none" && miniFood.station == "none") {
+        // This is a placeholder entry indicating no foods were available
+        continue;
+      }
+      miniFoods.add(miniFood);
+    }
+    print(
+      "Retrieved ${miniFoods.length} dining hall foods for $diningCourt on $dateStr",
+    );
+    return miniFoods;
   }
 }

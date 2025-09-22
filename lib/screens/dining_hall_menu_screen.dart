@@ -1,4 +1,5 @@
 import 'package:boiler_fuel/api/database.dart';
+import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -161,127 +162,125 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1B263B),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            Navigator.of(context).pop();
-          },
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF0D1B2A),
+                Color(0xFF1B263B),
+                Color(0xFF415A77),
+                Color(0xFF778DA9),
+                Color(0xFF415A77),
+              ],
+              stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+            ),
+          ),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.diningHall,
-              style: TextStyle(
-                color: Colors.white,
-                fontFamily: '.SF Pro Display',
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-                decoration: TextDecoration.none,
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: CustomAppBar(
+              title: widget.diningHall,
+              showBackButton: true,
+              onBackButtonPressed: (context) {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF0D1B2A),
+                  Color(0xFF1B263B),
+                  Color(0xFF415A77),
+                  Color(0xFF778DA9),
+                  Color(0xFF415A77),
+                ],
+                stops: [0.0, 0.25, 0.5, 0.75, 1.0],
               ),
             ),
-          ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Container(
-            height: 0.5,
-            color: Color(0xFF415A77).withOpacity(0.3),
-          ),
-        ),
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0D1B2A),
-              Color(0xFF1B263B),
-              Color(0xFF415A77),
-              Color(0xFF778DA9),
-              Color(0xFF415A77),
-            ],
-            stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Floating decorative elements
-            ...List.generate(
-              4,
-              (index) => Positioned(
-                left: (index * 95.0) % MediaQuery.of(context).size.width,
-                top: (index * 200.0) % MediaQuery.of(context).size.height,
-                child: AnimatedBuilder(
-                  animation: _floatingAnimation,
-                  builder: (context, child) => Transform.translate(
-                    offset: Offset(
-                      math.sin(_floatingAnimation.value / 10 + index) * 5,
-                      _floatingAnimation.value +
-                          math.cos(_floatingAnimation.value / 8 + index) * 3,
-                    ),
-                    child: Container(
-                      width: 14 + (index * 6),
-                      height: 14 + (index * 6),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: [
-                          Colors.orange.withOpacity(0.05),
-                          Colors.green.withOpacity(0.04),
-                          Colors.blue.withOpacity(0.03),
-                          Colors.purple.withOpacity(0.02),
-                        ][index],
-                        boxShadow: [
-                          BoxShadow(
+            child: Stack(
+              children: [
+                // Floating decorative elements
+                ...List.generate(
+                  4,
+                  (index) => Positioned(
+                    left: (index * 95.0) % MediaQuery.of(context).size.width,
+                    top: (index * 200.0) % MediaQuery.of(context).size.height,
+                    child: AnimatedBuilder(
+                      animation: _floatingAnimation,
+                      builder: (context, child) => Transform.translate(
+                        offset: Offset(
+                          math.sin(_floatingAnimation.value / 10 + index) * 5,
+                          _floatingAnimation.value +
+                              math.cos(_floatingAnimation.value / 8 + index) *
+                                  3,
+                        ),
+                        child: Container(
+                          width: 14 + (index * 6),
+                          height: 14 + (index * 6),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
                             color: [
-                              Colors.orange,
-                              Colors.green,
-                              Colors.blue,
-                              Colors.purple,
-                            ][index].withOpacity(0.1),
-                            blurRadius: 8,
-                            spreadRadius: 2,
+                              Colors.orange.withOpacity(0.05),
+                              Colors.green.withOpacity(0.04),
+                              Colors.blue.withOpacity(0.03),
+                              Colors.purple.withOpacity(0.02),
+                            ][index],
+                            boxShadow: [
+                              BoxShadow(
+                                color: [
+                                  Colors.orange,
+                                  Colors.green,
+                                  Colors.blue,
+                                  Colors.purple,
+                                ][index].withOpacity(0.1),
+                                blurRadius: 8,
+                                spreadRadius: 2,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+
+                // Main content
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: _isLoading
+                      ? _buildLoadingView()
+                      : _availableMealTimes.isEmpty
+                      ? _buildEmptyView()
+                      : Column(
+                          children: [
+                            // Meal time selector
+                            SizedBox(height: 8),
+
+                            _buildMealTimeSelector(),
+
+                            // Station selector
+                            _buildStationSelector(),
+
+                            // Food list
+                            Expanded(child: _buildFoodList()),
+                          ],
+                        ),
+                ),
+              ],
             ),
-
-            // Main content
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: _isLoading
-                  ? _buildLoadingView()
-                  : _availableMealTimes.isEmpty
-                  ? _buildEmptyView()
-                  : Column(
-                      children: [
-                        // Meal time selector
-                        SizedBox(height: 8),
-
-                        _buildMealTimeSelector(),
-
-                        // Station selector
-                        _buildStationSelector(),
-
-                        // Food list
-                        Expanded(child: _buildFoodList()),
-                      ],
-                    ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 

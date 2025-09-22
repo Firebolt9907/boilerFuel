@@ -11,7 +11,7 @@ class FBDatabase {
   final CollectionReference diningHallsCollection = FirebaseFirestore.instance
       .collection("dining-halls");
 
-  Future<List<Food>?> getFoodIDsMeal(
+  Future<List<MiniFood>?> getFoodIDsMeal(
     String diningCourt,
     DateTime date,
     MealTime mealTime,
@@ -30,9 +30,9 @@ class FBDatabase {
       print(
         "Fetched meal data for $diningCourt on ${date.month}-${date.day}-${date.year}",
       );
-      Meals meals = Meals.fromMap(snapshot.data() ?? {});
+      DiningHallMeals meals = DiningHallMeals.fromMap(snapshot.data() ?? {});
       print(snapshot.data());
-      List<Map<String, dynamic>> foodIDs;
+      List<MiniFood> foodIDs;
 
       switch (mealTime) {
         case MealTime.breakfast:
@@ -50,22 +50,22 @@ class FBDatabase {
           break;
       }
       print("Found ${foodIDs.length} food items for $mealTime");
+      return foodIDs;
 
       List<Food> foods = [];
-      for (dynamic foodID in foodIDs) {
+      for (MiniFood foodID in foodIDs) {
         //check if foods already contains foodID
-        if (foods.any((food) => food.id == foodID["id"])) {
+        if (foods.any((food) => food.id == foodID.id)) {
           continue;
         }
         print(
-          "Fetcing from dining hall: ${diningCourt}, foodID: ${foodID["id"]}, station: ${foodID["station"]}",
+          "Fetcing from dining hall: ${diningCourt}, foodID: ${foodID.id}, station: ${foodID.station}",
         );
-        Food food = await Database().getFoodByID(foodID["id"]);
+        Food food = await Database().getFoodByID(foodID.id);
 
-        food.station = foodID["station"] ?? "";
+        food.station = foodID.station;
         foods.add(food);
       }
-      return foods;
     }
     // } catch (error) {
     //   print('Error fetching data (getFoodIDsMeal): $error');

@@ -2007,12 +2007,426 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
   }
 }
 
+class $DiningHallFoodsTableTable extends DiningHallFoodsTable
+    with TableInfo<$DiningHallFoodsTableTable, DiningHallFoodsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DiningHallFoodsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _diningHallMeta = const VerificationMeta(
+    'diningHall',
+  );
+  @override
+  late final GeneratedColumn<String> diningHall = GeneratedColumn<String>(
+    'dining_hall',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _mealTimeMeta = const VerificationMeta(
+    'mealTime',
+  );
+  @override
+  late final GeneratedColumn<String> mealTime = GeneratedColumn<String>(
+    'meal_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _miniFoodMeta = const VerificationMeta(
+    'miniFood',
+  );
+  @override
+  late final GeneratedColumn<String> miniFood = GeneratedColumn<String>(
+    'mini_food',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
+    'lastUpdated',
+  );
+  @override
+  late final GeneratedColumn<int> lastUpdated = GeneratedColumn<int>(
+    'last_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    diningHall,
+    date,
+    mealTime,
+    miniFood,
+    lastUpdated,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'dining_hall_foods_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DiningHallFoodsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('dining_hall')) {
+      context.handle(
+        _diningHallMeta,
+        diningHall.isAcceptableOrUnknown(data['dining_hall']!, _diningHallMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_diningHallMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('meal_time')) {
+      context.handle(
+        _mealTimeMeta,
+        mealTime.isAcceptableOrUnknown(data['meal_time']!, _mealTimeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_mealTimeMeta);
+    }
+    if (data.containsKey('mini_food')) {
+      context.handle(
+        _miniFoodMeta,
+        miniFood.isAcceptableOrUnknown(data['mini_food']!, _miniFoodMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_miniFoodMeta);
+    }
+    if (data.containsKey('last_updated')) {
+      context.handle(
+        _lastUpdatedMeta,
+        lastUpdated.isAcceptableOrUnknown(
+          data['last_updated']!,
+          _lastUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastUpdatedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DiningHallFoodsTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DiningHallFoodsTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      diningHall: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dining_hall'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      mealTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meal_time'],
+      )!,
+      miniFood: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mini_food'],
+      )!,
+      lastUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_updated'],
+      )!,
+    );
+  }
+
+  @override
+  $DiningHallFoodsTableTable createAlias(String alias) {
+    return $DiningHallFoodsTableTable(attachedDatabase, alias);
+  }
+}
+
+class DiningHallFoodsTableData extends DataClass
+    implements Insertable<DiningHallFoodsTableData> {
+  final int id;
+  final String diningHall;
+  final String date;
+  final String mealTime;
+  final String miniFood;
+  final int lastUpdated;
+  const DiningHallFoodsTableData({
+    required this.id,
+    required this.diningHall,
+    required this.date,
+    required this.mealTime,
+    required this.miniFood,
+    required this.lastUpdated,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['dining_hall'] = Variable<String>(diningHall);
+    map['date'] = Variable<String>(date);
+    map['meal_time'] = Variable<String>(mealTime);
+    map['mini_food'] = Variable<String>(miniFood);
+    map['last_updated'] = Variable<int>(lastUpdated);
+    return map;
+  }
+
+  DiningHallFoodsTableCompanion toCompanion(bool nullToAbsent) {
+    return DiningHallFoodsTableCompanion(
+      id: Value(id),
+      diningHall: Value(diningHall),
+      date: Value(date),
+      mealTime: Value(mealTime),
+      miniFood: Value(miniFood),
+      lastUpdated: Value(lastUpdated),
+    );
+  }
+
+  factory DiningHallFoodsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DiningHallFoodsTableData(
+      id: serializer.fromJson<int>(json['id']),
+      diningHall: serializer.fromJson<String>(json['diningHall']),
+      date: serializer.fromJson<String>(json['date']),
+      mealTime: serializer.fromJson<String>(json['mealTime']),
+      miniFood: serializer.fromJson<String>(json['miniFood']),
+      lastUpdated: serializer.fromJson<int>(json['lastUpdated']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'diningHall': serializer.toJson<String>(diningHall),
+      'date': serializer.toJson<String>(date),
+      'mealTime': serializer.toJson<String>(mealTime),
+      'miniFood': serializer.toJson<String>(miniFood),
+      'lastUpdated': serializer.toJson<int>(lastUpdated),
+    };
+  }
+
+  DiningHallFoodsTableData copyWith({
+    int? id,
+    String? diningHall,
+    String? date,
+    String? mealTime,
+    String? miniFood,
+    int? lastUpdated,
+  }) => DiningHallFoodsTableData(
+    id: id ?? this.id,
+    diningHall: diningHall ?? this.diningHall,
+    date: date ?? this.date,
+    mealTime: mealTime ?? this.mealTime,
+    miniFood: miniFood ?? this.miniFood,
+    lastUpdated: lastUpdated ?? this.lastUpdated,
+  );
+  DiningHallFoodsTableData copyWithCompanion(
+    DiningHallFoodsTableCompanion data,
+  ) {
+    return DiningHallFoodsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      diningHall: data.diningHall.present
+          ? data.diningHall.value
+          : this.diningHall,
+      date: data.date.present ? data.date.value : this.date,
+      mealTime: data.mealTime.present ? data.mealTime.value : this.mealTime,
+      miniFood: data.miniFood.present ? data.miniFood.value : this.miniFood,
+      lastUpdated: data.lastUpdated.present
+          ? data.lastUpdated.value
+          : this.lastUpdated,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiningHallFoodsTableData(')
+          ..write('id: $id, ')
+          ..write('diningHall: $diningHall, ')
+          ..write('date: $date, ')
+          ..write('mealTime: $mealTime, ')
+          ..write('miniFood: $miniFood, ')
+          ..write('lastUpdated: $lastUpdated')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, diningHall, date, mealTime, miniFood, lastUpdated);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DiningHallFoodsTableData &&
+          other.id == this.id &&
+          other.diningHall == this.diningHall &&
+          other.date == this.date &&
+          other.mealTime == this.mealTime &&
+          other.miniFood == this.miniFood &&
+          other.lastUpdated == this.lastUpdated);
+}
+
+class DiningHallFoodsTableCompanion
+    extends UpdateCompanion<DiningHallFoodsTableData> {
+  final Value<int> id;
+  final Value<String> diningHall;
+  final Value<String> date;
+  final Value<String> mealTime;
+  final Value<String> miniFood;
+  final Value<int> lastUpdated;
+  const DiningHallFoodsTableCompanion({
+    this.id = const Value.absent(),
+    this.diningHall = const Value.absent(),
+    this.date = const Value.absent(),
+    this.mealTime = const Value.absent(),
+    this.miniFood = const Value.absent(),
+    this.lastUpdated = const Value.absent(),
+  });
+  DiningHallFoodsTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String diningHall,
+    required String date,
+    required String mealTime,
+    required String miniFood,
+    required int lastUpdated,
+  }) : diningHall = Value(diningHall),
+       date = Value(date),
+       mealTime = Value(mealTime),
+       miniFood = Value(miniFood),
+       lastUpdated = Value(lastUpdated);
+  static Insertable<DiningHallFoodsTableData> custom({
+    Expression<int>? id,
+    Expression<String>? diningHall,
+    Expression<String>? date,
+    Expression<String>? mealTime,
+    Expression<String>? miniFood,
+    Expression<int>? lastUpdated,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (diningHall != null) 'dining_hall': diningHall,
+      if (date != null) 'date': date,
+      if (mealTime != null) 'meal_time': mealTime,
+      if (miniFood != null) 'mini_food': miniFood,
+      if (lastUpdated != null) 'last_updated': lastUpdated,
+    });
+  }
+
+  DiningHallFoodsTableCompanion copyWith({
+    Value<int>? id,
+    Value<String>? diningHall,
+    Value<String>? date,
+    Value<String>? mealTime,
+    Value<String>? miniFood,
+    Value<int>? lastUpdated,
+  }) {
+    return DiningHallFoodsTableCompanion(
+      id: id ?? this.id,
+      diningHall: diningHall ?? this.diningHall,
+      date: date ?? this.date,
+      mealTime: mealTime ?? this.mealTime,
+      miniFood: miniFood ?? this.miniFood,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (diningHall.present) {
+      map['dining_hall'] = Variable<String>(diningHall.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (mealTime.present) {
+      map['meal_time'] = Variable<String>(mealTime.value);
+    }
+    if (miniFood.present) {
+      map['mini_food'] = Variable<String>(miniFood.value);
+    }
+    if (lastUpdated.present) {
+      map['last_updated'] = Variable<int>(lastUpdated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiningHallFoodsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('diningHall: $diningHall, ')
+          ..write('date: $date, ')
+          ..write('mealTime: $mealTime, ')
+          ..write('miniFood: $miniFood, ')
+          ..write('lastUpdated: $lastUpdated')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(e);
   $AppDbManager get managers => $AppDbManager(this);
   late final $UsersTableTable usersTable = $UsersTableTable(this);
   late final $MealsTableTable mealsTable = $MealsTableTable(this);
   late final $FoodsTableTable foodsTable = $FoodsTableTable(this);
+  late final $DiningHallFoodsTableTable diningHallFoodsTable =
+      $DiningHallFoodsTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2021,6 +2435,7 @@ abstract class _$AppDb extends GeneratedDatabase {
     usersTable,
     mealsTable,
     foodsTable,
+    diningHallFoodsTable,
   ];
 }
 
@@ -2985,6 +3400,239 @@ typedef $$FoodsTableTableProcessedTableManager =
       FoodsTableData,
       PrefetchHooks Function()
     >;
+typedef $$DiningHallFoodsTableTableCreateCompanionBuilder =
+    DiningHallFoodsTableCompanion Function({
+      Value<int> id,
+      required String diningHall,
+      required String date,
+      required String mealTime,
+      required String miniFood,
+      required int lastUpdated,
+    });
+typedef $$DiningHallFoodsTableTableUpdateCompanionBuilder =
+    DiningHallFoodsTableCompanion Function({
+      Value<int> id,
+      Value<String> diningHall,
+      Value<String> date,
+      Value<String> mealTime,
+      Value<String> miniFood,
+      Value<int> lastUpdated,
+    });
+
+class $$DiningHallFoodsTableTableFilterComposer
+    extends Composer<_$AppDb, $DiningHallFoodsTableTable> {
+  $$DiningHallFoodsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get diningHall => $composableBuilder(
+    column: $table.diningHall,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mealTime => $composableBuilder(
+    column: $table.mealTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get miniFood => $composableBuilder(
+    column: $table.miniFood,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DiningHallFoodsTableTableOrderingComposer
+    extends Composer<_$AppDb, $DiningHallFoodsTableTable> {
+  $$DiningHallFoodsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get diningHall => $composableBuilder(
+    column: $table.diningHall,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mealTime => $composableBuilder(
+    column: $table.mealTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get miniFood => $composableBuilder(
+    column: $table.miniFood,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DiningHallFoodsTableTableAnnotationComposer
+    extends Composer<_$AppDb, $DiningHallFoodsTableTable> {
+  $$DiningHallFoodsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get diningHall => $composableBuilder(
+    column: $table.diningHall,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get mealTime =>
+      $composableBuilder(column: $table.mealTime, builder: (column) => column);
+
+  GeneratedColumn<String> get miniFood =>
+      $composableBuilder(column: $table.miniFood, builder: (column) => column);
+
+  GeneratedColumn<int> get lastUpdated => $composableBuilder(
+    column: $table.lastUpdated,
+    builder: (column) => column,
+  );
+}
+
+class $$DiningHallFoodsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDb,
+          $DiningHallFoodsTableTable,
+          DiningHallFoodsTableData,
+          $$DiningHallFoodsTableTableFilterComposer,
+          $$DiningHallFoodsTableTableOrderingComposer,
+          $$DiningHallFoodsTableTableAnnotationComposer,
+          $$DiningHallFoodsTableTableCreateCompanionBuilder,
+          $$DiningHallFoodsTableTableUpdateCompanionBuilder,
+          (
+            DiningHallFoodsTableData,
+            BaseReferences<
+              _$AppDb,
+              $DiningHallFoodsTableTable,
+              DiningHallFoodsTableData
+            >,
+          ),
+          DiningHallFoodsTableData,
+          PrefetchHooks Function()
+        > {
+  $$DiningHallFoodsTableTableTableManager(
+    _$AppDb db,
+    $DiningHallFoodsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DiningHallFoodsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DiningHallFoodsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$DiningHallFoodsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> diningHall = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<String> mealTime = const Value.absent(),
+                Value<String> miniFood = const Value.absent(),
+                Value<int> lastUpdated = const Value.absent(),
+              }) => DiningHallFoodsTableCompanion(
+                id: id,
+                diningHall: diningHall,
+                date: date,
+                mealTime: mealTime,
+                miniFood: miniFood,
+                lastUpdated: lastUpdated,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String diningHall,
+                required String date,
+                required String mealTime,
+                required String miniFood,
+                required int lastUpdated,
+              }) => DiningHallFoodsTableCompanion.insert(
+                id: id,
+                diningHall: diningHall,
+                date: date,
+                mealTime: mealTime,
+                miniFood: miniFood,
+                lastUpdated: lastUpdated,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DiningHallFoodsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDb,
+      $DiningHallFoodsTableTable,
+      DiningHallFoodsTableData,
+      $$DiningHallFoodsTableTableFilterComposer,
+      $$DiningHallFoodsTableTableOrderingComposer,
+      $$DiningHallFoodsTableTableAnnotationComposer,
+      $$DiningHallFoodsTableTableCreateCompanionBuilder,
+      $$DiningHallFoodsTableTableUpdateCompanionBuilder,
+      (
+        DiningHallFoodsTableData,
+        BaseReferences<
+          _$AppDb,
+          $DiningHallFoodsTableTable,
+          DiningHallFoodsTableData
+        >,
+      ),
+      DiningHallFoodsTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDbManager {
   final _$AppDb _db;
@@ -2995,4 +3643,6 @@ class $AppDbManager {
       $$MealsTableTableTableManager(_db, _db.mealsTable);
   $$FoodsTableTableTableManager get foodsTable =>
       $$FoodsTableTableTableManager(_db, _db.foodsTable);
+  $$DiningHallFoodsTableTableTableManager get diningHallFoodsTable =>
+      $$DiningHallFoodsTableTableTableManager(_db, _db.diningHallFoodsTable);
 }

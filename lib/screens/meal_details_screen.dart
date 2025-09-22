@@ -1,3 +1,5 @@
+import 'package:boiler_fuel/widgets/custom_app_bar.dart';
+import 'package:boiler_fuel/widgets/titanium_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,100 +76,81 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1B263B),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            Navigator.of(context).pop();
-          },
-        ),
-        title: Text(
-          'Meal Details',
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: '.SF Pro Display',
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            decoration: TextDecoration.none,
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.black,
+                Color(0xFF0D1B2A),
+                Color(0xFF1B263B),
+                Color(0xFF415A77),
+                Color(0xFF778DA9),
+              ],
+              stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+            ),
           ),
         ),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Container(
-            height: 0.5,
-            color: Color(0xFF415A77).withOpacity(0.3),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: CustomAppBar(
+              title: 'Meal Details',
+              showBackButton: true,
+              onBackButtonPressed: (context) {
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-        ),
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.dark,
-          statusBarIconBrightness: Brightness.light,
-          statusBarColor: Colors.transparent,
-        ),
-      ),
-      extendBodyBehindAppBar: false,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.black,
-              Color(0xFF0D1B2A),
-              Color(0xFF1B263B),
-              Color(0xFF415A77),
-              Color(0xFF778DA9),
-            ],
-            stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Floating decorative elements
-            ...List.generate(
-              4,
-              (index) => Positioned(
-                left: (index * 90.0) % MediaQuery.of(context).size.width,
-                top: (index * 180.0) % MediaQuery.of(context).size.height,
-                child: AnimatedBuilder(
-                  animation: _floatingAnimation,
-                  builder: (context, child) => Transform.translate(
-                    offset: Offset(
-                      math.sin(_floatingAnimation.value / 12 + index) * 6,
-                      _floatingAnimation.value +
-                          math.cos(_floatingAnimation.value / 10 + index) * 4,
-                    ),
-                    child: AnimatedBuilder(
-                      animation: _pulseAnimation,
-                      builder: (context, child) => Transform.scale(
-                        scale: _pulseAnimation.value * (0.04 + index * 0.02),
-                        child: Container(
-                          width: 12 + (index * 4),
-                          height: 12 + (index * 4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: [
-                              Colors.orange.withOpacity(0.06),
-                              Colors.green.withOpacity(0.05),
-                              Colors.blue.withOpacity(0.04),
-                              Colors.purple.withOpacity(0.03),
-                            ][index],
-                            boxShadow: [
-                              BoxShadow(
-                                color: [
-                                  Colors.orange,
-                                  Colors.green,
-                                  Colors.blue,
-                                  Colors.purple,
-                                ][index].withOpacity(0.1),
-                                blurRadius: 6,
-                                spreadRadius: 1,
-                              ),
-                            ],
+          extendBodyBehindAppBar: false,
+          body: Stack(
+            children: [
+              // Floating decorative elements
+              ...List.generate(
+                4,
+                (index) => Positioned(
+                  left: (index * 90.0) % MediaQuery.of(context).size.width,
+                  top: (index * 180.0) % MediaQuery.of(context).size.height,
+                  child: AnimatedBuilder(
+                    animation: _floatingAnimation,
+                    builder: (context, child) => Transform.translate(
+                      offset: Offset(
+                        math.sin(_floatingAnimation.value / 12 + index) * 6,
+                        _floatingAnimation.value +
+                            math.cos(_floatingAnimation.value / 10 + index) * 4,
+                      ),
+                      child: AnimatedBuilder(
+                        animation: _pulseAnimation,
+                        builder: (context, child) => Transform.scale(
+                          scale: _pulseAnimation.value * (0.04 + index * 0.02),
+                          child: Container(
+                            width: 12 + (index * 4),
+                            height: 12 + (index * 4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: [
+                                Colors.orange.withOpacity(0.06),
+                                Colors.green.withOpacity(0.05),
+                                Colors.blue.withOpacity(0.04),
+                                Colors.purple.withOpacity(0.03),
+                              ][index],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: [
+                                    Colors.orange,
+                                    Colors.green,
+                                    Colors.blue,
+                                    Colors.purple,
+                                  ][index].withOpacity(0.1),
+                                  blurRadius: 6,
+                                  spreadRadius: 1,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -175,62 +158,48 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   ),
                 ),
               ),
-            ),
 
-            // Main content
-            SafeArea(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Meal Header
-                      _buildMealHeader(),
-                      SizedBox(height: 24),
+              // Main content
+              SafeArea(
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Meal Header
+                        _buildMealHeader(),
+                        SizedBox(height: 24),
 
-                      // Nutritional Overview
-                      _buildNutritionalOverview(),
-                      SizedBox(height: 24),
+                        // Nutritional Overview
+                        _buildNutritionalOverview(),
+                        SizedBox(height: 24),
 
-                      // Detailed Macros
-                      // _buildDetailedMacros(),
-                      // SizedBox(height: 24),
+                        // Detailed Macros
+                        // _buildDetailedMacros(),
+                        // SizedBox(height: 24),
 
-                      // Individual Foods/Ingredients
-                      _buildFoodsSection(),
-                      SizedBox(height: 24),
+                        // Individual Foods/Ingredients
+                        _buildFoodsSection(),
+                        SizedBox(height: 24),
 
-                      // Quick Actions
-                      // _buildQuickActions(),
-                    ],
+                        // Quick Actions
+                        // _buildQuickActions(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildMealHeader() {
-    return Container(
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.green.withOpacity(0.15),
-            Colors.blue.withOpacity(0.10),
-            Colors.purple.withOpacity(0.05),
-          ],
-        ),
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
-      ),
+    return TitaniumContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -317,13 +286,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
   }
 
   Widget _buildNutritionalOverview() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white.withOpacity(0.05),
-        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
-      ),
+    return TitaniumContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -547,13 +510,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
   }
 
   Widget _buildFoodsSection() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white.withOpacity(0.05),
-        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
-      ),
+    return TitaniumContainer(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
