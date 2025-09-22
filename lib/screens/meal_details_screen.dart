@@ -282,35 +282,35 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
               ),
             ],
           ),
-          SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white.withOpacity(0.1),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  CupertinoIcons.flame_fill,
-                  color: Colors.orange.shade300,
-                  size: 16,
-                ),
-                SizedBox(width: 6),
-                Text(
-                  '${widget.meal.calories.round()} Calories',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    fontFamily: '.SF Pro Text',
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // SizedBox(height: 16),
+          // Container(
+          //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(12),
+          //     color: Colors.white.withOpacity(0.1),
+          //   ),
+          //   child: Row(
+          //     mainAxisSize: MainAxisSize.min,
+          //     children: [
+          //       Icon(
+          //         CupertinoIcons.flame_fill,
+          //         color: Colors.orange.shade300,
+          //         size: 16,
+          //       ),
+          //       SizedBox(width: 6),
+          //       Text(
+          //         '${widget.meal.calories.round()} Calories',
+          //         style: TextStyle(
+          //           fontSize: 14,
+          //           fontWeight: FontWeight.w600,
+          //           color: Colors.white,
+          //           fontFamily: '.SF Pro Text',
+          //           decoration: TextDecoration.none,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
@@ -352,19 +352,19 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
             children: [
               Expanded(
                 child: _buildNutritionCard(
-                  'Protein',
-                  '${widget.meal.protein.round()}g',
-                  Colors.green,
-                  CupertinoIcons.bolt_fill,
+                  'Calories',
+                  '${widget.meal.calories.round()}',
+                  Colors.orange.shade300,
+                  CupertinoIcons.flame_fill,
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
                 child: _buildNutritionCard(
-                  'Carbs',
-                  '${widget.meal.carbs.round()}g',
-                  Colors.orange,
-                  CupertinoIcons.heart_fill,
+                  'Protein',
+                  '${widget.meal.protein.round()}g',
+                  Colors.green,
+                  CupertinoIcons.bolt_fill,
                 ),
               ),
             ],
@@ -383,10 +383,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
               SizedBox(width: 12),
               Expanded(
                 child: _buildNutritionCard(
-                  'Foods',
-                  '${widget.meal.foods.length}',
-                  Colors.blue,
-                  CupertinoIcons.square_grid_2x2_fill,
+                  'Carbs',
+                  '${widget.meal.carbs.round()}g',
+                  Colors.orange,
+                  CupertinoIcons.heart_fill,
                 ),
               ),
             ],

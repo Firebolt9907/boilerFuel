@@ -39,6 +39,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
       _pulseController.value = 0.9;
     }
     Future.delayed(Duration(milliseconds: 500), () {
+      if (!mounted) return;
       _pulseController.repeat(reverse: true);
     });
   }

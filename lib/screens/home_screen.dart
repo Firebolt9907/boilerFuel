@@ -23,6 +23,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _fadeAnimation;
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
+  late AnimationController _statusBarController;
+  late Animation<double> _statusBarAnimation;
   PageController _scrollController = PageController();
 
   User? _currentUser = null;
@@ -58,6 +60,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: Duration(milliseconds: 2000),
       vsync: this,
     );
+    _statusBarController = AnimationController(
+      duration: Duration(milliseconds: 600),
+      vsync: this,
+    );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
@@ -69,10 +75,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
+    _statusBarAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(parent: _statusBarController, curve: Curves.elasticOut),
+    );
+
     _animationController.forward();
     Future.delayed(Duration(milliseconds: 400), () {
       _floatingController.repeat(reverse: true);
       _pulseController.repeat(reverse: true);
+      _statusBarController.repeat(reverse: true);
     });
 
     _loadHomeData();
@@ -83,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _animationController.dispose();
     _floatingController.dispose();
     _pulseController.dispose();
+    _statusBarController.dispose();
     super.dispose();
   }
 
@@ -588,6 +600,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   setState(() {
                     _currentMealIndex = index;
                   });
+                  // Trigger a more pronounced animation for the new active indicator
+                  _statusBarController.reset();
+                  _statusBarController.forward();
+
+                  // Add haptic feedback for page changes
+                  HapticFeedback.selectionClick();
                 },
                 controller: _scrollController,
                 itemCount: diningHallMeals.length,
@@ -685,22 +703,59 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             SizedBox(height: 16),
 
             // Status bar (page indicator)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                diningHallMeals.length,
-                (index) => Container(
-                  margin: EdgeInsets.symmetric(horizontal: 4),
-                  width: _currentMealIndex == index ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: _currentMealIndex == index
-                        ? Colors.green.shade400
-                        : Colors.white.withOpacity(0.3),
-                  ),
-                ),
-              ),
+            AnimatedBuilder(
+              animation: _statusBarAnimation,
+              builder: (context, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(diningHallMeals.length, (index) {
+                    bool isActive = _currentMealIndex == index;
+
+                    return AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      margin: EdgeInsets.symmetric(horizontal: 4),
+                      width: isActive ? 24 : 8,
+                      height: 8,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: isActive
+                              ? Colors.green.shade400
+                              : Colors.white.withOpacity(0.3),
+                          boxShadow: isActive
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.green.shade400.withOpacity(
+                                      0.4,
+                                    ),
+                                    blurRadius: 8 * _statusBarAnimation.value,
+                                    spreadRadius: 2 * _statusBarAnimation.value,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: isActive
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Colors.green.shade300,
+                                      Colors.green.shade500,
+                                      Colors.green.shade300,
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                ),
+                              )
+                            : null,
+                      ),
+                    );
+                  }),
+                );
+              },
             ),
           ],
         ],
