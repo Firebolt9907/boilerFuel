@@ -284,14 +284,10 @@ DO NOT include any other text outside of the JSON block.
     required MealTime mealTime,
     required String diningHall,
     required User user,
+    required DateTime date,
   }) async {
     List<Food> food =
-        await Database().getDiningCourtMeal(
-          diningHall,
-          new DateTime.now(),
-          mealTime,
-        ) ??
-        [];
+        await Database().getDiningCourtMeal(diningHall, date, mealTime) ?? [];
     print("Fetched ${food.length} food items for $diningHall at $mealTime");
     print("User dietary restrictions: ${user.dietaryRestrictions.toMap()}");
     List<List<Food>> availableFoods = user.dietaryRestrictions.filterFoodList(
@@ -318,7 +314,10 @@ DO NOT include any other text outside of the JSON block.
     return meal;
   }
 
-  static Future<void> generateDayMealPlan({required User user}) async {
+  static Future<void> generateDayMealPlan({
+    required User user,
+    DateTime? date,
+  }) async {
     final _userMacros = CalorieMacroCalculator.calculateMacros(
       age: user.age,
       weightLbs: user.weight.toDouble(),
@@ -345,6 +344,8 @@ DO NOT include any other text outside of the JSON block.
             targetProtein: mealProtein,
             targetCarbs: mealCarbs,
             targetFat: mealFat,
+            date: date ?? DateTime.now(),
+
             user: user,
           ),
         );
@@ -352,18 +353,26 @@ DO NOT include any other text outside of the JSON block.
     }
 
     // Wait for all meal generation tasks to complete in parallel
-    try {
-      List<Meal?> generatedMeals = await Future.wait(mealGenerationTasks);
-      for (Meal? meal in generatedMeals) {
-        if (meal != null) {
-          await LocalDatabase().addMeal(meal, meal.mealTime!);
-        }
+
+    List<Meal?> generatedMeals = await Future.wait(mealGenerationTasks);
+    for (Meal? meal in generatedMeals) {
+      if (meal != null) {
+        await LocalDatabase().addMeal(
+          meal,
+          meal.mealTime!,
+          date ?? DateTime.now(),
+        );
       }
-      print(
-        "Generated ${generatedMeals.where((meal) => meal != null).length} meals successfully",
+    }
+    print(
+      "Generated ${generatedMeals.where((meal) => meal != null).length} meals successfully for ${date ?? DateTime.now()}",
+    );
+    //check if date is 3 days after now, if so stop
+    if (date == null || date.isBefore(DateTime.now().add(Duration(days: 2)))) {
+      await generateDayMealPlan(
+        user: user,
+        date: (date ?? DateTime.now()).add(Duration(days: 1)),
       );
-    } catch (e) {
-      print("Error generating meals in parallel: $e");
     }
   }
 }

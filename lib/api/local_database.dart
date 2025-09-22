@@ -197,9 +197,8 @@ class LocalDatabase {
     }
   }
 
-  Future<void> addMeal(Meal meal, MealTime mealTime) async {
-    DateTime now = DateTime.now();
-    String dateStr = "${now.year}-${now.month}-${now.day}";
+  Future<void> addMeal(Meal meal, MealTime mealTime, DateTime date) async {
+    String dateStr = "${date.year}-${date.month}-${date.day}";
 
     List<Map<String, dynamic>> foodListMap = meal.foods
         .map((f) => f.toMap())
@@ -342,6 +341,31 @@ class LocalDatabase {
 
       controller.add(meals);
     });
+  }
+
+  Future<DateTime?> getLastMeal() async {
+    final mealsRes =
+        await (localDb.select(localDb.mealsTable)
+              ..orderBy([
+                (tbl) =>
+                    OrderingTerm(expression: tbl.date, mode: OrderingMode.desc),
+              ])
+              ..limit(1))
+            .get();
+
+    if (mealsRes.isNotEmpty) {
+      var row = mealsRes.first;
+      List<String> dateParts = row.date.split("-");
+      if (dateParts.length == 3) {
+        int year = int.parse(dateParts[0]);
+        int month = int.parse(dateParts[1]);
+        int day = int.parse(dateParts[2]);
+        return DateTime(year, month, day);
+      }
+    } else {
+      print("No meals found.");
+      return null;
+    }
   }
 
   Future<void> addFood(Food food) async {

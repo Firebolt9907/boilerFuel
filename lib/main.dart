@@ -45,19 +45,90 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   User? user = null;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    LocalDatabase().getUser().then((value) {
+    WidgetsBinding.instance.addObserver(this);
+    LocalDatabase().getUser().then((value) async {
       print("Fetched user from local DB: ${value?.name}");
       setState(() {
         user = value;
       });
+      if (user != null) {
+        DateTime latestMealPlanDate =
+            (await LocalDatabase().getLastMeal()) ??
+            DateTime.now().subtract(Duration(days: 1));
+        //check if latestMealPlanDate is past 3 days in future
+        if (latestMealPlanDate.isAfter(DateTime.now().add(Duration(days: 2)))) {
+          print("Meal plan is up to date");
+          return;
+        }
+        print(
+          "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
+        );
+
+        MealPlanner.generateDayMealPlan(
+          user: user!,
+          date: latestMealPlanDate.add(Duration(days: 1)),
+        );
+      }
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        // bool isSignedIn = await Auth().isUserLoggedIn();
+        LocalDatabase().getUser().then((value) async {
+          print("Fetched user from local DB: ${value?.name}");
+          setState(() {
+            user = value;
+          });
+          if (user != null) {
+            DateTime latestMealPlanDate =
+                (await LocalDatabase().getLastMeal()) ??
+                DateTime.now().subtract(Duration(days: 1));
+            //check if latestMealPlanDate is past 3 days in future
+            if (latestMealPlanDate.isAfter(
+              DateTime.now().add(Duration(days: 2)),
+            )) {
+              print("Meal plan is up to date");
+              return;
+            }
+            print(
+              "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
+            );
+
+            MealPlanner.generateDayMealPlan(
+              user: user!,
+              date: latestMealPlanDate.add(Duration(days: 1)),
+            );
+          }
+        });
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+
+        break;
+      case AppLifecycleState.hidden:
+        print("app in hidden");
+
+        break;
+    }
   }
 
   @override
@@ -84,89 +155,6 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: user == null ? WelcomeScreen() : HomeScreen(user: user!),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  List<Food> data = [];
-  String value = "";
-
-  late DietaryRestrictions dietaryRestrictions;
-
-  @override
-  void initState() {
-    super.initState();
-    // dietaryRestrictions = DietaryRestrictions(
-    //   allergies: <FoodAllergy>[FoodAllergy.TreeNuts, FoodAllergy.Peanuts],
-    //   preferences: <FoodPreference>[FoodPreference.Halal],
-    //   ingredientPreferences: [],
-    // );
-    // getFoodData(true);
-    // testPlanner(176, 70.86614173, 50, Gender.male);
-    // MealPlanner.generateMeal(
-    //   targetCalories: 757,
-    //   targetProtein: 47.5,
-    //   targetCarbs: 94.5,
-    //   targetFat: 21,
-    //   availableFoods: data,
-    //   diningHall: "Wiley",
-    // ).then((meal) {
-    //   print("Generated Meal:");
-    //   print(meal.toString());
-    // });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: ListView(
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => WelcomeScreen()),
-                ); // Replace Container() with the other page
-              },
-              child: const Text('Open Other Page'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => HomeScreen()),
-                ); // Replace Container() with the other page
-              },
-              child: const Text('Home Page'),
-            ),
-            Text(value, style: Theme.of(context).textTheme.headlineMedium),
-          ],
-        ),
-      ),
     );
   }
 }
