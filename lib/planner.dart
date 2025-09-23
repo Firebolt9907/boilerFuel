@@ -219,51 +219,76 @@ Return as a JSON as formatted as
 
 DO NOT include any other text outside of the JSON block.
 """;
+    final gemini = Gemini.instance;
 
+    gemini
+        .listModels()
+        .then((models) => print(models))
+        /// list
+        .catchError((e) => print('listModels' + e.toString()));
     // Call Gemini API with the prompt and parse response
-    String response =
-        (await Gemini.instance.prompt(
-          parts: [Part.text(geminiPrompt)],
-        ))!.output ??
-        "{}";
-    print("Gemini response: $response");
-    // Parse response and create Meal object
-    response = response
-        .replaceAll('\n', '')
-        .replaceAll('```', '')
-        .replaceAll("json", "");
-    print("Cleaned response: $response");
     try {
-      var decoded = jsonDecode(response);
-      List<Food> foods = (decoded['foods'] as List).map((f) {
-        return availableFoods.firstWhere(
-          (food) => food.id == f['id'],
-          orElse: () {
-            return Food(
-              id: f['id'] ?? '',
-              name: f['name'] ?? 'Unknown',
-              calories: (f['calories'] ?? 0).toDouble(),
-              protein: (f['protein'] ?? 0).toDouble(),
-              fat: (f['fats'] ?? 0).toDouble(),
-              carbs: (f['carbs'] ?? 0).toDouble(),
-              sugar: (f['sugar'] ?? 0).toDouble(),
-              ingredients: "",
-              labels: [],
-            );
-          },
+      String response =
+          (await Gemini.instance.prompt(
+            model: "gemini-1.5-flash",
+            parts: [Part.text(geminiPrompt)],
+          ))!.output ??
+          "{}";
+      print("Gemini response: $response");
+      // Parse response and create Meal object
+      response = response
+          .replaceAll('\n', '')
+          .replaceAll('```', '')
+          .replaceAll("json", "");
+      print("Cleaned response: $response");
+      try {
+        var decoded = jsonDecode(response);
+        List<Food> foods = (decoded['foods'] as List).map((f) {
+          return availableFoods.firstWhere(
+            (food) => food.id == f['id'],
+            orElse: () {
+              return Food(
+                id: f['id'] ?? '',
+                name: f['name'] ?? 'Unknown',
+                calories: (f['calories'] ?? 0).toDouble(),
+                protein: (f['protein'] ?? 0).toDouble(),
+                fat: (f['fats'] ?? 0).toDouble(),
+                carbs: (f['carbs'] ?? 0).toDouble(),
+                sugar: (f['sugar'] ?? 0).toDouble(),
+                ingredients: "",
+                labels: [],
+              );
+            },
+          );
+        }).toList();
+        return Meal(
+          name: decoded['mealName'] ?? 'Generated Meal',
+          calories: (decoded['totalCals'] ?? 0).toDouble(),
+          protein: (decoded['totalProtein'] ?? 0).toDouble(),
+          fat: (decoded['totalFat'] ?? 0).toDouble(),
+          carbs: (decoded['totalCarbs'] ?? 0).toDouble(),
+          diningHall: diningHall, // Could be set based on food sources
+          foods: foods,
         );
-      }).toList();
-      return Meal(
-        name: decoded['mealName'] ?? 'Generated Meal',
-        calories: (decoded['totalCals'] ?? 0).toDouble(),
-        protein: (decoded['totalProtein'] ?? 0).toDouble(),
-        fat: (decoded['totalFat'] ?? 0).toDouble(),
-        carbs: (decoded['totalCarbs'] ?? 0).toDouble(),
-        diningHall: diningHall, // Could be set based on food sources
-        foods: foods,
-      );
+      } catch (e) {
+        print("Error parsing response: $e");
+        return Meal(
+          name: "Error Meal",
+          calories: 0,
+          protein: 0,
+          fat: 0,
+          carbs: 0,
+          diningHall: "",
+          foods: [],
+        );
+      }
     } catch (e) {
-      print("Error parsing response: $e");
+      print("Error initializing Gemini: $e");
+      List<String> geminiPromptLines = geminiPrompt.split("\n");
+      for (String line in geminiPromptLines) {
+        print("$line");
+      }
+      // print("With prompt: $geminiPrompt");
       return Meal(
         name: "Error Meal",
         calories: 0,
@@ -273,45 +298,199 @@ DO NOT include any other text outside of the JSON block.
         diningHall: "",
         foods: [],
       );
+      // return generateMeal(
+      //   targetCalories: targetCalories,
+      //   targetProtein: targetProtein,
+      //   targetCarbs: targetCarbs,
+      //   targetFat: targetFat,
+      //   availableFoods: availableFoods,
+      //   diningHall: diningHall,
+      // );
     }
   }
 
-  static Future<Meal?> generateDiningHallMeal({
+  static Future<Map<MealTime, Meal>> generateDayMeal({
     required double targetCalories,
     required double targetProtein,
     required double targetCarbs,
     required double targetFat,
-    required MealTime mealTime,
+    required Map<MealTime, List<Food>> availableFoods,
+    required String diningHall,
+  }) async {
+    Map<MealTime, Meal> meals = {};
+    String availableMealTimes = availableFoods.keys
+        .map((e) => e.toString())
+        .join(", ");
+    String mealTimeIngredients = "";
+    for (MealTime mealTime in availableFoods.keys) {
+      mealTimeIngredients = availableFoods[mealTime]!
+          .map((f) => f.toString())
+          .join(", ");
+      mealTimeIngredients +=
+          """Given this information for the food available for $mealTime, ignore the dips and sauces also if value is -1, the nutrition information isn't available just treat it as 0:
+   $mealTimeIngredients
+\n
+  """;
+    }
+
+    String geminiPrompt =
+        """
+Given this information for the food available for $availableMealTimes:
+  $mealTimeIngredients
+
+
+
+
+Create ${availableFoods.keys.length} meal with the nutrition goals for the day as follows :
+Calories: ${targetCalories}kcal
+Protein: ${targetProtein}g
+Carbs: ${targetCarbs}g
+Fat: ${targetFat}g
+
+The NAME of each meal should be related to the ingredients used in the meal!
+
+Return as a JSON as formatted as 
+{
+  "breakfast" |"lunch" | "brunch" | "dinner": {
+   mealName: string,
+   totalCals: number,
+   totalProtein: number,
+   totalFat: number,
+   totalCarbs: number,
+   foods: List[] formatted as {name: string, calories: number, protein: number, carbs: number, fats: number, id: string, sugar: number}
+ }
+ ...
+}
+
+DO NOT include any other text outside of the JSON block.
+""";
+    final gemini = Gemini.instance;
+
+    gemini
+        .listModels()
+        .then((models) => print(models))
+        /// list
+        .catchError((e) => print('listModels' + e.toString()));
+    // Call Gemini API with the prompt and parse response
+    try {
+      String response =
+          (await Gemini.instance.prompt(
+            parts: [Part.text(geminiPrompt)],
+          ))!.output ??
+          "{}";
+      print("Gemini response: $response");
+      // Parse response and create Meal object
+      response = response
+          .replaceAll('\n', '')
+          .replaceAll('```', '')
+          .replaceAll("json", "");
+      print("Cleaned response: $response");
+      try {
+        var decoded = jsonDecode(response);
+        for (MealTime mealTime in availableFoods.keys) {
+          if (decoded[mealTime.toString()] != null) {
+            var mealData = decoded[mealTime.toString()] as Map;
+            List<Food> foods = (mealData['foods'] as List).map((f) {
+              return availableFoods[mealTime]!.firstWhere(
+                (food) => food.id == f['id'],
+                orElse: () {
+                  return Food(
+                    id: f['id'] ?? '',
+                    name: f['name'] ?? 'Unknown',
+                    calories: (f['calories'] ?? 0).toDouble(),
+                    protein: (f['protein'] ?? 0).toDouble(),
+                    fat: (f['fats'] ?? 0).toDouble(),
+                    carbs: (f['carbs'] ?? 0).toDouble(),
+                    sugar: (f['sugar'] ?? 0).toDouble(),
+                    ingredients: "",
+                    labels: [],
+                  );
+                },
+              );
+            }).toList();
+            meals[mealTime] = Meal(
+              name: mealData['mealName'] ?? 'Generated Meal',
+              calories: (mealData['totalCals'] ?? 0).toDouble(),
+              protein: (mealData['totalProtein'] ?? 0).toDouble(),
+              fat: (mealData['totalFat'] ?? 0).toDouble(),
+              carbs: (mealData['totalCarbs'] ?? 0).toDouble(),
+              diningHall: diningHall, // Could be set based on food sources
+              foods: foods,
+              mealTime: mealTime,
+            );
+          }
+        }
+        return meals;
+      } catch (e) {
+        print("Error parsing response: $e");
+        return {};
+      }
+    } catch (e) {
+      print("Error initializing Gemini: $e");
+      List<String> geminiPromptLines = geminiPrompt.split("\n");
+      for (String line in geminiPromptLines) {
+        print("$line");
+      }
+      // print("With prompt: $geminiPrompt");
+      return {};
+      // return generateMeal(
+      //   targetCalories: targetCalories,
+      //   targetProtein: targetProtein,
+      //   targetCarbs: targetCarbs,
+      //   targetFat: targetFat,
+      //   availableFoods: availableFoods,
+      //   diningHall: diningHall,
+      // );
+    }
+  }
+
+  static Future<Map<MealTime, Meal>> generateDiningHallMeal({
+    required double targetCalories,
+    required double targetProtein,
+    required double targetCarbs,
+    required double targetFat,
+
     required String diningHall,
     required User user,
     required DateTime date,
   }) async {
-    List<Food> food =
-        await Database().getDiningCourtMeal(diningHall, date, mealTime) ?? [];
-    print("Fetched ${food.length} food items for $diningHall at $mealTime");
-    print("User dietary restrictions: ${user.dietaryRestrictions.toMap()}");
-    List<List<Food>> availableFoods = user.dietaryRestrictions.filterFoodList(
-      food,
-    );
-    List<Food> availableFood = availableFoods.isNotEmpty
-        ? availableFoods[0]
-        : [];
-    print("Filtered to ${availableFood.length} available food items");
-    if (availableFood.isEmpty) {
-      return null;
+    Map<MealTime, List<Food>> availableFoods = {};
+    for (MealTime mt in MealTime.values) {
+      List<Food> food =
+          await Database().getDiningCourtMeal(diningHall, date, mt) ?? [];
+      print("Fetched ${food.length} food items for $diningHall at $mt");
+      print("User dietary restrictions: ${user.dietaryRestrictions.toMap()}");
+      List<List<Food>> filteredFoods = user.dietaryRestrictions.filterFoodList(
+        food,
+      );
+      List<Food> filteredFood = filteredFoods.isNotEmpty
+          ? filteredFoods[0]
+          : [];
+      print("Filtered to ${filteredFood.length} available food items");
+      if (filteredFood.isNotEmpty) {
+        availableFoods[mt] = filteredFood;
+      }
     }
-    Meal meal = await generateMeal(
+
+    // Meal meal = await generateMeal(
+    //   targetCalories: targetCalories,
+    //   targetProtein: targetProtein,
+    //   targetCarbs: targetCarbs,
+    //   targetFat: targetFat,
+    //   availableFoods: availableFood,
+    //   diningHall: diningHall,
+    // );
+
+    // meal.mealTime = mealTime;
+
+    return await generateDayMeal(
       targetCalories: targetCalories,
       targetProtein: targetProtein,
       targetCarbs: targetCarbs,
       targetFat: targetFat,
-      availableFoods: availableFood,
+      availableFoods: availableFoods,
       diningHall: diningHall,
     );
-
-    meal.mealTime = mealTime;
-
-    return meal;
   }
 
   static Future<void> generateDayMealPlan({
@@ -331,37 +510,39 @@ DO NOT include any other text outside of the JSON block.
     double mealFat = _userMacros!.fat / 2;
 
     // Create a list to hold all the meal generation futures
-    List<Future<Meal?>> mealGenerationTasks = [];
+    List<Future<Map<MealTime, Meal>>> mealGenerationTasks = [];
 
-    for (MealTime mealTime in MealTime.values) {
-      // Add meal generation for all dining halls to the task list
-      for (String diningHall in _diningHalls) {
-        mealGenerationTasks.add(
-          MealPlanner.generateDiningHallMeal(
-            diningHall: diningHall,
-            mealTime: mealTime,
-            targetCalories: mealCalories,
-            targetProtein: mealProtein,
-            targetCarbs: mealCarbs,
-            targetFat: mealFat,
-            date: date ?? DateTime.now(),
+    // Add meal generation for all dining halls to the task list
+    for (String diningHall in _diningHalls) {
+      mealGenerationTasks.add(
+        MealPlanner.generateDiningHallMeal(
+          diningHall: diningHall,
 
-            user: user,
-          ),
-        );
-      }
+          targetCalories: mealCalories,
+          targetProtein: mealProtein,
+          targetCarbs: mealCarbs,
+          targetFat: mealFat,
+          date: date ?? DateTime.now(),
+
+          user: user,
+        ),
+      );
     }
 
     // Wait for all meal generation tasks to complete in parallel
 
-    List<Meal?> generatedMeals = await Future.wait(mealGenerationTasks);
-    for (Meal? meal in generatedMeals) {
+    List<Map<MealTime, Meal>> generatedMeals = await Future.wait(
+      mealGenerationTasks,
+    );
+    for (Map<MealTime, Meal>? meal in generatedMeals) {
       if (meal != null) {
-        await LocalDatabase().addMeal(
-          meal,
-          meal.mealTime!,
-          date ?? DateTime.now(),
-        );
+        for (MealTime mt in meal.keys) {
+          Meal m = meal[mt]!;
+          print(
+            "Generated meal for ${m.diningHall} at ${mt.toString()} with ${m.calories} kcal, ${m.protein}g protein, ${m.carbs}g carbs, ${m.fat}g fat",
+          );
+          await LocalDatabase().addMeal(m, mt, date ?? DateTime.now());
+        }
       }
     }
     print(
@@ -369,6 +550,8 @@ DO NOT include any other text outside of the JSON block.
     );
     //check if date is 3 days after now, if so stop
     if (date == null || date.isBefore(DateTime.now().add(Duration(days: 2)))) {
+      //Wait 60 seconds between calls to avoid rate limiting
+      await Future.delayed(Duration(seconds: 60));
       await generateDayMealPlan(
         user: user,
         date: (date ?? DateTime.now()).add(Duration(days: 1)),

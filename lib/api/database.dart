@@ -67,4 +67,17 @@ class Database {
 
     return foods;
   }
+
+  Future<List<DiningHall>> getDiningHalls() async {
+    List<DiningHall> localDiningHalls = await LocalDatabase().getDiningHalls();
+    if (localDiningHalls.isEmpty) {
+      print("No local dining halls found, fetching from Firebase");
+      List<DiningHall> fbDiningHalls = await FBDatabase().getAllDiningHalls();
+      for (DiningHall diningHall in fbDiningHalls) {
+        await LocalDatabase().addDiningHall(diningHall);
+      }
+      return fbDiningHalls;
+    }
+    return localDiningHalls;
+  }
 }

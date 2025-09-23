@@ -15,8 +15,9 @@ import 'dart:math' as math;
 // Make sure 'boiler_fuel' matches your project's package name
 class MealPlanScreen extends StatefulWidget {
   final User user;
+  final bool isEditing;
 
-  MealPlanScreen({required this.user});
+  MealPlanScreen({required this.user, this.isEditing = false});
 
   @override
   _MealPlanScreenState createState() => _MealPlanScreenState();
@@ -35,6 +36,9 @@ class _MealPlanScreenState extends State<MealPlanScreen>
   @override
   void initState() {
     super.initState();
+    if (widget.isEditing) {
+      _selectedPlan = widget.user.mealPlan.toString() + " Plan";
+    }
     _animationController = AnimationController(
       duration: Duration(milliseconds: 800),
       vsync: this,
@@ -87,6 +91,14 @@ class _MealPlanScreenState extends State<MealPlanScreen>
         case 'Unlimited Plan':
           mealPlan = MealPlan.Unlimited;
           break;
+        case '7 Day Plan':
+          mealPlan = MealPlan.SevenDay;
+          break;
+        case '50 Block':
+          mealPlan = MealPlan.FiftyBlock;
+          break;
+        case '80 Block':
+          mealPlan = MealPlan.EightyBlock;
         default:
           mealPlan = MealPlan.Unlimited; // Default fallback
           break;
@@ -94,6 +106,10 @@ class _MealPlanScreenState extends State<MealPlanScreen>
 
       widget.user.mealPlan = mealPlan;
       await LocalDatabase().saveUser(widget.user);
+      if (widget.isEditing) {
+        Navigator.pop(context, widget.user);
+        return;
+      }
 
       // Navigate to dietary restrictions flow
       Navigator.pushAndRemoveUntil(
@@ -113,11 +129,11 @@ class _MealPlanScreenState extends State<MealPlanScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.black,
               Color(0xFF0D1B2A),
               Color(0xFF1B263B),
               Color(0xFF415A77),
               Color(0xFF778DA9),
+              Color(0xFF415A77),
             ],
             stops: [0.0, 0.25, 0.5, 0.75, 1.0],
           ),
@@ -214,7 +230,9 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                           end: Alignment.bottomRight,
                         ).createShader(bounds),
                         child: Text(
-                          'What\'s your meal plan',
+                          widget.isEditing
+                              ? 'Update Your Meal Plan'
+                              : 'What\'s Your Meal Plan',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -238,7 +256,9 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                           ),
                         ),
                         child: Text(
-                          'Select your current meal plan',
+                          widget.isEditing
+                              ? 'Update your current meal plan'
+                              : 'Select your current meal plan',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white.withOpacity(0.8),
@@ -304,6 +324,8 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                           child: AnimatedButton(
                             text: (_selectedPlan == null)
                                 ? 'Select a meal plan'
+                                : widget.isEditing
+                                ? 'Update Plan'
                                 : 'Get Started',
                             onTap: _finish,
                             isEnabled: _selectedPlan != null,

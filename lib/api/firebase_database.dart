@@ -1,6 +1,7 @@
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class FBDatabase {
   final String? uid;
@@ -48,6 +49,9 @@ class FBDatabase {
         case MealTime.dinner:
           foodIDs = meals.dinner;
           break;
+        case MealTime.lateLunch:
+          foodIDs = meals.lunch;
+          break;
       }
       print("Found ${foodIDs.length} food items for $mealTime");
       return foodIDs;
@@ -87,5 +91,474 @@ class FBDatabase {
     //   print('Error fetching data (getFoodByID): $error');
     // }
     return null;
+  }
+
+  Future<void> createDiningHalls() async {
+    Schedule fordSchedule = Schedule(
+      breakfast: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 8, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 8, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+      },
+
+      brunch: null,
+      lunch: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+      },
+      lateLunch: null,
+      dinner: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Saturday': null,
+      },
+    );
+    await diningHallsCollection.doc("Ford").set({
+      'name': "Ford",
+      'id': "Ford",
+      'schedule': fordSchedule.toMap(),
+    });
+    Schedule wileySchedule = Schedule(
+      breakfast: {
+        'Sunday': null,
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Saturday': null,
+      },
+
+      brunch: null,
+      lunch: {
+        'Sunday': null,
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+      },
+      lateLunch: null,
+      dinner: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+      },
+    );
+    await diningHallsCollection.doc("Wiley").set({
+      'name': "Wiley",
+      'id': "Wiley",
+      'schedule': wileySchedule.toMap(),
+    });
+
+    Schedule windsorSchedule = Schedule(
+      breakfast: null,
+
+      brunch: null,
+      lunch: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 10, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 10, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 10, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 10, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 10, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Saturday': null,
+      },
+      lateLunch: {
+        'Sunday': null,
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 16, minute: 0),
+        ),
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+      },
+      dinner: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Friday': null,
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+      },
+    );
+    await diningHallsCollection.doc("Windsor").set({
+      'name': "Windsor",
+      'id': "Windsor",
+      'schedule': windsorSchedule.toMap(),
+    });
+    Schedule hillenbrandSchedule = Schedule(
+      breakfast: null,
+
+      brunch: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Monday': null,
+        'Tuesday': null,
+        'Wednesday': null,
+        'Thursday': null,
+        'Friday': null,
+        'Saturday': null,
+      },
+      lunch: {
+        'Sunday': null,
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Friday': null,
+        'Saturday': null,
+      },
+      lateLunch: {
+        'Sunday': null,
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 14, minute: 0),
+          end: TimeOfDay(hour: 17, minute: 0),
+        ),
+        'Friday': null,
+        'Saturday': null,
+      },
+      dinner: {
+        'Sunday': null,
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Friday': null,
+        'Saturday': null,
+      },
+    );
+    await diningHallsCollection.doc("Hillenbrand").set({
+      'name': "Hillenbrand",
+      'id': "Hillenbrand",
+      'schedule': hillenbrandSchedule.toMap(),
+    });
+    Schedule earhartSchedule = Schedule(
+      breakfast: {
+        'Sunday': null,
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 7, minute: 0),
+          end: TimeOfDay(hour: 10, minute: 0),
+        ),
+        'Saturday': null,
+      },
+
+      brunch: null,
+      lunch: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 11, minute: 0),
+          end: TimeOfDay(hour: 14, minute: 0),
+        ),
+      },
+      lateLunch: null,
+      dinner: {
+        'Sunday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Monday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Tuesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Wednesday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Thursday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Friday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+        'Saturday': TimePeriod(
+          start: TimeOfDay(hour: 17, minute: 0),
+          end: TimeOfDay(hour: 21, minute: 0),
+        ),
+      },
+    );
+    await diningHallsCollection.doc("Earhart").set({
+      'name': "Earhart",
+      'id': "Earhart",
+      'schedule': earhartSchedule.toMap(),
+    });
+  }
+
+  Future<List<DiningHall>> getAllDiningHalls() async {
+    QuerySnapshot snapshot = await diningHallsCollection.get();
+    List<DiningHall> diningHalls = snapshot.docs.map((doc) {
+      return DiningHall.fromMap(doc.data() as Map<String, dynamic>);
+    }).toList();
+    return diningHalls;
   }
 }

@@ -70,8 +70,21 @@ class DiningHallFoodsTable extends Table {
   IntColumn get lastUpdated => integer()();
 }
 
+class DiningHallsTable extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get diningHallId => text()();
+  TextColumn get name => text()();
+  TextColumn get schedule => text()(); // JSON encoded Schedule
+}
+
 @DriftDatabase(
-  tables: [UsersTable, MealsTable, FoodsTable, DiningHallFoodsTable],
+  tables: [
+    UsersTable,
+    MealsTable,
+    FoodsTable,
+    DiningHallFoodsTable,
+    DiningHallsTable,
+  ],
 )
 class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
@@ -87,10 +100,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 15) {
+      if (resetLocalDB <= 18) {
         print("Deleting old database");
         await file.delete();
-        await SharedPrefs.setResetLocalData(16);
+        await SharedPrefs.setResetLocalData(19);
         // print("Deleted old database");
         // await LocalDatabase().deleteOldResponse();
         // print("Deleted old responses");
@@ -535,5 +548,67 @@ class LocalDatabase {
       "Retrieved ${miniFoods.length} dining hall foods for $diningCourt on $dateStr",
     );
     return miniFoods;
+  }
+
+  Future<void> deleteCurrentAndFutureMeals() async {
+    DateTime now = DateTime.now();
+    String dateStr = "${now.year}-${now.month}-${now.day}";
+
+    await (localDb.delete(
+      localDb.mealsTable,
+    )..where((tbl) => tbl.date.isBiggerOrEqualValue(dateStr))).go();
+
+    print("Deleted current and future meals from local database.");
+  }
+
+  Future<List<DiningHall>> getDiningHalls() async {
+    final dhRes = await (localDb.select(localDb.diningHallsTable)).get();
+    List<DiningHall> diningHalls = [];
+    if (dhRes.isNotEmpty) {
+      for (var row in dhRes) {
+        Map<String, dynamic> scheduleMap = jsonDecode(row.schedule);
+        Schedule schedule = Schedule.fromMap(scheduleMap);
+        diningHalls.add(
+          DiningHall(id: row.diningHallId, name: row.name, schedule: schedule),
+        );
+      }
+    } else {
+      print("No dining halls found.");
+    }
+    return diningHalls;
+  }
+
+  Future<void> addDiningHall(DiningHall diningHall) async {
+    final dhRes = await (localDb.select(
+      localDb.diningHallsTable,
+    )..where((tbl) => tbl.diningHallId.equals(diningHall.id))).get();
+
+    String scheduleStr = jsonEncode(diningHall.schedule.toMap());
+
+    if (dhRes.isNotEmpty) {
+      // Update existing dining hall
+      await (localDb.update(
+        localDb.diningHallsTable,
+      )..where((tbl) => tbl.id.equals(dhRes.first.id))).write(
+        DiningHallsTableCompanion(
+          diningHallId: Value(diningHall.id),
+          schedule: Value(scheduleStr),
+          name: Value(diningHall.name),
+        ),
+      );
+      print("Dining hall updated: ${diningHall.id}");
+    } else {
+      // Insert new dining hall
+      await localDb
+          .into(localDb.diningHallsTable)
+          .insert(
+            DiningHallsTableCompanion(
+              diningHallId: Value(diningHall.id),
+              schedule: Value(scheduleStr),
+              name: Value(diningHall.name),
+            ),
+          );
+      print("Dining hall inserted: ${diningHall.id}");
+    }
   }
 }

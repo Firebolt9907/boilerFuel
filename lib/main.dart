@@ -58,6 +58,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       setState(() {
         user = value;
       });
+      // await FBDatabase().createDiningHalls();
+      // print("Ensured dining halls exist in Firebase");
       if (user != null) {
         DateTime latestMealPlanDate =
             (await LocalDatabase().getLastMeal()) ??

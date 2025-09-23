@@ -182,11 +182,11 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.black,
               Color(0xFF0D1B2A),
               Color(0xFF1B263B),
               Color(0xFF415A77),
               Color(0xFF778DA9),
+              Color(0xFF415A77),
             ],
             stops: [0.0, 0.25, 0.5, 0.75, 1.0],
           ),

@@ -14,9 +14,13 @@ import 'dart:math' as math;
 
 class DietaryRestrictionsScreen extends StatefulWidget {
   final User user;
+  final bool isEditing;
 
-  const DietaryRestrictionsScreen({Key? key, required this.user})
-    : super(key: key);
+  const DietaryRestrictionsScreen({
+    Key? key,
+    required this.user,
+    this.isEditing = false,
+  }) : super(key: key);
 
   @override
   _DietaryRestrictionsScreenState createState() =>
@@ -262,11 +266,11 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.black,
               Color(0xFF0D1B2A),
               Color(0xFF1B263B),
               Color(0xFF415A77),
               Color(0xFF778DA9),
+              Color(0xFF415A77),
             ],
             stops: [0.0, 0.25, 0.5, 0.75, 1.0],
           ),
@@ -393,7 +397,9 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                           ),
                         ),
                         child: Text(
-                          'Let\'s personalize your dining experience with a fun swipe-through setup!',
+                          widget.isEditing
+                              ? 'Update your dietary preferences and restrictions below.'
+                              : 'Let\'s personalize your dining experience with a fun swipe-through setup!',
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.white.withOpacity(0.85),
@@ -448,19 +454,20 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                           ),
                         ),
                       ),
-                      SizedBox(height: 16),
-                      Center(
-                        child: TextButton(
-                          onPressed: _skipAll,
-                          child: Text(
-                            'Skip for now',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 16,
+                      if (!widget.isEditing) SizedBox(height: 16),
+                      if (!widget.isEditing)
+                        Center(
+                          child: TextButton(
+                            onPressed: _skipAll,
+                            child: Text(
+                              'Skip for now',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.6),
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
                       // Progress indicator
                       // Row(

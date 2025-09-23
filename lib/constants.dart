@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Food {
   final String name;
   final String id;
@@ -113,7 +115,7 @@ enum MealPlan {
   FourteenDay,
   Unlimited,
   unset,
-  FortyBlock,
+  FiftyBlock,
   EightyBlock,
   SevenDay;
 
@@ -128,8 +130,8 @@ enum MealPlan {
         return 'Unlimited';
       case MealPlan.unset:
         return 'Unset';
-      case MealPlan.FortyBlock:
-        return '40 Block';
+      case MealPlan.FiftyBlock:
+        return '50 Block';
       case MealPlan.EightyBlock:
         return '80 Block';
       case MealPlan.SevenDay:
@@ -148,7 +150,7 @@ enum MealPlan {
       case 'Unset':
         return MealPlan.unset;
       case '40 Block':
-        return MealPlan.FortyBlock;
+        return MealPlan.FiftyBlock;
       case '80 Block':
         return MealPlan.EightyBlock;
       case '7 Day':
@@ -364,6 +366,7 @@ enum MealTime {
   breakfast,
   brunch,
   lunch,
+  lateLunch,
   dinner;
 
   @override
@@ -375,6 +378,8 @@ enum MealTime {
         return 'brunch';
       case MealTime.lunch:
         return 'lunch';
+      case MealTime.lateLunch:
+        return 'lunch'; // Treat late lunch as lunch
       case MealTime.dinner:
         return 'dinner';
     }
@@ -413,6 +418,211 @@ class MiniFood {
 
   factory MiniFood.fromMap(Map<String, dynamic> map) {
     return MiniFood(id: map['id'], station: map['station'] ?? "");
+  }
+}
+
+class TimePeriod {
+  final TimeOfDay start;
+  final TimeOfDay end;
+
+  TimePeriod({required this.start, required this.end});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'start':
+          '${start.hour.toString().padLeft(2, '0')}:'
+          '${start.minute.toString().padLeft(2, '0')}',
+      'end':
+          '${end.hour.toString().padLeft(2, '0')}:'
+          '${end.minute.toString().padLeft(2, '0')}',
+    };
+  }
+
+  factory TimePeriod.fromMap(Map<String, dynamic> map) {
+    return TimePeriod(
+      start: TimeOfDay(
+        hour: int.parse(map['start'].split(':')[0]),
+        minute: int.parse(map['start'].split(':')[1]),
+      ),
+      end: TimeOfDay(
+        hour: int.parse(map['end'].split(':')[0]),
+        minute: int.parse(map['end'].split(':')[1]),
+      ),
+    );
+  }
+
+  bool isOpenNow() {
+    DateTime now = DateTime.now();
+    DateTime startTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      start.hour,
+      start.minute,
+    );
+    DateTime endTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      end.hour,
+      end.minute,
+    );
+
+    return (now.isAfter(startTime) && now.isBefore(endTime)) ||
+        now.isAtSameMomentAs(startTime) ||
+        now.isAtSameMomentAs(endTime);
+  }
+}
+
+class Schedule {
+  final Map<String, TimePeriod?>? breakfast;
+  final Map<String, TimePeriod?>? brunch;
+  final Map<String, TimePeriod?>? lunch;
+  final Map<String, TimePeriod?>? dinner;
+  final Map<String, TimePeriod?>? lateLunch;
+
+  Schedule({
+    this.breakfast,
+    this.brunch,
+    this.lunch,
+    this.dinner,
+    this.lateLunch,
+  });
+
+  @override
+  String toString() {
+    return '''=== SCHEDULE ===
+Breakfast: ${breakfast ?? 'Closed'}
+Brunch: ${brunch ?? 'Closed'}
+Lunch: ${lunch ?? 'Closed'}
+Late Lunch: ${lateLunch ?? 'Closed'}
+Dinner: ${dinner ?? 'Closed'}
+''';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'breakfast': breakfast != null
+          ? breakfast!.map((key, value) => MapEntry(key, value?.toMap()))
+          : null,
+      'brunch': brunch != null
+          ? brunch!.map((key, value) => MapEntry(key, value?.toMap()))
+          : null,
+      'lunch': lunch != null
+          ? lunch!.map((key, value) => MapEntry(key, value?.toMap()))
+          : null,
+      'dinner': dinner != null
+          ? dinner!.map((key, value) => MapEntry(key, value?.toMap()))
+          : null,
+      'lateLunch': lateLunch != null
+          ? lateLunch!.map((key, value) => MapEntry(key, value?.toMap()))
+          : null,
+    };
+  }
+
+  factory Schedule.fromMap(Map<String, dynamic> map) {
+    return Schedule(
+      breakfast: map['breakfast'] != null
+          ? (map['breakfast'] as Map<String, dynamic>).map(
+              (key, value) => MapEntry(
+                key,
+                value != null ? TimePeriod.fromMap(value) : null,
+              ),
+            )
+          : null,
+      brunch: map['brunch'] != null
+          ? (map['brunch'] as Map<String, dynamic>).map(
+              (key, value) => MapEntry(
+                key,
+                value != null ? TimePeriod.fromMap(value) : null,
+              ),
+            )
+          : null,
+      lunch: map['lunch'] != null
+          ? (map['lunch'] as Map<String, dynamic>).map(
+              (key, value) => MapEntry(
+                key,
+                value != null ? TimePeriod.fromMap(value) : null,
+              ),
+            )
+          : null,
+      dinner: map['dinner'] != null
+          ? (map['dinner'] as Map<String, dynamic>).map(
+              (key, value) => MapEntry(
+                key,
+                value != null ? TimePeriod.fromMap(value) : null,
+              ),
+            )
+          : null,
+      lateLunch: map['lateLunch'] != null
+          ? (map['lateLunch'] as Map<String, dynamic>).map(
+              (key, value) => MapEntry(
+                key,
+                value != null ? TimePeriod.fromMap(value) : null,
+              ),
+            )
+          : null,
+    );
+  }
+
+  MealTime? getCurrentMealTime() {
+    DateTime now = DateTime.now();
+    String weekday = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ][now.weekday - 1];
+    if (breakfast != null &&
+        breakfast![weekday] != null &&
+        breakfast![weekday]!.isOpenNow()) {
+      return MealTime.breakfast;
+    } else if (brunch != null &&
+        brunch![weekday] != null &&
+        brunch![weekday]!.isOpenNow()) {
+      return MealTime.brunch;
+    } else if (lunch != null &&
+        lunch![weekday] != null &&
+        lunch![weekday]!.isOpenNow()) {
+      return MealTime.lunch;
+    } else if (lateLunch != null &&
+        lateLunch![weekday] != null &&
+        lateLunch![weekday]!.isOpenNow()) {
+      return MealTime.lateLunch;
+    } else if (dinner != null &&
+        dinner![weekday] != null &&
+        dinner![weekday]!.isOpenNow()) {
+      return MealTime.dinner;
+    }
+    return null;
+  }
+}
+
+class DiningHall {
+  final String name;
+  final String id;
+  final Schedule schedule;
+
+  DiningHall({required this.name, required this.id, required this.schedule});
+
+  Map<String, dynamic> toMap() {
+    return {'name': name, 'id': id, 'schedule': schedule.toMap()};
+  }
+
+  @override
+  String toString() {
+    return toMap().toString();
+  }
+
+  factory DiningHall.fromMap(Map<String, dynamic> map) {
+    return DiningHall(
+      name: map['name'],
+      id: map['id'],
+      schedule: Schedule.fromMap(map['schedule']),
+    );
   }
 }
 
@@ -681,6 +891,7 @@ class Meal {
     required this.fat,
     required this.foods,
     required this.diningHall,
+    this.mealTime,
   });
 
   @override

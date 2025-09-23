@@ -1,4 +1,6 @@
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
+import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/dietary_restrictions_screen.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
@@ -11,7 +13,8 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
 class UserInfoScreen extends StatefulWidget {
-  UserInfoScreen({Key? key}) : super(key: key);
+  final User? user;
+  UserInfoScreen({Key? key, this.user}) : super(key: key);
 
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
@@ -63,6 +66,15 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       _floatingController.repeat(reverse: true);
       _pulseController.repeat(reverse: true);
     });
+
+    if (widget.user != null) {
+      _nameController.text = widget.user!.name;
+      _weightController.text = widget.user!.weight.toString();
+      _heightController.text = widget.user!.height.toString();
+      _selectedGoal = widget.user!.goal;
+      _ageController.text = widget.user!.age.toString();
+      _selectedGender = widget.user!.gender;
+    }
   }
 
   @override
@@ -75,7 +87,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
     super.dispose();
   }
 
-  void _continue() {
+  void _continue() async {
     if (_weightController.text.isNotEmpty &&
         _heightController.text.isNotEmpty &&
         _selectedGoal != null &&
@@ -83,22 +95,30 @@ class _UserInfoScreenState extends State<UserInfoScreen>
         _selectedGender != null &&
         _ageController.text.isNotEmpty) {
       User user = User(
-        uid: '',
+        uid: widget.user?.uid ?? '',
         name: _nameController.text,
         weight: int.tryParse(_weightController.text)!,
         height: int.tryParse(_heightController.text)!,
         goal: _selectedGoal!,
-        dietaryRestrictions: DietaryRestrictions(
-          allergies: [],
-          preferences: [],
-          ingredientPreferences: [],
-        ),
-        mealPlan: MealPlan.unset,
-        diningHallRank: [],
+        dietaryRestrictions:
+            widget.user?.dietaryRestrictions ??
+            DietaryRestrictions(
+              allergies: [],
+              preferences: [],
+              ingredientPreferences: [],
+            ),
+        mealPlan: widget.user?.mealPlan ?? MealPlan.unset,
+        diningHallRank: widget.user?.diningHallRank ?? [],
         age: int.tryParse(_ageController.text)!,
         gender: _selectedGender!,
       );
-
+      if (widget.user != null) {
+        LocalDatabase().saveUser(user);
+        await LocalDatabase().deleteCurrentAndFutureMeals();
+        MealPlanner.generateDayMealPlan(user: user);
+        Navigator.pop(context, user);
+        return;
+      }
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -119,11 +139,11 @@ class _UserInfoScreenState extends State<UserInfoScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.black,
                 Color(0xFF0D1B2A),
                 Color(0xFF1B263B),
                 Color(0xFF415A77),
                 Color(0xFF778DA9),
+                Color(0xFF415A77),
               ],
               stops: [0.0, 0.25, 0.5, 0.75, 1.0],
             ),
@@ -218,7 +238,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                             end: Alignment.bottomRight,
                           ).createShader(bounds),
                           child: Text(
-                            'Tell us about yourself',
+                            widget.user == null
+                                ? 'Tell us about yourself'
+                                : 'Update your info',
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -242,7 +264,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                             ),
                           ),
                           child: Text(
-                            'Help us personalize your experience',
+                            widget.user == null
+                                ? 'Help us personalize your experience'
+                                : 'Make changes to your personal info',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white.withOpacity(0.8),
@@ -358,7 +382,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                                       _nameController.text.isNotEmpty &&
                                       _selectedGender != null &&
                                       _ageController.text.isNotEmpty
-                                  ? 'Continue Your Journey'
+                                  ? widget.user == null
+                                        ? 'Continue Your Journey'
+                                        : 'Update Info'
                                   : 'Enter your info',
                               onTap: _continue,
                               isEnabled:

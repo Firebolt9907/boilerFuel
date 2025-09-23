@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:flutter/cupertino.dart' hide AnimatedList;
 import 'package:flutter/material.dart' hide AnimatedList;
@@ -10,8 +11,9 @@ import 'dart:math' as math;
 
 class DiningHallRankingScreen extends StatefulWidget {
   final User user;
+  final bool isEditing;
 
-  DiningHallRankingScreen({required this.user});
+  DiningHallRankingScreen({required this.user, this.isEditing = false});
 
   @override
   _DiningHallRankingScreenState createState() =>
@@ -38,6 +40,9 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
   @override
   void initState() {
     super.initState();
+    if (widget.isEditing && widget.user.diningHallRank.isNotEmpty) {
+      rankedHalls = List.from(widget.user.diningHallRank);
+    }
     _animationController = AnimationController(
       duration: Duration(milliseconds: 800),
       vsync: this,
@@ -89,6 +94,11 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
   void _continue() {
     if (rankedHalls.length == 5) {
       widget.user.diningHallRank = rankedHalls;
+      if (widget.isEditing) {
+        LocalDatabase().saveUser(widget.user);
+        Navigator.pop(context, widget.user);
+        return;
+      }
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -107,11 +117,11 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.black,
               Color(0xFF0D1B2A),
               Color(0xFF1B263B),
               Color(0xFF415A77),
               Color(0xFF778DA9),
+              Color(0xFF415A77),
             ],
             stops: [0.0, 0.25, 0.5, 0.75, 1.0],
           ),
@@ -216,7 +226,9 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                           end: Alignment.bottomRight,
                         ).createShader(bounds),
                         child: Text(
-                          'Rank your dining halls',
+                          widget.isEditing
+                              ? 'Update Your Dining Hall Ranking'
+                              : 'Rank Your Dining Halls',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -408,6 +420,8 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen>
                           child: AnimatedButton(
                             text: rankedHalls.length < 5
                                 ? 'Select more to continue'
+                                : widget.isEditing
+                                ? 'Update Ranking'
                                 : 'Continue to Meal Plans',
                             onTap: _continue,
                             isEnabled: rankedHalls.length == 5,

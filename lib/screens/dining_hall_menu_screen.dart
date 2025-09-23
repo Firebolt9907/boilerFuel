@@ -6,16 +6,17 @@ import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../api/local_database.dart';
 import 'meal_details_screen.dart';
-import 'dart:math' as math;
 
 class DiningHallMenuScreen extends StatefulWidget {
   final String diningHall;
   final User user;
+  final MealTime? initialMealTime;
 
   const DiningHallMenuScreen({
     Key? key,
     required this.diningHall,
     required this.user,
+    this.initialMealTime,
   }) : super(key: key);
 
   @override
@@ -28,10 +29,16 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   late AnimationController _floatingController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _floatingAnimation;
+  late PageController _stationPageController;
+  ScrollController _stationScrollController = ScrollController();
 
   Map<String, List<Food>> _stationFoods = {};
   bool _isLoading = true;
+  int _currentStationIndex = 0;
   String _selectedStation = '';
+
+  // Spacing between station items
+  double _stationSpacing = 12.0;
 
   // New variables for meal time selection
   Map<MealTime, Map<String, List<Food>>> _allMealData = {};
@@ -50,6 +57,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       duration: Duration(milliseconds: 3500),
       vsync: this,
     );
+    _stationPageController = PageController();
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
@@ -72,6 +80,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   void dispose() {
     _animationController.dispose();
     _floatingController.dispose();
+    _stationPageController.dispose();
     super.dispose();
   }
 
@@ -87,6 +96,9 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
         // Process each meal time
         for (MealTime mealTime in MealTime.values) {
+          if (mealTime == MealTime.lateLunch) {
+            continue; // Skip brunch if not supported
+          }
           List<Food> diningHallFoods =
               (await Database().getDiningCourtMeal(
                 widget.diningHall,
@@ -147,16 +159,83 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     }
   }
 
+  // Improved scroll position calculation
+  void _scrollToStationIndex(int targetIndex) {
+    if (!_stationScrollController.hasClients || _stationFoods.isEmpty) return;
+
+    final stationCount = _stationFoods.keys.length;
+    if (targetIndex < 0 || targetIndex >= stationCount) return;
+
+    // Calculate approximate item width based on text length and padding
+    final stationNames = _stationFoods.keys.toList();
+    final targetStationName = stationNames[targetIndex];
+
+    // Estimate width: base width + character width * name length
+    const baseWidth = 32.0; // Horizontal padding
+    const charWidth = 8.0; // Approximate character width
+    final estimatedItemWidth =
+        baseWidth + (targetStationName.length * charWidth);
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final listPadding = 16.0; // Horizontal padding of the ListView
+
+    // Calculate accumulated width up to the target index
+    double accumulatedWidth = 0;
+    for (int i = 0; i < targetIndex; i++) {
+      final stationName = stationNames[i];
+      final itemWidth = baseWidth + (stationName.length * charWidth);
+      accumulatedWidth += itemWidth + _stationSpacing;
+    }
+
+    // Calculate the offset to center the selected item
+    final targetOffset =
+        accumulatedWidth -
+        (screenWidth / 2) +
+        (estimatedItemWidth / 2) +
+        listPadding;
+
+    // Clamp the offset to valid scroll range
+    final maxScrollExtent = _stationScrollController.position.maxScrollExtent;
+    final clampedOffset = targetOffset.clamp(0.0, maxScrollExtent);
+
+    _stationScrollController.animateTo(
+      clampedOffset,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   void _updateStationFoods() {
     if (_selectedMealTime != null &&
         _allMealData.containsKey(_selectedMealTime)) {
       _stationFoods = _allMealData[_selectedMealTime]!;
       if (_stationFoods.isNotEmpty) {
         _selectedStation = _stationFoods.keys.first;
+        _currentStationIndex = 0;
+        // Reset PageController to first page when meal time changes
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_stationPageController.hasClients) {
+            // _stationPageController.jumpToPage(0);
+            if (widget.initialMealTime != null) {
+              int initialIndex = MealTime.values.indexOf(
+                widget.initialMealTime!,
+              );
+              if (initialIndex >= 0 &&
+                  initialIndex < _availableMealTimes.length) {
+                _stationPageController.jumpToPage(initialIndex);
+                _selectedStation = _stationFoods.keys.elementAt(initialIndex);
+                _currentStationIndex = initialIndex;
+              }
+            } else {
+              _stationPageController.jumpToPage(0);
+            }
+          }
+        });
       }
     } else {
       _stationFoods = {};
       _selectedStation = '';
+      _currentStationIndex = 0;
     }
   }
 
@@ -210,49 +289,6 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             child: Stack(
               children: [
                 // Floating decorative elements
-                ...List.generate(
-                  4,
-                  (index) => Positioned(
-                    left: (index * 95.0) % MediaQuery.of(context).size.width,
-                    top: (index * 200.0) % MediaQuery.of(context).size.height,
-                    child: AnimatedBuilder(
-                      animation: _floatingAnimation,
-                      builder: (context, child) => Transform.translate(
-                        offset: Offset(
-                          math.sin(_floatingAnimation.value / 10 + index) * 5,
-                          _floatingAnimation.value +
-                              math.cos(_floatingAnimation.value / 8 + index) *
-                                  3,
-                        ),
-                        child: Container(
-                          width: 14 + (index * 6),
-                          height: 14 + (index * 6),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: [
-                              Colors.orange.withOpacity(0.05),
-                              Colors.green.withOpacity(0.04),
-                              Colors.blue.withOpacity(0.03),
-                              Colors.purple.withOpacity(0.02),
-                            ][index],
-                            boxShadow: [
-                              BoxShadow(
-                                color: [
-                                  Colors.orange,
-                                  Colors.green,
-                                  Colors.blue,
-                                  Colors.purple,
-                                ][index].withOpacity(0.1),
-                                blurRadius: 8,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
 
                 // Main content
                 FadeTransition(
@@ -265,14 +301,14 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                           children: [
                             // Meal time selector
                             SizedBox(height: 8),
-
                             _buildMealTimeSelector(),
 
-                            // Station selector
-                            _buildStationSelector(),
+                            // Station indicator
+                            if (_stationFoods.isNotEmpty)
+                              _buildStationIndicator(),
 
-                            // Food list
-                            Expanded(child: _buildFoodList()),
+                            // PageView for stations
+                            Expanded(child: _buildStationPageView()),
                           ],
                         ),
                 ),
@@ -406,29 +442,38 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     );
   }
 
-  Widget _buildStationSelector() {
+  Widget _buildStationIndicator() {
     if (_stationFoods.isEmpty) return SizedBox.shrink();
+
+    List<String> stationNames = _stationFoods.keys.toList();
 
     return Container(
       height: 60,
       padding: EdgeInsets.symmetric(vertical: 8),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
+        controller: _stationScrollController,
         padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _stationFoods.keys.length,
+        itemCount: stationNames.length,
         itemBuilder: (context, index) {
-          String stationName = _stationFoods.keys.elementAt(index);
-          bool isSelected = _selectedStation == stationName;
+          String stationName = stationNames[index];
+          bool isSelected = _currentStationIndex == index;
 
           return GestureDetector(
             onTap: () {
               HapticFeedback.selectionClick();
               setState(() {
+                _currentStationIndex = index;
                 _selectedStation = stationName;
+                _stationPageController.animateToPage(
+                  index,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
               });
             },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 200),
+            child: Container(
+              key: ValueKey('station_$index'),
               margin: EdgeInsets.only(right: 12),
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -464,20 +509,37 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     );
   }
 
-  Widget _buildFoodList() {
-    if (_selectedStation.isEmpty ||
-        !_stationFoods.containsKey(_selectedStation)) {
-      return SizedBox.shrink();
-    }
+  Widget _buildStationPageView() {
+    if (_stationFoods.isEmpty) return SizedBox.shrink();
 
-    List<Food> foods = _stationFoods[_selectedStation]!;
+    List<String> stationNames = _stationFoods.keys.toList();
 
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: foods.length,
+    return PageView.builder(
+      controller: _stationPageController,
+      onPageChanged: (index) {
+        setState(() {
+          _currentStationIndex = index;
+          _selectedStation = stationNames[index];
+        });
+
+        // Use the improved scroll positioning
+        _scrollToStationIndex(index);
+
+        HapticFeedback.selectionClick();
+      },
+      itemCount: stationNames.length,
       itemBuilder: (context, index) {
-        Food food = foods[index];
-        return _buildFoodItem(food, index);
+        String stationName = stationNames[index];
+        List<Food> foods = _stationFoods[stationName]!;
+
+        return ListView.builder(
+          padding: EdgeInsets.all(16),
+          itemCount: foods.length,
+          itemBuilder: (context, foodIndex) {
+            Food food = foods[foodIndex];
+            return _buildFoodItem(food, foodIndex);
+          },
+        );
       },
     );
   }
@@ -684,17 +746,17 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       ),
     );
   }
+}
 
-  String _getMealTimeDisplayName(MealTime mealTime) {
-    switch (mealTime) {
-      case MealTime.breakfast:
-        return 'Breakfast';
-      case MealTime.lunch:
-        return 'Lunch';
-      case MealTime.dinner:
-        return 'Dinner';
-      default:
-        return 'Menu';
-    }
+String _getMealTimeDisplayName(MealTime mealTime) {
+  switch (mealTime) {
+    case MealTime.breakfast:
+      return 'Breakfast';
+    case MealTime.lunch:
+      return 'Lunch';
+    case MealTime.dinner:
+      return 'Dinner';
+    default:
+      return 'Menu';
   }
 }

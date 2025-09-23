@@ -2419,6 +2419,310 @@ class DiningHallFoodsTableCompanion
   }
 }
 
+class $DiningHallsTableTable extends DiningHallsTable
+    with TableInfo<$DiningHallsTableTable, DiningHallsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DiningHallsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _diningHallIdMeta = const VerificationMeta(
+    'diningHallId',
+  );
+  @override
+  late final GeneratedColumn<String> diningHallId = GeneratedColumn<String>(
+    'dining_hall_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scheduleMeta = const VerificationMeta(
+    'schedule',
+  );
+  @override
+  late final GeneratedColumn<String> schedule = GeneratedColumn<String>(
+    'schedule',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, diningHallId, name, schedule];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'dining_halls_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DiningHallsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('dining_hall_id')) {
+      context.handle(
+        _diningHallIdMeta,
+        diningHallId.isAcceptableOrUnknown(
+          data['dining_hall_id']!,
+          _diningHallIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_diningHallIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('schedule')) {
+      context.handle(
+        _scheduleMeta,
+        schedule.isAcceptableOrUnknown(data['schedule']!, _scheduleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scheduleMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DiningHallsTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DiningHallsTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      diningHallId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dining_hall_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      schedule: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}schedule'],
+      )!,
+    );
+  }
+
+  @override
+  $DiningHallsTableTable createAlias(String alias) {
+    return $DiningHallsTableTable(attachedDatabase, alias);
+  }
+}
+
+class DiningHallsTableData extends DataClass
+    implements Insertable<DiningHallsTableData> {
+  final int id;
+  final String diningHallId;
+  final String name;
+  final String schedule;
+  const DiningHallsTableData({
+    required this.id,
+    required this.diningHallId,
+    required this.name,
+    required this.schedule,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['dining_hall_id'] = Variable<String>(diningHallId);
+    map['name'] = Variable<String>(name);
+    map['schedule'] = Variable<String>(schedule);
+    return map;
+  }
+
+  DiningHallsTableCompanion toCompanion(bool nullToAbsent) {
+    return DiningHallsTableCompanion(
+      id: Value(id),
+      diningHallId: Value(diningHallId),
+      name: Value(name),
+      schedule: Value(schedule),
+    );
+  }
+
+  factory DiningHallsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DiningHallsTableData(
+      id: serializer.fromJson<int>(json['id']),
+      diningHallId: serializer.fromJson<String>(json['diningHallId']),
+      name: serializer.fromJson<String>(json['name']),
+      schedule: serializer.fromJson<String>(json['schedule']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'diningHallId': serializer.toJson<String>(diningHallId),
+      'name': serializer.toJson<String>(name),
+      'schedule': serializer.toJson<String>(schedule),
+    };
+  }
+
+  DiningHallsTableData copyWith({
+    int? id,
+    String? diningHallId,
+    String? name,
+    String? schedule,
+  }) => DiningHallsTableData(
+    id: id ?? this.id,
+    diningHallId: diningHallId ?? this.diningHallId,
+    name: name ?? this.name,
+    schedule: schedule ?? this.schedule,
+  );
+  DiningHallsTableData copyWithCompanion(DiningHallsTableCompanion data) {
+    return DiningHallsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      diningHallId: data.diningHallId.present
+          ? data.diningHallId.value
+          : this.diningHallId,
+      name: data.name.present ? data.name.value : this.name,
+      schedule: data.schedule.present ? data.schedule.value : this.schedule,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiningHallsTableData(')
+          ..write('id: $id, ')
+          ..write('diningHallId: $diningHallId, ')
+          ..write('name: $name, ')
+          ..write('schedule: $schedule')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, diningHallId, name, schedule);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DiningHallsTableData &&
+          other.id == this.id &&
+          other.diningHallId == this.diningHallId &&
+          other.name == this.name &&
+          other.schedule == this.schedule);
+}
+
+class DiningHallsTableCompanion extends UpdateCompanion<DiningHallsTableData> {
+  final Value<int> id;
+  final Value<String> diningHallId;
+  final Value<String> name;
+  final Value<String> schedule;
+  const DiningHallsTableCompanion({
+    this.id = const Value.absent(),
+    this.diningHallId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.schedule = const Value.absent(),
+  });
+  DiningHallsTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String diningHallId,
+    required String name,
+    required String schedule,
+  }) : diningHallId = Value(diningHallId),
+       name = Value(name),
+       schedule = Value(schedule);
+  static Insertable<DiningHallsTableData> custom({
+    Expression<int>? id,
+    Expression<String>? diningHallId,
+    Expression<String>? name,
+    Expression<String>? schedule,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (diningHallId != null) 'dining_hall_id': diningHallId,
+      if (name != null) 'name': name,
+      if (schedule != null) 'schedule': schedule,
+    });
+  }
+
+  DiningHallsTableCompanion copyWith({
+    Value<int>? id,
+    Value<String>? diningHallId,
+    Value<String>? name,
+    Value<String>? schedule,
+  }) {
+    return DiningHallsTableCompanion(
+      id: id ?? this.id,
+      diningHallId: diningHallId ?? this.diningHallId,
+      name: name ?? this.name,
+      schedule: schedule ?? this.schedule,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (diningHallId.present) {
+      map['dining_hall_id'] = Variable<String>(diningHallId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (schedule.present) {
+      map['schedule'] = Variable<String>(schedule.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiningHallsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('diningHallId: $diningHallId, ')
+          ..write('name: $name, ')
+          ..write('schedule: $schedule')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(e);
   $AppDbManager get managers => $AppDbManager(this);
@@ -2427,6 +2731,9 @@ abstract class _$AppDb extends GeneratedDatabase {
   late final $FoodsTableTable foodsTable = $FoodsTableTable(this);
   late final $DiningHallFoodsTableTable diningHallFoodsTable =
       $DiningHallFoodsTableTable(this);
+  late final $DiningHallsTableTable diningHallsTable = $DiningHallsTableTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2436,6 +2743,7 @@ abstract class _$AppDb extends GeneratedDatabase {
     mealsTable,
     foodsTable,
     diningHallFoodsTable,
+    diningHallsTable,
   ];
 }
 
@@ -3633,6 +3941,187 @@ typedef $$DiningHallFoodsTableTableProcessedTableManager =
       DiningHallFoodsTableData,
       PrefetchHooks Function()
     >;
+typedef $$DiningHallsTableTableCreateCompanionBuilder =
+    DiningHallsTableCompanion Function({
+      Value<int> id,
+      required String diningHallId,
+      required String name,
+      required String schedule,
+    });
+typedef $$DiningHallsTableTableUpdateCompanionBuilder =
+    DiningHallsTableCompanion Function({
+      Value<int> id,
+      Value<String> diningHallId,
+      Value<String> name,
+      Value<String> schedule,
+    });
+
+class $$DiningHallsTableTableFilterComposer
+    extends Composer<_$AppDb, $DiningHallsTableTable> {
+  $$DiningHallsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get diningHallId => $composableBuilder(
+    column: $table.diningHallId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get schedule => $composableBuilder(
+    column: $table.schedule,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DiningHallsTableTableOrderingComposer
+    extends Composer<_$AppDb, $DiningHallsTableTable> {
+  $$DiningHallsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get diningHallId => $composableBuilder(
+    column: $table.diningHallId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get schedule => $composableBuilder(
+    column: $table.schedule,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DiningHallsTableTableAnnotationComposer
+    extends Composer<_$AppDb, $DiningHallsTableTable> {
+  $$DiningHallsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get diningHallId => $composableBuilder(
+    column: $table.diningHallId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get schedule =>
+      $composableBuilder(column: $table.schedule, builder: (column) => column);
+}
+
+class $$DiningHallsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDb,
+          $DiningHallsTableTable,
+          DiningHallsTableData,
+          $$DiningHallsTableTableFilterComposer,
+          $$DiningHallsTableTableOrderingComposer,
+          $$DiningHallsTableTableAnnotationComposer,
+          $$DiningHallsTableTableCreateCompanionBuilder,
+          $$DiningHallsTableTableUpdateCompanionBuilder,
+          (
+            DiningHallsTableData,
+            BaseReferences<
+              _$AppDb,
+              $DiningHallsTableTable,
+              DiningHallsTableData
+            >,
+          ),
+          DiningHallsTableData,
+          PrefetchHooks Function()
+        > {
+  $$DiningHallsTableTableTableManager(_$AppDb db, $DiningHallsTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DiningHallsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DiningHallsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DiningHallsTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> diningHallId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> schedule = const Value.absent(),
+              }) => DiningHallsTableCompanion(
+                id: id,
+                diningHallId: diningHallId,
+                name: name,
+                schedule: schedule,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String diningHallId,
+                required String name,
+                required String schedule,
+              }) => DiningHallsTableCompanion.insert(
+                id: id,
+                diningHallId: diningHallId,
+                name: name,
+                schedule: schedule,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DiningHallsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDb,
+      $DiningHallsTableTable,
+      DiningHallsTableData,
+      $$DiningHallsTableTableFilterComposer,
+      $$DiningHallsTableTableOrderingComposer,
+      $$DiningHallsTableTableAnnotationComposer,
+      $$DiningHallsTableTableCreateCompanionBuilder,
+      $$DiningHallsTableTableUpdateCompanionBuilder,
+      (
+        DiningHallsTableData,
+        BaseReferences<_$AppDb, $DiningHallsTableTable, DiningHallsTableData>,
+      ),
+      DiningHallsTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDbManager {
   final _$AppDb _db;
@@ -3645,4 +4134,6 @@ class $AppDbManager {
       $$FoodsTableTableTableManager(_db, _db.foodsTable);
   $$DiningHallFoodsTableTableTableManager get diningHallFoodsTable =>
       $$DiningHallFoodsTableTableTableManager(_db, _db.diningHallFoodsTable);
+  $$DiningHallsTableTableTableManager get diningHallsTable =>
+      $$DiningHallsTableTableTableManager(_db, _db.diningHallsTable);
 }

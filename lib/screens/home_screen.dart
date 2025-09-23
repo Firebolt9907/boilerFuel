@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/api/shared_preferences.dart';
+import 'package:boiler_fuel/screens/user_settings_screen.dart';
 import 'package:boiler_fuel/widgets/titanium_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +15,9 @@ import 'dining_hall_menu_screen.dart';
 import 'dart:math' as math;
 
 class HomeScreen extends StatefulWidget {
-  final User? user;
+  final User user;
 
-  const HomeScreen({Key? key, this.user}) : super(key: key);
+  const HomeScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -36,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       StreamController.broadcast();
 
   User? _currentUser = null;
+  List<DiningHall> _diningHalls = [];
 
   List<String> _rankedDiningHalls = [];
   Map<MealTime, Map<String, Meal>> _suggestedMeals = {};
@@ -43,18 +46,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   MacroResult? _userMacros;
 
   MealTime _selectedMealTime = MealTime.lunch;
-  final List<String> _diningHalls = [
-    "Wiley",
-    "Hillenbrand",
-    "Windsor",
-    "Earhart",
-    "Ford",
-  ];
+
   int _currentMealIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _currentUser = widget.user;
+    });
 
     _animationController = AnimationController(
       duration: Duration(milliseconds: 800),
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _statusBarController.repeat(reverse: true);
     });
 
-    _loadHomeData();
+    _loadHomeData(widget.user);
   }
 
   @override
@@ -107,15 +107,205 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _loadHomeData() async {
-    User? user = widget.user;
-    if (user == null) {
-      user = (await LocalDatabase().getUser())!;
+  Map<String, dynamic> _getDiningHallStatus(DiningHall diningHall) {
+    DateTime now = DateTime.now();
+    String weekday = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ][now.weekday - 1];
+
+    // Check current meal time
+    MealTime? currentMeal = diningHall.schedule.getCurrentMealTime();
+
+    if (currentMeal != null) {
+      // Currently open - find when it closes
+      TimePeriod? currentPeriod;
+      String mealName = '';
+
+      switch (currentMeal) {
+        case MealTime.breakfast:
+          currentPeriod = diningHall.schedule.breakfast?[weekday];
+          mealName = 'Breakfast';
+          break;
+        case MealTime.brunch:
+          currentPeriod = diningHall.schedule.brunch?[weekday];
+          mealName = 'Brunch';
+          break;
+        case MealTime.lunch:
+          currentPeriod = diningHall.schedule.lunch?[weekday];
+          mealName = 'Lunch';
+          break;
+        case MealTime.lateLunch:
+          currentPeriod = diningHall.schedule.lateLunch?[weekday];
+          mealName = 'Late Lunch';
+          break;
+        case MealTime.dinner:
+          currentPeriod = diningHall.schedule.dinner?[weekday];
+          mealName = 'Dinner';
+          break;
+      }
+
+      String closeTime = currentPeriod != null
+          ? _formatTime(currentPeriod.end)
+          : '';
+
+      return {
+        'isOpen': true,
+        'currentMeal': mealName,
+        'closeTime': closeTime,
+        'status': 'Open for $mealName',
+        'subStatus': 'Closes at $closeTime',
+      };
+    } else {
+      // Currently closed - find next opening
+      Map<String, dynamic> nextOpening = _getNextOpening(diningHall, now);
+
+      return {
+        'isOpen': false,
+        'currentMeal': null,
+        'nextMeal': nextOpening['meal'],
+        'nextTime': nextOpening['time'],
+        'nextDay': nextOpening['day'],
+        'status': 'Currently Closed',
+        'subStatus': nextOpening['day'] == 'Today'
+            ? 'Opens at ${nextOpening['time']} for ${nextOpening['meal']}'
+            : 'Opens ${nextOpening['day']} at ${nextOpening['time']} for ${nextOpening['meal']}',
+      };
     }
-    setState(() {
-      _currentUser = user;
+  }
+
+  Map<String, dynamic> _getNextOpening(DiningHall diningHall, DateTime now) {
+    String currentWeekday = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ][now.weekday - 1];
+
+    // Check remaining meals today
+    List<Map<String, dynamic>> todayMeals = _getMealsForDay(
+      diningHall,
+      currentWeekday,
+    );
+
+    for (var meal in todayMeals) {
+      TimePeriod period = meal['period'];
+      DateTime openTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        period.start.hour,
+        period.start.minute,
+      );
+
+      if (openTime.isAfter(now)) {
+        return {
+          'meal': meal['name'],
+          'time': _formatTime(period.start),
+          'day': 'Today',
+        };
+      }
+    }
+
+    // Check next days (up to 7 days ahead)
+    for (int i = 1; i <= 7; i++) {
+      DateTime nextDay = now.add(Duration(days: i));
+      String nextWeekday = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ][nextDay.weekday - 1];
+
+      List<Map<String, dynamic>> nextDayMeals = _getMealsForDay(
+        diningHall,
+        nextWeekday,
+      );
+
+      if (nextDayMeals.isNotEmpty) {
+        var firstMeal = nextDayMeals.first;
+        return {
+          'meal': firstMeal['name'],
+          'time': _formatTime(firstMeal['period'].start),
+          'day': i == 1 ? 'Tomorrow' : nextWeekday,
+        };
+      }
+    }
+
+    return {'meal': 'Unknown', 'time': 'Unknown', 'day': 'Unknown'};
+  }
+
+  List<Map<String, dynamic>> _getMealsForDay(
+    DiningHall diningHall,
+    String weekday,
+  ) {
+    List<Map<String, dynamic>> meals = [];
+
+    if (diningHall.schedule.breakfast?[weekday] != null) {
+      meals.add({
+        'name': 'Breakfast',
+        'period': diningHall.schedule.breakfast![weekday]!,
+      });
+    }
+    if (diningHall.schedule.brunch?[weekday] != null) {
+      meals.add({
+        'name': 'Brunch',
+        'period': diningHall.schedule.brunch![weekday]!,
+      });
+    }
+    if (diningHall.schedule.lunch?[weekday] != null) {
+      meals.add({
+        'name': 'Lunch',
+        'period': diningHall.schedule.lunch![weekday]!,
+      });
+    }
+    if (diningHall.schedule.lateLunch?[weekday] != null) {
+      meals.add({
+        'name': 'Late Lunch',
+        'period': diningHall.schedule.lateLunch![weekday]!,
+      });
+    }
+    if (diningHall.schedule.dinner?[weekday] != null) {
+      meals.add({
+        'name': 'Dinner',
+        'period': diningHall.schedule.dinner![weekday]!,
+      });
+    }
+
+    // Sort meals by start time
+    meals.sort((a, b) {
+      TimePeriod periodA = a['period'];
+      TimePeriod periodB = b['period'];
+      return (periodA.start.hour * 60 + periodA.start.minute).compareTo(
+        periodB.start.hour * 60 + periodB.start.minute,
+      );
     });
-    // Get user data and calculate macros
+
+    return meals;
+  }
+
+  String _formatTime(TimeOfDay time) {
+    int hour = time.hour;
+    String period = hour >= 12 ? 'PM' : 'AM';
+    if (hour > 12) hour -= 12;
+    if (hour == 0) hour = 12;
+
+    String minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute $period';
+  }
+
+  Future<void> _loadHomeData(User user) async {
     _userMacros = CalorieMacroCalculator.calculateMacros(
       age: user.age,
       weightLbs: user.weight.toDouble(),
@@ -126,7 +316,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // Use user's dining hall ranking from their profile
     _rankedDiningHalls = List.from(user.diningHallRank);
-
+    List<DiningHall> diningHalls = await Database().getDiningHalls();
+    //sort dining halls by user's ranking
+    diningHalls.sort((a, b) {
+      int indexA = _rankedDiningHalls.indexOf(a.name);
+      int indexB = _rankedDiningHalls.indexOf(b.name);
+      if (indexA == -1) indexA = _rankedDiningHalls.length;
+      if (indexB == -1) indexB = _rankedDiningHalls.length;
+      return indexA.compareTo(indexB);
+    });
+    setState(() {
+      _diningHalls = diningHalls;
+    });
     // Generate meal suggestions for all dining halls
     if (_diningHalls.isNotEmpty) {
       setState(() {
@@ -166,6 +367,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
+  //OLD BACKGROUND
+  //  Container(
+  //         decoration: BoxDecoration(
+  //           gradient: LinearGradient(
+  //             begin: Alignment.topLeft,
+  //             end: Alignment.bottomRight,
+  //             colors: [
+  //               Colors.black,
+  //               Color(0xFF0D1B2A),
+  //               Color(0xFF1B263B),
+  //               Color(0xFF415A77),
+  //               Color(0xFF778DA9),
+  //             ],
+  //             stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+  //           ),
+  //         ),
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,71 +392,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Colors.black,
               Color(0xFF0D1B2A),
               Color(0xFF1B263B),
               Color(0xFF415A77),
               Color(0xFF778DA9),
+              Color(0xFF415A77),
             ],
             stops: [0.0, 0.25, 0.5, 0.75, 1.0],
           ),
         ),
+
         child: Stack(
           children: [
             // Floating decorative elements
-            ...List.generate(
-              6,
-              (index) => Positioned(
-                left: (index * 80.0) % MediaQuery.of(context).size.width,
-                top: (index * 140.0) % MediaQuery.of(context).size.height,
-                child: AnimatedBuilder(
-                  animation: _floatingAnimation,
-                  builder: (context, child) => Transform.translate(
-                    offset: Offset(
-                      math.sin(_floatingAnimation.value / 18 + index) * 8,
-                      _floatingAnimation.value +
-                          math.cos(_floatingAnimation.value / 14 + index) * 6,
-                    ),
-                    child: AnimatedBuilder(
-                      animation: _pulseAnimation,
-                      builder: (context, child) => Transform.scale(
-                        scale: _pulseAnimation.value * (0.06 + index * 0.03),
-                        child: Container(
-                          width: 16 + (index * 5),
-                          height: 16 + (index * 5),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: [
-                              Colors.blue.withOpacity(0.08),
-                              Colors.green.withOpacity(0.06),
-                              Colors.orange.withOpacity(0.05),
-                              Colors.purple.withOpacity(0.04),
-                              Colors.cyan.withOpacity(0.03),
-                              Colors.pink.withOpacity(0.02),
-                            ][index],
-                            boxShadow: [
-                              BoxShadow(
-                                color: [
-                                  Colors.blue,
-                                  Colors.green,
-                                  Colors.orange,
-                                  Colors.purple,
-                                  Colors.cyan,
-                                  Colors.pink,
-                                ][index].withOpacity(0.1),
-                                blurRadius: 8,
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
             // Main content
             _currentUser == null
                 ? Center(
@@ -250,6 +415,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   )
                 : SafeArea(
+                    bottom: false,
                     child: FadeTransition(
                       opacity: _fadeAnimation,
                       child: SingleChildScrollView(
@@ -315,6 +481,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            Spacer(),
+            IconButton(
+              onPressed: () {
+                // Open settings screen
+                HapticFeedback.lightImpact();
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (context) => UserSettingsScreen(
+                      user: _currentUser!,
+                      onUserUpdated: (updatedUser) {
+                        setState(() {
+                          _currentUser = updatedUser;
+                        });
+                        _loadHomeData(updatedUser);
+                      },
+                    ),
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.settings,
+                color: Colors.white.withOpacity(0.8),
+                size: 28,
+              ),
+            ),
           ],
         ),
         SizedBox(height: 8),
@@ -374,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
           SizedBox(height: 16),
-          if (_rankedDiningHalls.isEmpty)
+          if (_diningHalls.isEmpty)
             Text(
               'No dining hall preferences set',
               style: TextStyle(
@@ -383,14 +574,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             )
           else
-            ...List.generate(_rankedDiningHalls.length, (index) {
+            ...List.generate(_diningHalls.length, (index) {
+              final diningHall = _diningHalls[index];
+              final status = _getDiningHallStatus(diningHall);
+
               return GestureDetector(
                 onTap: () {
                   HapticFeedback.lightImpact();
                   Navigator.of(context).push(
                     CupertinoPageRoute(
                       builder: (context) => DiningHallMenuScreen(
-                        diningHall: _rankedDiningHalls[index],
+                        diningHall: _diningHalls[index].name,
                         user: _currentUser!,
                       ),
                     ),
@@ -398,55 +592,110 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 12),
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: Colors.white.withOpacity(0.05),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.1),
+                      color: status['isOpen']
+                          ? Colors.green.withOpacity(0.3)
+                          : Colors.white.withOpacity(0.1),
                       width: 1,
                     ),
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Container(
-                      //   width: 24,
-                      //   height: 24,
-                      //   decoration: BoxDecoration(
-                      //     shape: BoxShape.circle,
-                      //     color: index == 0
-                      //         ? Colors.green.shade400
-                      //         : Colors.white.withOpacity(0.2),
-                      //   ),
-                      //   child: Center(
-                      //     child: Text(
-                      //       '${index + 1}',
-                      //       style: TextStyle(
-                      //         color: Colors.white,
-                      //         fontWeight: FontWeight.bold,
-                      //         fontSize: 12,
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      // SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _rankedDiningHalls[index],
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: index == 0
-                                ? FontWeight.w600
-                                : FontWeight.w400,
+                      Row(
+                        children: [
+                          // Status indicator dot
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: status['isOpen']
+                                  ? Colors.green.shade400
+                                  : Colors.red.shade400,
+                              boxShadow: status['isOpen']
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.green.shade400
+                                            .withOpacity(0.4),
+                                        blurRadius: 8,
+                                        spreadRadius: 2,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
                           ),
-                        ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              diningHall.name,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: index == 0
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.white.withOpacity(0.4),
+                            size: 16,
+                          ),
+                        ],
                       ),
-                      // if (index == 0)
-                      Icon(
-                        Icons.arrow_forward,
-                        color: Colors.amber.shade400,
-                        size: 20,
+                      SizedBox(height: 8),
+
+                      // Status row
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: status['isOpen']
+                                  ? Colors.green.withOpacity(0.25)
+                                  : Colors.red.withOpacity(0.25),
+                              border: Border.all(
+                                color: status['isOpen']
+                                    ? Colors.green.shade300
+                                    : Colors.red.shade300,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Text(
+                              status['status'],
+                              style: TextStyle(
+                                color: status['isOpen']
+                                    ? Colors.green.shade200
+                                    : Colors.red.shade200,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 6),
+
+                      // Additional info
+                      Text(
+                        status['subStatus'],
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.2,
+                        ),
                       ),
                     ],
                   ),
@@ -555,18 +804,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     });
                   }
                 },
-                items: MealTime.values.map<DropdownMenuItem<MealTime>>((
-                  MealTime value,
-                ) {
-                  return DropdownMenuItem<MealTime>(
-                    value: value,
-                    child: Text(
-                      value.toString().substring(0, 1).toUpperCase() +
-                          value.toString().substring(1),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                }).toList(),
+                items: MealTime.values
+                    .where((v) => v != MealTime.lateLunch)
+                    .map<DropdownMenuItem<MealTime>>((MealTime value) {
+                      return DropdownMenuItem<MealTime>(
+                        value: value,
+                        child: Text(
+                          value.toString().substring(0, 1).toUpperCase() +
+                              value.toString().substring(1),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    })
+                    .toList(),
               ),
             ),
 
