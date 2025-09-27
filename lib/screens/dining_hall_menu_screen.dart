@@ -1,12 +1,36 @@
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants.dart';
-import '../api/local_database.dart';
 import 'meal_details_screen.dart';
 import 'collection_screen.dart';
+
+// Data structure for isolate communication
+class _MenuProcessingData {
+  final Map<MealTime, List<Food>> mealTimeFood;
+  final DietaryRestrictions dietaryRestrictions;
+  final String diningHall;
+
+  _MenuProcessingData({
+    required this.mealTimeFood,
+    required this.dietaryRestrictions,
+    required this.diningHall,
+  });
+}
+
+// Result structure from isolate
+class _MenuProcessingResult {
+  final Map<MealTime, Map<String, List<FoodItem>>> mealTimeData;
+  final List<MealTime> availableTimes;
+
+  _MenuProcessingResult({
+    required this.mealTimeData,
+    required this.availableTimes,
+  });
+}
 
 // Wrapper class to handle both individual foods and collections
 class FoodItem {
@@ -91,136 +115,108 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     super.dispose();
   }
 
+  int menuCallCount = 0;
+
   Future<void> _loadDiningHallMenu() async {
     try {
-      // Get all meals from the database
-      Map<MealTime, Map<String, Meal>>? allMeals = await LocalDatabase()
-          .getDayMeals();
+      setState(() {
+        _isLoading = true;
+      });
 
-      if (allMeals != null) {
-        Map<MealTime, Map<String, List<FoodItem>>> mealTimeData = {};
-        List<MealTime> availableTimes = [];
+      // Get list of meal times to process
+      List<MealTime> mealTimesToProcess = MealTime.values
+          .where(
+            (mealTime) =>
+                mealTime != MealTime.lateLunch &&
+                !(mealTime == MealTime.brunch &&
+                    widget.diningHall != "Hillenbrand"),
+          )
+          .toList();
 
-        // Process each meal time
-        for (MealTime mealTime in MealTime.values) {
-          if (mealTime == MealTime.lateLunch) {
-            continue; // Skip brunch if not supported
-          }
-          List<Food> diningHallFoods =
-              (await Database().getDiningCourtMeal(
-                widget.diningHall,
-                new DateTime.now(),
-                mealTime,
-              )) ??
-              [];
+      // Fetch data from database (must be done on main thread)
+      Map<MealTime, List<Food>> mealTimeFood = {};
 
-          diningHallFoods = widget.user.dietaryRestrictions.filterFoodList(
-            diningHallFoods,
-          )[0];
+      for (MealTime mealTime in mealTimesToProcess) {
+        menuCallCount++;
+        print("calling Database().getDiningCourtMeal; call #$menuCallCount");
 
-          if (diningHallFoods.isNotEmpty) {
-            // Group foods by station for this meal time
-            Map<String, List<FoodItem>> stationGroups = {};
+        List<Food>? diningHallFoods = await Database().getDiningCourtMeal(
+          widget.diningHall,
+          DateTime.now(),
+          mealTime,
+        );
 
-            // First, group by station
-            Map<String, List<Food>> stationRawFoods = {};
-            for (Food food in diningHallFoods) {
-              String station = food.station.isNotEmpty ? food.station : 'Other';
-              print(
-                'Food: ${food.name}, Station: $station, Collection: ${food.collection}',
-              );
-              if (!stationRawFoods.containsKey(station)) {
-                stationRawFoods[station] = [];
-              }
-              stationRawFoods[station]!.add(food);
-            }
-
-            // For each station, group by collection or create individual items
-            stationRawFoods.forEach((station, foods) {
-              List<FoodItem> foodItems = [];
-
-              // Group foods by collection
-              Map<String?, List<Food>> collectionGroups = {};
-              for (Food food in foods) {
-                if (!collectionGroups.containsKey(food.collection)) {
-                  collectionGroups[food.collection] = [];
-                }
-                collectionGroups[food.collection]!.add(food);
-              }
-
-              // Create FoodItem objects
-              collectionGroups.forEach((collection, collectionFoods) {
-                if (collection != null && collectionFoods.length > 1) {
-                  // Create a collection item
-                  collectionFoods.sort((a, b) => a.name.compareTo(b.name));
-                  foodItems.add(
-                    FoodItem(
-                      name: collection,
-                      isCollection: true,
-                      foods: collectionFoods,
-                      station: station,
-                      collection: collection,
-                    ),
-                  );
-                } else {
-                  // Create individual food items
-                  for (Food food in collectionFoods) {
-                    foodItems.add(
-                      FoodItem(
-                        name: food.name,
-                        isCollection: false,
-                        foods: [food],
-                        station: station,
-                        collection: food.collection,
-                      ),
-                    );
-                  }
-                }
-              });
-
-              // Sort food items alphabetically
-              foodItems.sort((a, b) => a.name.compareTo(b.name));
-              stationGroups[station] = foodItems;
-            });
-
-            // Only add meal times that have food
-            if (stationGroups.isNotEmpty) {
-              mealTimeData[mealTime] = stationGroups;
-              availableTimes.add(mealTime);
-            }
-          }
+        if (diningHallFoods != null && diningHallFoods.isNotEmpty) {
+          mealTimeFood[mealTime] = diningHallFoods;
         }
+
+        print(
+          "Fetched ${diningHallFoods?.length ?? 0} foods for #$menuCallCount",
+        );
+      }
+
+      if (mealTimeFood.isNotEmpty) {
+        // Move heavy processing to isolate
+        _MenuProcessingData processingData = _MenuProcessingData(
+          mealTimeFood: mealTimeFood,
+          dietaryRestrictions: widget.user.dietaryRestrictions,
+          diningHall: widget.diningHall,
+        );
+
+        // Process data in isolate to prevent UI freezing
+        _MenuProcessingResult result = await compute(
+          _processMenuData,
+          processingData,
+        );
+
+        if (!mounted) return;
+
+        // Handle initial meal time selection
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (widget.initialMealTime != null) {
-            int initialIndex = availableTimes.indexOf(widget.initialMealTime!);
-            if (initialIndex >= 0 && initialIndex < availableTimes.length) {
-              setState(() {
-                _selectedMealTime = widget.initialMealTime;
-                _updateStationFoods();
+            int initialIndex = result.availableTimes.indexOf(
+              widget.initialMealTime!,
+            );
+            if (initialIndex >= 0 &&
+                initialIndex < result.availableTimes.length) {
+              _selectedMealTime = widget.initialMealTime;
+              _updateStationFoods();
+              if (_stationPageController.hasClients) {
                 _stationPageController.jumpToPage(initialIndex);
-              });
+              }
             }
           }
         });
 
+        // Update state with processed data
         setState(() {
-          _allMealData = mealTimeData;
-          _availableMealTimes = availableTimes;
+          _allMealData = result.mealTimeData;
+          _availableMealTimes = result.availableTimes;
           _isLoading = false;
 
           // Set default selections
-          if (_availableMealTimes.isNotEmpty) {
+          if (_availableMealTimes.isNotEmpty && _selectedMealTime == null) {
             _selectedMealTime = _availableMealTimes.first;
-            _updateStationFoods();
           }
         });
+
+        // Update station foods after setState
+        if (_availableMealTimes.isNotEmpty) {
+          _updateStationFoods();
+        }
+
+        print(
+          "Menu loading completed with ${_availableMealTimes.length} meal times",
+        );
       } else {
+        if (!mounted) return;
         setState(() {
           _isLoading = false;
         });
       }
     } catch (e) {
       print('Error loading dining hall menu: $e');
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -454,6 +450,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           return GestureDetector(
             onTap: () {
               HapticFeedback.selectionClick();
+              print("calling setState");
               setState(() {
                 _selectedMealTime = mealTime;
                 _updateStationFoods();
@@ -516,6 +513,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           return GestureDetector(
             onTap: () {
               HapticFeedback.selectionClick();
+              print("calling setState");
               setState(() {
                 _currentStationIndex = index;
                 _stationPageController.animateToPage(
@@ -572,6 +570,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     return PageView.builder(
       controller: _stationPageController,
       onPageChanged: (index) {
+        print("calling setState");
         setState(() {
           if (!tappedSection) _currentStationIndex = index;
           if (index == _currentStationIndex && tappedSection)
@@ -900,4 +899,89 @@ String _getMealTimeDisplayName(MealTime mealTime) {
     default:
       return 'Menu';
   }
+}
+
+// Static function to process menu data in isolate
+_MenuProcessingResult _processMenuData(_MenuProcessingData data) {
+  Map<MealTime, Map<String, List<FoodItem>>> mealTimeData = {};
+  List<MealTime> availableTimes = [];
+
+  for (var entry in data.mealTimeFood.entries) {
+    MealTime mealTime = entry.key;
+    List<Food> diningHallFoods = entry.value;
+
+    List<Food> filteredFoods = data.dietaryRestrictions.filterFoodList(
+      diningHallFoods,
+    )[0];
+
+    if (filteredFoods.isNotEmpty) {
+      Map<String, List<FoodItem>> stationGroups = {};
+
+      Map<String, List<Food>> stationRawFoods = {};
+      for (Food food in filteredFoods) {
+        String station = food.station.isNotEmpty ? food.station : 'Other';
+        if (!stationRawFoods.containsKey(station)) {
+          stationRawFoods[station] = [];
+        }
+        stationRawFoods[station]!.add(food);
+      }
+
+      for (var stationEntry in stationRawFoods.entries) {
+        String station = stationEntry.key;
+        List<Food> foods = stationEntry.value;
+        List<FoodItem> foodItems = [];
+
+        Map<String?, List<Food>> collectionGroups = {};
+        for (Food food in foods) {
+          if (!collectionGroups.containsKey(food.collection)) {
+            collectionGroups[food.collection] = [];
+          }
+          collectionGroups[food.collection]!.add(food);
+        }
+
+        for (var collectionEntry in collectionGroups.entries) {
+          String? collection = collectionEntry.key;
+          List<Food> collectionFoods = collectionEntry.value;
+
+          if (collection != null && collectionFoods.length > 1) {
+            collectionFoods.sort((a, b) => a.name.compareTo(b.name));
+            foodItems.add(
+              FoodItem(
+                name: collection,
+                isCollection: true,
+                foods: collectionFoods,
+                station: station,
+                collection: collection,
+              ),
+            );
+          } else {
+            for (Food food in collectionFoods) {
+              foodItems.add(
+                FoodItem(
+                  name: food.name,
+                  isCollection: false,
+                  foods: [food],
+                  station: station,
+                  collection: food.collection,
+                ),
+              );
+            }
+          }
+        }
+
+        foodItems.sort((a, b) => a.name.compareTo(b.name));
+        stationGroups[station] = foodItems;
+      }
+
+      if (stationGroups.isNotEmpty) {
+        mealTimeData[mealTime] = stationGroups;
+        availableTimes.add(mealTime);
+      }
+    }
+  }
+
+  return _MenuProcessingResult(
+    mealTimeData: mealTimeData,
+    availableTimes: availableTimes,
+  );
 }
