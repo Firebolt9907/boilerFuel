@@ -65,14 +65,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             (await LocalDatabase().getLastMeal()) ??
             DateTime.now().subtract(Duration(days: 1));
         //check if latestMealPlanDate is past 3 days in future
-        if (latestMealPlanDate.isAfter(DateTime.now().add(Duration(days: 2)))) {
+        DateTime now = DateTime.now();
+        now = DateTime(now.year, now.month, now.day);
+        latestMealPlanDate = DateTime(
+          latestMealPlanDate.year,
+          latestMealPlanDate.month,
+          latestMealPlanDate.day,
+        );
+        if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
           print("Meal plan is up to date");
           return;
         }
         print(
           "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
         );
-
+        // await Future.delayed(Duration(seconds: 60));
         MealPlanner.generateDayMealPlan(
           user: user!,
           date: latestMealPlanDate.add(Duration(days: 1)),
@@ -97,16 +104,21 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 (await LocalDatabase().getLastMeal()) ??
                 DateTime.now().subtract(Duration(days: 1));
             //check if latestMealPlanDate is past 3 days in future
-            if (latestMealPlanDate.isAfter(
-              DateTime.now().add(Duration(days: 2)),
-            )) {
+            DateTime now = DateTime.now();
+            now = DateTime(now.year, now.month, now.day);
+            latestMealPlanDate = DateTime(
+              latestMealPlanDate.year,
+              latestMealPlanDate.month,
+              latestMealPlanDate.day,
+            );
+            if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
               print("Meal plan is up to date");
               return;
             }
             print(
               "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
             );
-
+            // await Future.delayed(Duration(seconds: 60));
             MealPlanner.generateDayMealPlan(
               user: user!,
               date: latestMealPlanDate.add(Duration(days: 1)),

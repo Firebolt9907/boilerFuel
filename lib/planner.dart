@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:boiler_fuel/algo_planner.dart';
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/api/local_database.dart';
+import 'package:boiler_fuel/api/web_api.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/api/firebase_database.dart';
 import 'package:boiler_fuel/api/shared_preferences.dart';
@@ -289,23 +291,15 @@ DO NOT include any other text outside of the JSON block.
         print("$line");
       }
       // print("With prompt: $geminiPrompt");
-      return Meal(
-        name: "Error Meal",
-        calories: 0,
-        protein: 0,
-        fat: 0,
-        carbs: 0,
-        diningHall: "",
-        foods: [],
+      await Future.delayed(Duration(minutes: 1));
+      return generateMeal(
+        targetCalories: targetCalories,
+        targetProtein: targetProtein,
+        targetCarbs: targetCarbs,
+        targetFat: targetFat,
+        availableFoods: availableFoods,
+        diningHall: diningHall,
       );
-      // return generateMeal(
-      //   targetCalories: targetCalories,
-      //   targetProtein: targetProtein,
-      //   targetCarbs: targetCarbs,
-      //   targetFat: targetFat,
-      //   availableFoods: availableFoods,
-      //   diningHall: diningHall,
-      // );
     }
   }
 
@@ -324,31 +318,28 @@ DO NOT include any other text outside of the JSON block.
     String mealTimeIngredients = "";
     for (MealTime mealTime in availableFoods.keys) {
       mealTimeIngredients = availableFoods[mealTime]!
-          .map((f) => f.toString())
+          .map((f) => f.toMiniString())
           .join(", ");
       mealTimeIngredients +=
-          """Given this information for the food available for $mealTime, ignore the dips and sauces also if value is -1, the nutrition information isn't available just treat it as 0:
+          """Given this information for the food available for $mealTime, ignore the dips and sauces, treat -1 as 0:
    $mealTimeIngredients
 \n
   """;
     }
 
+    if (availableFoods.keys.length == 0) {
+      return {};
+    }
+
     String geminiPrompt =
-        """
-Given this information for the food available for $availableMealTimes:
+        """Given this information for the food available for $availableMealTimes:
   $mealTimeIngredients
-
-
-
-
 Create ${availableFoods.keys.length} meal with the nutrition goals for the day as follows :
 Calories: ${targetCalories}kcal
 Protein: ${targetProtein}g
 Carbs: ${targetCarbs}g
 Fat: ${targetFat}g
-
 The NAME of each meal should be related to the ingredients used in the meal!
-
 Return as a JSON as formatted as 
 {
   "breakfast" |"lunch" | "brunch" | "dinner": {
@@ -361,24 +352,28 @@ Return as a JSON as formatted as
  }
  ...
 }
-
 DO NOT include any other text outside of the JSON block.
 """;
-    final gemini = Gemini.instance;
 
-    gemini
-        .listModels()
-        .then((models) => print(models))
-        /// list
-        .catchError((e) => print('listModels' + e.toString()));
     // Call Gemini API with the prompt and parse response
     try {
-      String response =
-          (await Gemini.instance.prompt(
-            parts: [Part.text(geminiPrompt)],
-          ))!.output ??
-          "{}";
+      // String response =
+      //     (await Gemini.instance.prompt(
+      //       parts: [Part.text(geminiPrompt)],
+      //       model: "gemini-2.0-flash-lite",
+      //     ))!.output ??
+      //     "{}";
+      String response = await WebAPI().getGeminiResponse(
+        "gemini-2.0-flash-lite",
+        geminiPrompt,
+      );
       print("Gemini response: $response");
+      print("Gemini Prompt Tokens: ${geminiPrompt.length / 4}");
+      print("Response Tokens: ${response.length / 4}");
+      await SharedPrefs.updateTokenStats(
+        (geminiPrompt.length / 4).round(),
+        (response.length / 4).round(),
+      );
       // Parse response and create Meal object
       response = response
           .replaceAll('\n', '')
@@ -427,12 +422,67 @@ DO NOT include any other text outside of the JSON block.
       }
     } catch (e) {
       print("Error initializing Gemini: $e");
+      //get retry again header
+
       List<String> geminiPromptLines = geminiPrompt.split("\n");
       for (String line in geminiPromptLines) {
         print("$line");
       }
+      Map<MealTime, Meal> meals = {};
+      for (MealTime mt in availableFoods.keys) {
+        final optimizer = MealOptimizerGA(
+          oneServingOnly: true,
+          availableFoods: availableFoods[mt]!.map((e) {
+            e.calories = e.calories < 0 ? 0 : e.calories;
+            e.protein = e.protein < 0 ? 0 : e.protein;
+            e.carbs = e.carbs < 0 ? 0 : e.carbs;
+            e.fat = e.fat < 0 ? 0 : e.fat;
+            e.sugar = e.sugar < 0 ? 0 : e.sugar;
+            return e;
+          }).toList(),
+          targets: MacroTargets(
+            calories: targetCalories / 2,
+            protein: targetProtein / 2,
+            carbs: targetCarbs / 2,
+            fat: targetFat / 2,
+          ),
+          diningHall: diningHall,
+          mealTime: mt,
+        );
+        final optimizedMeal = optimizer.optimize(
+          mealName: 'Optimized' + mt.toString() + ' Meal',
+          generations: 50,
+          onProgress: (generation, fitness) {
+            print(
+              'Generation $generation: Best fitness = ${fitness.toStringAsFixed(3)}',
+            );
+          },
+        );
+        //Change the meal name to be just the top 3 ingredients based on calories
+        if (optimizedMeal.foods.isNotEmpty) {
+          List<Food> sortedFoods = List<Food>.from(optimizedMeal.foods);
+          sortedFoods.sort((a, b) => b.calories.compareTo(a.calories));
+          optimizedMeal.name = sortedFoods
+              .sublist(0, min(2, sortedFoods.length))
+              .map((f) => f.name)
+              .join(" and ");
+        }
+        optimizedMeal.mealTime = mt;
+        meals[mt] = optimizedMeal;
+      }
+      return meals;
+
       // print("With prompt: $geminiPrompt");
-      return {};
+      // await Future.delayed(Duration(minutes: 1));
+      // return generateDayMeal(
+      //   targetCalories: targetCalories,
+      //   targetProtein: targetProtein,
+      //   targetCarbs: targetCarbs,
+      //   targetFat: targetFat,
+      //   availableFoods: availableFoods,
+      //   diningHall: diningHall,
+      // );
+
       // return generateMeal(
       //   targetCalories: targetCalories,
       //   targetProtein: targetProtein,
@@ -454,8 +504,27 @@ DO NOT include any other text outside of the JSON block.
     required User user,
     required DateTime date,
   }) async {
+    // Map<MealTime, List<Food>> availableFoods = {};
+    // for (MealTime mt in MealTime.values) {
+    //   if (mt == MealTime.lateLunch) continue;
+    //   List<Food> food =
+    //       await Database().getDiningCourtMeal(diningHall, date, mt) ?? [];
+    //   print("Fetched ${food.length} food items for $diningHall at $mt");
+    //   print("User dietary restrictions: ${user.dietaryRestrictions.toMap()}");
+    //   List<List<Food>> filteredFoods = user.dietaryRestrictions.filterFoodList(
+    //     food,
+    //   );
+    //   List<Food> filteredFood = filteredFoods.isNotEmpty
+    //       ? filteredFoods[0]
+    //       : [];
+    //   print("Filtered to ${filteredFood.length} available food items");
+    //   if (filteredFood.isNotEmpty) {
+    //     availableFoods[mt] = filteredFood;
+    //   }
+    // }
     Map<MealTime, List<Food>> availableFoods = {};
     for (MealTime mt in MealTime.values) {
+      if (mt == MealTime.lateLunch) continue;
       List<Food> food =
           await Database().getDiningCourtMeal(diningHall, date, mt) ?? [];
       print("Fetched ${food.length} food items for $diningHall at $mt");
@@ -471,6 +540,51 @@ DO NOT include any other text outside of the JSON block.
         availableFoods[mt] = filteredFood;
       }
     }
+    // Map<MealTime, Meal> meals = {};
+
+    // for (MealTime mt in availableFoods.keys) {
+    //   final optimizer = MealOptimizerGA(
+    //     oneServingOnly: true,
+    //     availableFoods: availableFoods[mt]!.map((e) {
+    //       e.calories = e.calories < 0 ? 0 : e.calories;
+    //       e.protein = e.protein < 0 ? 0 : e.protein;
+    //       e.carbs = e.carbs < 0 ? 0 : e.carbs;
+    //       e.fat = e.fat < 0 ? 0 : e.fat;
+    //       e.sugar = e.sugar < 0 ? 0 : e.sugar;
+    //       return e;
+    //     }).toList(),
+    //     targets: MacroTargets(
+    //       calories: targetCalories / 2,
+    //       protein: targetProtein / 2,
+    //       carbs: targetCarbs / 2,
+    //       fat: targetFat / 2,
+    //     ),
+    //     diningHall: diningHall,
+    //     mealTime: mt,
+    //   );
+    //   final optimizedMeal = optimizer.optimize(
+    //     mealName: 'Optimized ' + mt.toString() + ' Meal',
+    //     generations: 50,
+    //     onProgress: (generation, fitness) {
+    //       print(
+    //         'Generation $generation: Best fitness = ${fitness.toStringAsFixed(3)}',
+    //       );
+    //     },
+    //   );
+    //   //Change the meal name to be just the top 3 ingredients based on calories
+    //   if (optimizedMeal.foods.isNotEmpty) {
+    //     List<Food> sortedFoods = List<Food>.from(optimizedMeal.foods);
+    //     sortedFoods.sort((a, b) => b.calories.compareTo(a.calories));
+    //     optimizedMeal.name = sortedFoods
+    //         .sublist(0, min(2, sortedFoods.length))
+    //         .map((f) => f.name)
+    //         .join(" and ");
+    //   }
+    //   optimizedMeal.mealTime = mt;
+
+    //   meals[mt] = optimizedMeal;
+    // }
+    // return meals;
 
     // Meal meal = await generateMeal(
     //   targetCalories: targetCalories,
@@ -548,10 +662,17 @@ DO NOT include any other text outside of the JSON block.
     print(
       "Generated ${generatedMeals.where((meal) => meal != null).length} meals successfully for ${date ?? DateTime.now()}",
     );
+    double averagePromptTokens = await SharedPrefs.getAveragePromptTokens();
+    double averageResponseTokens = await SharedPrefs.getAverageResponseTokens();
+    int totalPrompts = await SharedPrefs.getTotalPrompts();
+    int totalResponses = await SharedPrefs.getTotalResponses();
+    print(
+      "Average Prompt Tokens: $averagePromptTokens, Average Response Tokens: $averageResponseTokens, Total Prompts: $totalPrompts, Total Responses: $totalResponses",
+    );
     //check if date is 3 days after now, if so stop
     if (date == null || date.isBefore(DateTime.now().add(Duration(days: 2)))) {
       //Wait 60 seconds between calls to avoid rate limiting
-      await Future.delayed(Duration(seconds: 60));
+      // await Future.delayed(Duration(seconds: 60));
       await generateDayMealPlan(
         user: user,
         date: (date ?? DateTime.now()).add(Duration(days: 1)),

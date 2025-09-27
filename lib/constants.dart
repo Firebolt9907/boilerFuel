@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 class Food {
   final String name;
   final String id;
-  final double calories;
-  final double protein;
-  final double carbs;
-  final double fat;
-  final double sugar;
+  double calories;
+  double protein;
+  double carbs;
+  double fat;
+  double sugar;
   final String ingredients;
   String station;
   final List<String> labels;
   String rejectedReason;
+  String? collection;
 
   Food({
     required this.name,
@@ -25,6 +26,7 @@ class Food {
     required this.labels,
     this.rejectedReason = "",
     this.station = "",
+    this.collection,
   });
 
   Map<String, dynamic> toMap() {
@@ -40,12 +42,17 @@ class Food {
       'labels': labels,
       'rejectedReason': rejectedReason,
       'station': station,
+      'collection': collection,
     };
   }
 
   @override
   String toString() {
     return toMap().toString();
+  }
+
+  String toMiniString() {
+    return '{name:$name,id:$id,calories:$calories,protein:$protein,carbs:$carbs,fat:$fat,sugar:$sugar}';
   }
 
   factory Food.fromMap(Map<String, dynamic> map) {
@@ -61,6 +68,7 @@ class Food {
       labels: List<String>.from(map['labels'] ?? []),
       station: map['station'] ?? "",
       rejectedReason: map['rejectedReason'] ?? "",
+      collection: map['collection'],
     );
   }
 
@@ -404,11 +412,12 @@ enum MealTime {
 class MiniFood {
   final String id;
   final String station;
+  final String? collection;
 
-  MiniFood({required this.id, required this.station});
+  MiniFood({required this.id, required this.station, this.collection});
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'station': station};
+    return {'id': id, 'station': station, 'collection': collection};
   }
 
   @override
@@ -417,7 +426,11 @@ class MiniFood {
   }
 
   factory MiniFood.fromMap(Map<String, dynamic> map) {
-    return MiniFood(id: map['id'], station: map['station'] ?? "");
+    return MiniFood(
+      id: map['id'],
+      station: map['station'] ?? "",
+      collection: map['collection'],
+    );
   }
 }
 
@@ -874,7 +887,7 @@ var ingredientAliasFalsePositives = {
 };
 
 class Meal {
-  final String name;
+  String name;
   final double calories;
   final double protein;
   final double carbs;

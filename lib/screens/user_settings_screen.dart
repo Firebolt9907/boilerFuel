@@ -124,26 +124,26 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                             }
                           },
                         ),
-                        TitaniumButton(
-                          title: "Deitary Restrictions",
-                          subtitle:
-                              "Change your deitary Restrictions, like allergies and food preferences.",
-                          icon: Icons.no_food,
-                          onTap: () async {
-                            User? user = await Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                builder: (context) => DietaryRestrictionsScreen(
-                                  user: currentUser!,
-                                  isEditing: true,
-                                ),
-                              ),
-                            );
-                            if (user != null) {
-                              widget.onUserUpdated(user);
-                            }
-                          },
-                        ),
+                        // TitaniumButton(
+                        //   title: "Deitary Restrictions",
+                        //   subtitle:
+                        //       "Change your deitary Restrictions, like allergies and food preferences.",
+                        //   icon: Icons.no_food,
+                        //   onTap: () async {
+                        //     User? user = await Navigator.push(
+                        //       context,
+                        //       CupertinoPageRoute(
+                        //         builder: (context) => DietaryRestrictionsScreen(
+                        //           user: currentUser!,
+                        //           isEditing: true,
+                        //         ),
+                        //       ),
+                        //     );
+                        //     if (user != null) {
+                        //       widget.onUserUpdated(user);
+                        //     }
+                        //   },
+                        // ),
                         TitaniumButton(
                           title: "Dining Hall Rankings",
                           subtitle:

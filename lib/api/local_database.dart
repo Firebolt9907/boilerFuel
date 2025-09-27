@@ -57,6 +57,7 @@ class FoodsTable extends Table {
   TextColumn get labels => text()();
   TextColumn get ingredients => text()();
   TextColumn get station => text()();
+  TextColumn get collection => text().nullable()();
   IntColumn get lastUpdated => integer()();
 }
 
@@ -100,10 +101,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 18) {
+      if (resetLocalDB <= 22) {
         print("Deleting old database");
         await file.delete();
-        await SharedPrefs.setResetLocalData(19);
+        await SharedPrefs.setResetLocalData(23);
         // print("Deleted old database");
         // await LocalDatabase().deleteOldResponse();
         // print("Deleted old responses");
@@ -402,6 +403,7 @@ class LocalDatabase {
           labels: Value(jsonEncode(food.labels)),
           ingredients: Value(food.ingredients),
           station: Value(food.station ?? ""),
+          collection: Value(food.collection),
           lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
         ),
       );
@@ -422,6 +424,7 @@ class LocalDatabase {
               labels: Value(jsonEncode(food.labels)),
               ingredients: Value(food.ingredients),
               station: Value(food.station ?? ""),
+              collection: Value(food.collection),
               lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
             ),
           );
@@ -445,6 +448,7 @@ class LocalDatabase {
         carbs: row.carbs,
         sugar: row.sugar,
         ingredients: row.ingredients,
+        collection: row.collection,
         labels: (jsonDecode(row.labels) as List<dynamic>).cast<String>(),
         station: row.station.isNotEmpty ? row.station : "",
       );

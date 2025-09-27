@@ -306,6 +306,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _loadHomeData(User user) async {
+    //Scroll to beginning
+    if (_scrollController.hasClients) {
+      _scrollController.jumpToPage(0);
+    }
     _userMacros = CalorieMacroCalculator.calculateMacros(
       age: user.age,
       weightLbs: user.weight.toDouble(),
@@ -416,6 +420,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   )
                 : SafeArea(
                     bottom: false,
+
                     child: FadeTransition(
                       opacity: _fadeAnimation,
                       child: SingleChildScrollView(
@@ -586,6 +591,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       builder: (context) => DiningHallMenuScreen(
                         diningHall: _diningHalls[index].name,
                         user: _currentUser!,
+                        initialMealTime: _diningHalls[index].schedule
+                            .getCurrentMealTime(),
                       ),
                     ),
                   );

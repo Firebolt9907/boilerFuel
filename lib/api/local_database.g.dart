@@ -1432,6 +1432,17 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _collectionMeta = const VerificationMeta(
+    'collection',
+  );
+  @override
+  late final GeneratedColumn<String> collection = GeneratedColumn<String>(
+    'collection',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
     'lastUpdated',
   );
@@ -1456,6 +1467,7 @@ class $FoodsTableTable extends FoodsTable
     labels,
     ingredients,
     station,
+    collection,
     lastUpdated,
   ];
   @override
@@ -1556,6 +1568,12 @@ class $FoodsTableTable extends FoodsTable
     } else if (isInserting) {
       context.missing(_stationMeta);
     }
+    if (data.containsKey('collection')) {
+      context.handle(
+        _collectionMeta,
+        collection.isAcceptableOrUnknown(data['collection']!, _collectionMeta),
+      );
+    }
     if (data.containsKey('last_updated')) {
       context.handle(
         _lastUpdatedMeta,
@@ -1620,6 +1638,10 @@ class $FoodsTableTable extends FoodsTable
         DriftSqlType.string,
         data['${effectivePrefix}station'],
       )!,
+      collection: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}collection'],
+      ),
       lastUpdated: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}last_updated'],
@@ -1645,6 +1667,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
   final String labels;
   final String ingredients;
   final String station;
+  final String? collection;
   final int lastUpdated;
   const FoodsTableData({
     required this.id,
@@ -1658,6 +1681,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     required this.labels,
     required this.ingredients,
     required this.station,
+    this.collection,
     required this.lastUpdated,
   });
   @override
@@ -1674,6 +1698,9 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     map['labels'] = Variable<String>(labels);
     map['ingredients'] = Variable<String>(ingredients);
     map['station'] = Variable<String>(station);
+    if (!nullToAbsent || collection != null) {
+      map['collection'] = Variable<String>(collection);
+    }
     map['last_updated'] = Variable<int>(lastUpdated);
     return map;
   }
@@ -1691,6 +1718,9 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
       labels: Value(labels),
       ingredients: Value(ingredients),
       station: Value(station),
+      collection: collection == null && nullToAbsent
+          ? const Value.absent()
+          : Value(collection),
       lastUpdated: Value(lastUpdated),
     );
   }
@@ -1712,6 +1742,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
       labels: serializer.fromJson<String>(json['labels']),
       ingredients: serializer.fromJson<String>(json['ingredients']),
       station: serializer.fromJson<String>(json['station']),
+      collection: serializer.fromJson<String?>(json['collection']),
       lastUpdated: serializer.fromJson<int>(json['lastUpdated']),
     );
   }
@@ -1730,6 +1761,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
       'labels': serializer.toJson<String>(labels),
       'ingredients': serializer.toJson<String>(ingredients),
       'station': serializer.toJson<String>(station),
+      'collection': serializer.toJson<String?>(collection),
       'lastUpdated': serializer.toJson<int>(lastUpdated),
     };
   }
@@ -1746,6 +1778,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     String? labels,
     String? ingredients,
     String? station,
+    Value<String?> collection = const Value.absent(),
     int? lastUpdated,
   }) => FoodsTableData(
     id: id ?? this.id,
@@ -1759,6 +1792,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     labels: labels ?? this.labels,
     ingredients: ingredients ?? this.ingredients,
     station: station ?? this.station,
+    collection: collection.present ? collection.value : this.collection,
     lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   FoodsTableData copyWithCompanion(FoodsTableCompanion data) {
@@ -1776,6 +1810,9 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
           ? data.ingredients.value
           : this.ingredients,
       station: data.station.present ? data.station.value : this.station,
+      collection: data.collection.present
+          ? data.collection.value
+          : this.collection,
       lastUpdated: data.lastUpdated.present
           ? data.lastUpdated.value
           : this.lastUpdated,
@@ -1796,6 +1833,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
           ..write('labels: $labels, ')
           ..write('ingredients: $ingredients, ')
           ..write('station: $station, ')
+          ..write('collection: $collection, ')
           ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
@@ -1814,6 +1852,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     labels,
     ingredients,
     station,
+    collection,
     lastUpdated,
   );
   @override
@@ -1831,6 +1870,7 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
           other.labels == this.labels &&
           other.ingredients == this.ingredients &&
           other.station == this.station &&
+          other.collection == this.collection &&
           other.lastUpdated == this.lastUpdated);
 }
 
@@ -1846,6 +1886,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
   final Value<String> labels;
   final Value<String> ingredients;
   final Value<String> station;
+  final Value<String?> collection;
   final Value<int> lastUpdated;
   const FoodsTableCompanion({
     this.id = const Value.absent(),
@@ -1859,6 +1900,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     this.labels = const Value.absent(),
     this.ingredients = const Value.absent(),
     this.station = const Value.absent(),
+    this.collection = const Value.absent(),
     this.lastUpdated = const Value.absent(),
   });
   FoodsTableCompanion.insert({
@@ -1873,6 +1915,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     required String labels,
     required String ingredients,
     required String station,
+    this.collection = const Value.absent(),
     required int lastUpdated,
   }) : foodId = Value(foodId),
        name = Value(name),
@@ -1897,6 +1940,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     Expression<String>? labels,
     Expression<String>? ingredients,
     Expression<String>? station,
+    Expression<String>? collection,
     Expression<int>? lastUpdated,
   }) {
     return RawValuesInsertable({
@@ -1911,6 +1955,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
       if (labels != null) 'labels': labels,
       if (ingredients != null) 'ingredients': ingredients,
       if (station != null) 'station': station,
+      if (collection != null) 'collection': collection,
       if (lastUpdated != null) 'last_updated': lastUpdated,
     });
   }
@@ -1927,6 +1972,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     Value<String>? labels,
     Value<String>? ingredients,
     Value<String>? station,
+    Value<String?>? collection,
     Value<int>? lastUpdated,
   }) {
     return FoodsTableCompanion(
@@ -1941,6 +1987,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
       labels: labels ?? this.labels,
       ingredients: ingredients ?? this.ingredients,
       station: station ?? this.station,
+      collection: collection ?? this.collection,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
@@ -1981,6 +2028,9 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     if (station.present) {
       map['station'] = Variable<String>(station.value);
     }
+    if (collection.present) {
+      map['collection'] = Variable<String>(collection.value);
+    }
     if (lastUpdated.present) {
       map['last_updated'] = Variable<int>(lastUpdated.value);
     }
@@ -2001,6 +2051,7 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
           ..write('labels: $labels, ')
           ..write('ingredients: $ingredients, ')
           ..write('station: $station, ')
+          ..write('collection: $collection, ')
           ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
@@ -3390,6 +3441,7 @@ typedef $$FoodsTableTableCreateCompanionBuilder =
       required String labels,
       required String ingredients,
       required String station,
+      Value<String?> collection,
       required int lastUpdated,
     });
 typedef $$FoodsTableTableUpdateCompanionBuilder =
@@ -3405,6 +3457,7 @@ typedef $$FoodsTableTableUpdateCompanionBuilder =
       Value<String> labels,
       Value<String> ingredients,
       Value<String> station,
+      Value<String?> collection,
       Value<int> lastUpdated,
     });
 
@@ -3469,6 +3522,11 @@ class $$FoodsTableTableFilterComposer
 
   ColumnFilters<String> get station => $composableBuilder(
     column: $table.station,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get collection => $composableBuilder(
+    column: $table.collection,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3542,6 +3600,11 @@ class $$FoodsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get collection => $composableBuilder(
+    column: $table.collection,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get lastUpdated => $composableBuilder(
     column: $table.lastUpdated,
     builder: (column) => ColumnOrderings(column),
@@ -3592,6 +3655,11 @@ class $$FoodsTableTableAnnotationComposer
   GeneratedColumn<String> get station =>
       $composableBuilder(column: $table.station, builder: (column) => column);
 
+  GeneratedColumn<String> get collection => $composableBuilder(
+    column: $table.collection,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get lastUpdated => $composableBuilder(
     column: $table.lastUpdated,
     builder: (column) => column,
@@ -3640,6 +3708,7 @@ class $$FoodsTableTableTableManager
                 Value<String> labels = const Value.absent(),
                 Value<String> ingredients = const Value.absent(),
                 Value<String> station = const Value.absent(),
+                Value<String?> collection = const Value.absent(),
                 Value<int> lastUpdated = const Value.absent(),
               }) => FoodsTableCompanion(
                 id: id,
@@ -3653,6 +3722,7 @@ class $$FoodsTableTableTableManager
                 labels: labels,
                 ingredients: ingredients,
                 station: station,
+                collection: collection,
                 lastUpdated: lastUpdated,
               ),
           createCompanionCallback:
@@ -3668,6 +3738,7 @@ class $$FoodsTableTableTableManager
                 required String labels,
                 required String ingredients,
                 required String station,
+                Value<String?> collection = const Value.absent(),
                 required int lastUpdated,
               }) => FoodsTableCompanion.insert(
                 id: id,
@@ -3681,6 +3752,7 @@ class $$FoodsTableTableTableManager
                 labels: labels,
                 ingredients: ingredients,
                 station: station,
+                collection: collection,
                 lastUpdated: lastUpdated,
               ),
           withReferenceMapper: (p0) => p0

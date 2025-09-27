@@ -56,12 +56,11 @@ class Database {
       if (foods.any((food) => food.id == foodID.id)) {
         continue;
       }
-      print(
-        "Fetcing from dining hall: ${diningCourt}, foodID: ${foodID.id}, station: ${foodID.station}",
-      );
+
       Food food = await Database().getFoodByID(foodID.id);
 
       food.station = foodID.station;
+      food.collection = foodID.collection;
       foods.add(food);
     }
 

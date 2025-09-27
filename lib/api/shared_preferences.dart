@@ -4,88 +4,11 @@ import 'package:boiler_fuel/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefs {
-  static String userKey = "USER_KEY";
-  static String mealsKey = "MEALS_KEYSSSS";
   static String resetLocalDBKey = "RESET_LOCAL_DB_KEY";
-
-  static User? user = null;
-  static String? userString = null;
-
-  static Future<void> saveUser(User user) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(userKey, jsonEncode(user.toMap()));
-    SharedPrefs.user = user;
-    userString = jsonEncode(user.toMap());
-  }
-
-  static Future<User?> getUser() async {
-    if (user != null && userString != null) return user;
-
-    final prefs = await SharedPreferences.getInstance();
-    userString = prefs.getString(userKey);
-    if (userString == null) return null;
-    Map<String, dynamic> userMap = jsonDecode(userString!);
-    user = User.fromMap(userMap);
-    return user;
-  }
-
-  static Future<void> saveDaysMeals(
-    Map<MealTime, Map<String, Meal>> meals,
-  ) async {
-    final prefs = await SharedPreferences.getInstance();
-    const mealTimeToString = {
-      MealTime.breakfast: "breakfast",
-      MealTime.lunch: "lunch",
-      MealTime.dinner: "dinner",
-      MealTime.brunch: "brunch",
-    };
-    List<String> mealStrings = [];
-    meals.forEach((mealTime, mealList) {
-      String mealTimeStr = mealTimeToString[mealTime]!;
-      mealList.forEach((din, meal) {
-        meal.diningHall = din;
-        String mealJsonStr = jsonEncode(meal.toMap());
-        print("Saving meal: ${meal.diningHall} $mealJsonStr");
-        mealStrings.add("$mealTimeStr|$mealJsonStr");
-      });
-    });
-
-    DateTime now = DateTime.now();
-    String dateKey = "${now.year}-${now.month}-${now.day}";
-    print("Saving ${mealStrings.length} meals for $dateKey");
-    print(mealStrings);
-    await prefs.setStringList(mealsKey + "_" + dateKey, mealStrings);
-  }
-
-  static Future<Map<MealTime, Map<String, Meal>>?> getDaysMeals() async {
-    final prefs = await SharedPreferences.getInstance();
-    DateTime now = DateTime.now();
-    String dateKey = "${now.year}-${now.month}-${now.day}";
-    List<String>? mealStrings = prefs.getStringList(mealsKey + "_" + dateKey);
-    if (mealStrings == null) return null;
-
-    const stringToMealTime = {
-      "breakfast": MealTime.breakfast,
-      "lunch": MealTime.lunch,
-      "dinner": MealTime.dinner,
-    };
-
-    Map<MealTime, Map<String, Meal>> meals = {};
-    for (String mealStr in mealStrings) {
-      List<String> parts = mealStr.split("|");
-      if (parts.length != 2) continue;
-      String mealTimeStr = parts[0];
-      String mealJsonStr = parts[1];
-      MealTime? mealTime = stringToMealTime[mealTimeStr];
-      if (mealTime == null) continue;
-      Map<String, dynamic> mealMap = jsonDecode(mealJsonStr);
-      Meal meal = Meal.fromMap(mealMap);
-      print("Loaded meal: ${meal.diningHall} $mealJsonStr");
-      meals.putIfAbsent(mealTime, () => {});
-      meals[mealTime]![meal.diningHall] = meal;
-    }
-    return meals;
-  }
+  static String averagePromptTokensKey = "AVERAGE_PROMPT_TOKENS_KEY";
+  static String averageResponseTokensKey = "AVERAGE_RESPONSE_TOKENS_KEY";
+  static String totalPromptsKey = "TOTAL_PROMPTS_KEY";
+  static String totalResponsesKey = "TOTAL_RESPONSES_KEY";
 
   static Future<int> getResetLocalData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -101,5 +24,53 @@ class SharedPrefs {
   static Future<void> setResetLocalData(int value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(resetLocalDBKey, value);
+  }
+
+  static Future<double> getAveragePromptTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(averagePromptTokensKey) ?? 0.0;
+  }
+
+  static Future<double> getAverageResponseTokens() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getDouble(averageResponseTokensKey) ?? 0.0;
+  }
+
+  static Future<int> getTotalPrompts() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(totalPromptsKey) ?? 0;
+  }
+
+  static Future<int> getTotalResponses() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(totalResponsesKey) ?? 0;
+  }
+
+  static Future<void> updateTokenStats(
+    int promptTokens,
+    int responseTokens,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    int totalPromptsCount = prefs.getInt(totalPromptsKey) ?? 0;
+    int totalResponsesCount = prefs.getInt(totalResponsesKey) ?? 0;
+    double averagePromptTokens = prefs.getDouble(averagePromptTokensKey) ?? 0.0;
+    double averageResponseTokens =
+        prefs.getDouble(averageResponseTokensKey) ?? 0.0;
+
+    // Update totals
+    totalPromptsCount += 1;
+    totalResponsesCount += 1;
+
+    // Update averages
+    averagePromptTokens =
+        ((averagePromptTokens * (totalPromptsCount - 1)) + promptTokens) /
+        totalPromptsCount;
+    averageResponseTokens =
+        ((averageResponseTokens * (totalResponsesCount - 1)) + responseTokens) /
+        totalResponsesCount;
+    await prefs.setInt(totalPromptsKey, totalPromptsCount);
+    await prefs.setInt(totalResponsesKey, totalResponsesCount);
+    await prefs.setDouble(averagePromptTokensKey, averagePromptTokens);
+    await prefs.setDouble(averageResponseTokensKey, averageResponseTokens);
   }
 }
