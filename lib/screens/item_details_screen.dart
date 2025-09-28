@@ -571,6 +571,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                 "Restriction: " +
                     food.rejectedReason
                         .replaceAll("Contains dispreferred ingredient: ", "")
+                        .replaceAll("Is dispreferred ingredient: ", "")
                         .capitalize(),
                 style: TextStyle(
                   color: Colors.red.shade200,
