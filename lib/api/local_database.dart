@@ -20,6 +20,8 @@ class UsersTable extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get uid => text()();
   TextColumn get name => text()();
+  BoolColumn get offlineDataFeatures => boolean()();
+  BoolColumn get aiDataFeatures => boolean()();
   TextColumn get gender => text()();
   IntColumn get age => integer()();
   IntColumn get weight => integer()();
@@ -148,6 +150,8 @@ class LocalDatabase {
       return User(
         uid: usersRes.first.uid,
         name: usersRes.first.name,
+        offlineDataFeatures: usersRes.first.offlineDataFeatures,
+        aiDataFeatures: usersRes.first.aiDataFeatures,
         weight: usersRes.first.weight,
         height: usersRes.first.height,
         age: usersRes.first.age,

@@ -28,6 +28,8 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
   @override
   void initState() {
     super.initState();
+    _isToggled = widget.initialValue;
+    setState(() {});
   }
 
   @override

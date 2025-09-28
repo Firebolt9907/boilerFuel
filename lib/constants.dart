@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
+
 import 'package:flutter/material.dart';
 
 class Food {
@@ -320,6 +322,8 @@ enum FoodAllergy {
 class User {
   final String uid;
   final String name;
+  final bool offlineDataFeatures;
+  final bool aiDataFeatures;
   final int weight;
   final int height;
   final Goal goal;
@@ -332,6 +336,8 @@ class User {
   User({
     required this.uid,
     required this.name,
+    required this.offlineDataFeatures,
+    required this.aiDataFeatures,
     required this.weight,
     required this.height,
     required this.goal,
@@ -339,13 +345,15 @@ class User {
     required this.mealPlan,
     required this.diningHallRank,
     required this.age,
-    required this.gender,
+    required this.gender ,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
       'name': name,
+      'offlineDataFeatures': offlineDataFeatures,
+      'aiDataFeatures': aiDataFeatures,
       'weight': weight,
       'height': height,
       'goal': goal.toString(),
@@ -361,6 +369,8 @@ class User {
     return User(
       uid: map['uid'],
       name: map['name'],
+      offlineDataFeatures: map['offlineDataFeatures'],
+      aiDataFeatures: map['aiDataFeatures'],
       weight: map['weight'],
       height: map['height'],
       goal: Goal.fromString(map['goal']),

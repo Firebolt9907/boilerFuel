@@ -134,6 +134,8 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       User user = User(
         uid: widget.user?.uid ?? '',
         name: _nameController.text,
+        offlineDataFeatures: offlineDietFeatures,
+        aiDataFeatures: aiDietFeatures,
         weight: int.tryParse(_weightController.text)!,
         height: int.tryParse(_heightController.text)!,
         goal: _selectedGoal!,
@@ -337,7 +339,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       ),
 
                       AnimatedOpacity(
-                        duration: Duration(milliseconds: 200),
+                        duration: Duration(milliseconds: 100),
                         curve: Curves.easeInOut,
                         opacity: offlineDietFeatures ? 1 : 0.5,
                         child: Container(
@@ -437,7 +439,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         ),
                       ),
                       AnimatedOpacity(
-                        duration: Duration(milliseconds: 200),
+                        duration: Duration(milliseconds: 100),
                         opacity: offlineDietFeatures ? 1 : 0.5,
                         child: AnimatedSwitch(
                           text: "AI Meal Planning",
