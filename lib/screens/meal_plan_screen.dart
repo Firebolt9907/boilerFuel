@@ -193,167 +193,173 @@ class _MealPlanScreenState extends State<MealPlanScreen>
             ),
 
             // Main content
-            SafeArea(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Back button with modern styling
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24 + MediaQuery.of(context).padding.top,
+                  bottom:
+                      24 +
+                      MediaQuery.of(context).padding.bottom +
+                      MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Back button with modern styling  
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.1),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    SizedBox(height: 32),
+
+                    // Enhanced title with emoji and styling
+                    ShaderMask(
+                      shaderCallback: (bounds) => LinearGradient(
+                        colors: [
+                          Colors.white,
+                          Colors.orange.shade300,
+                          Colors.yellow.shade200,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        widget.isEditing
+                            ? 'Update Your Meal Plan'
+                            : 'What\'s Your Meal Plan',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white.withOpacity(0.05),
+                        border: Border.all(
                           color: Colors.white.withOpacity(0.1),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
+                          width: 1,
                         ),
                       ),
-                      SizedBox(height: 32),
+                      child: Text(
+                        widget.isEditing
+                            ? 'Update your current meal plan'
+                            : 'Select your current meal plan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.8),
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 48),
 
-                      // Enhanced title with emoji and styling
-                      ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [
-                            Colors.white,
-                            Colors.orange.shade300,
-                            Colors.yellow.shade200,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ).createShader(bounds),
-                        child: Text(
-                          widget.isEditing
-                              ? 'Update Your Meal Plan'
-                              : 'What\'s Your Meal Plan',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                          ),
+                    // Enhanced meal plan options
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white.withOpacity(0.05),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.15),
+                          width: 1,
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.white.withOpacity(0.05),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Available Plans',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          widget.isEditing
-                              ? 'Update your current meal plan'
-                              : 'Select your current meal plan',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white.withOpacity(0.8),
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 48),
-
-                      // Enhanced meal plan options
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white.withOpacity(0.05),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.15),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Available Plans',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
+                          SizedBox(height: 20),
+                          ...[
+                            '7 Day Plan',
+                            '10 Day Plan',
+                            '14 Day Plan',
+                            'Unlimited Plan',
+                            '50 Block',
+                            "80 Block",
+                          ].map(
+                            (plan) => Container(
+                              margin: EdgeInsets.only(bottom: 12),
+                              child: AnimatedGoalOption(
+                                text: plan,
+                                isSelected: _selectedPlan == plan,
+                                onTap: () =>
+                                    setState(() => _selectedPlan = plan),
                               ),
                             ),
-                            SizedBox(height: 20),
-                            ...[
-                              '7 Day Plan',
-                              '10 Day Plan',
-                              '14 Day Plan',
-                              'Unlimited Plan',
-                              '50 Block',
-                              "80 Block",
-                            ].map(
-                              (plan) => Container(
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: AnimatedGoalOption(
-                                  text: plan,
-                                  isSelected: _selectedPlan == plan,
-                                  onTap: () =>
-                                      setState(() => _selectedPlan = plan),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: 40),
-
-                      // Enhanced finish button
-                      AnimatedBuilder(
-                        animation: _pulseAnimation,
-                        builder: (context, child) => Transform.scale(
-                          scale: (_selectedPlan != null) ? 1.0 : 0.98,
-                          child: AnimatedButton(
-                            text: (_selectedPlan == null)
-                                ? 'Select a meal plan'
-                                : widget.isEditing
-                                ? 'Update Plan'
-                                : 'Get Started',
-                            onTap: _finish,
-                            isEnabled: _selectedPlan != null,
                           ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 40),
+
+                    // Enhanced finish button
+                    AnimatedBuilder(
+                      animation: _pulseAnimation,
+                      builder: (context, child) => Transform.scale(
+                        scale: (_selectedPlan != null) ? 1.0 : 0.98,
+                        child: AnimatedButton(
+                          text: (_selectedPlan == null)
+                              ? 'Select a meal plan'
+                              : widget.isEditing
+                              ? 'Update Plan'
+                              : 'Get Started',
+                          onTap: _finish,
+                          isEnabled: _selectedPlan != null,
                         ),
                       ),
-                      SizedBox(height: 20),
+                    ),
+                    SizedBox(height: 20),
 
-                      // Progress indicator
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: List.generate(
-                      //     4, // Changed from 3 to 4 to show there's another step
-                      //     (index) => Container(
-                      //       margin: EdgeInsets.symmetric(horizontal: 4),
-                      //       width: index == 2 ? 20 : 8,
-                      //       height: 8,
-                      //       decoration: BoxDecoration(
-                      //         borderRadius: BorderRadius.circular(4),
-                      //         color: index == 2
-                      //             ? Colors.green.shade400
-                      //             : Colors.white.withOpacity(0.3),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
+                    // Progress indicator
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: List.generate(
+                    //     4, // Changed from 3 to 4 to show there's another step
+                    //     (index) => Container(
+                    //       margin: EdgeInsets.symmetric(horizontal: 4),
+                    //       width: index == 2 ? 20 : 8,
+                    //       height: 8,
+                    //       decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(4),
+                    //         color: index == 2
+                    //             ? Colors.green.shade400
+                    //             : Colors.white.withOpacity(0.3),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
             ),

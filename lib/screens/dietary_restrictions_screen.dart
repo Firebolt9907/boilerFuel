@@ -336,161 +336,164 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
             ),
 
             // Main content
-            SafeArea(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Back button
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 24 + MediaQuery.of(context).padding.top,
+                  bottom: 24 + MediaQuery.of(context).padding.bottom,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Back button
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.1),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    SizedBox(height: 32),
+
+                    // Title section
+                    ShaderMask(
+                      shaderCallback: (bounds) => LinearGradient(
+                        colors: [
+                          Colors.white,
+                          Colors.red.shade300,
+                          Colors.orange.shade200,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: Text(
+                        'Dietary Preferences',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        color: Colors.white.withOpacity(0.05),
+                        border: Border.all(
                           color: Colors.white.withOpacity(0.1),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
+                          width: 1,
                         ),
                       ),
-                      SizedBox(height: 32),
+                      child: Text(
+                        widget.isEditing
+                            ? 'Update your dietary preferences and restrictions below.'
+                            : 'Let\'s personalize your dining experience with a fun swipe-through setup!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white.withOpacity(0.85),
+                          fontWeight: FontWeight.w300,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 48),
 
-                      // Title section
-                      ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [
-                            Colors.white,
-                            Colors.red.shade300,
-                            Colors.orange.shade200,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ).createShader(bounds),
-                        child: Text(
-                          'Dietary Preferences',
-                          style: TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          color: Colors.white.withOpacity(0.05),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          widget.isEditing
-                              ? 'Update your dietary preferences and restrictions below.'
-                              : 'Let\'s personalize your dining experience with a fun swipe-through setup!',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white.withOpacity(0.85),
-                            fontWeight: FontWeight.w300,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 48),
+                    // Feature cards
+                    _buildFeatureCard(
+                      icon: Icons.warning,
+                      title: 'Food Allergies',
+                      description:
+                          'Swipe through common allergens to identify what you need to avoid',
+                      color: Colors.red,
+                      onTap: () => _startAllergenFlow(),
+                    ),
+                    SizedBox(height: 20),
 
-                      // Feature cards
-                      _buildFeatureCard(
-                        icon: Icons.warning,
-                        title: 'Food Allergies',
-                        description:
-                            'Swipe through common allergens to identify what you need to avoid',
-                        color: Colors.red,
-                        onTap: () => _startAllergenFlow(),
-                      ),
-                      SizedBox(height: 20),
+                    _buildFeatureCard(
+                      icon: Icons.eco,
+                      title: 'Diet Preferences',
+                      description:
+                          'Tell us about your lifestyle choices like vegan, vegetarian, or kosher',
+                      color: Colors.green,
+                      onTap: () => _startPreferenceFlow(),
+                    ),
+                    SizedBox(height: 20),
 
-                      _buildFeatureCard(
-                        icon: Icons.eco,
-                        title: 'Diet Preferences',
-                        description:
-                            'Tell us about your lifestyle choices like vegan, vegetarian, or kosher',
-                        color: Colors.green,
-                        onTap: () => _startPreferenceFlow(),
-                      ),
-                      SizedBox(height: 20),
+                    _buildFeatureCard(
+                      icon: Icons.restaurant_menu,
+                      title: 'Custom Restrictions',
+                      description:
+                          'Add specific ingredients you prefer to avoid like beef, pork, or mushrooms',
+                      color: Colors.orange,
+                      onTap: () => _startCustomIngredientsFlow(),
+                    ),
+                    SizedBox(height: 48),
 
-                      _buildFeatureCard(
-                        icon: Icons.restaurant_menu,
-                        title: 'Custom Restrictions',
-                        description:
-                            'Add specific ingredients you prefer to avoid like beef, pork, or mushrooms',
-                        color: Colors.orange,
-                        onTap: () => _startCustomIngredientsFlow(),
-                      ),
-                      SizedBox(height: 48),
-
-                      // Start journey button
-                      AnimatedBuilder(
-                        animation: _pulseAnimation,
-                        builder: (context, child) => Transform.scale(
-                          scale: _pulseAnimation.value,
-                          child: AnimatedButton(
-                            text: 'Save',
-                            onTap: () {
-                              _completeSetup();
-                            },
-                          ),
+                    // Start journey button
+                    AnimatedBuilder(
+                      animation: _pulseAnimation,
+                      builder: (context, child) => Transform.scale(
+                        scale: _pulseAnimation.value,
+                        child: AnimatedButton(
+                          text: 'Save',
+                          onTap: () {
+                            _completeSetup();
+                          },
                         ),
                       ),
-                      if (!widget.isEditing) SizedBox(height: 16),
-                      if (!widget.isEditing)
-                        Center(
-                          child: TextButton(
-                            onPressed: _skipAll,
-                            child: Text(
-                              'Skip for now',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.6),
-                                fontSize: 16,
-                              ),
+                    ),
+                    if (!widget.isEditing) SizedBox(height: 16),
+                    if (!widget.isEditing)
+                      Center(
+                        child: TextButton(
+                          onPressed: _skipAll,
+                          child: Text(
+                            'Skip for now',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.6),
+                              fontSize: 16,
                             ),
                           ),
                         ),
+                      ),
 
-                      // Progress indicator
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.center,
-                      //   children: List.generate(
-                      //     4, // Updated to match meal plan screen
-                      //     (index) => Container(
-                      //       margin: EdgeInsets.symmetric(horizontal: 4),
-                      //       width: index == 3
-                      //           ? 20
-                      //           : 8, // Changed to index == 3 for final step
-                      //       height: 8,
-                      //       decoration: BoxDecoration(
-                      //         borderRadius: BorderRadius.circular(4),
-                      //         color: index == 3
-                      //             ? Colors.purple.shade400
-                      //             : Colors.white.withOpacity(0.3),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
-                  ),
+                    // Progress indicator
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: List.generate(
+                    //     4, // Updated to match meal plan screen
+                    //     (index) => Container(
+                    //       margin: EdgeInsets.symmetric(horizontal: 4),
+                    //       width: index == 3
+                    //           ? 20
+                    //           : 8, // Changed to index == 3 for final step
+                    //       height: 8,
+                    //       decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(4),
+                    //         color: index == 3
+                    //             ? Colors.purple.shade400
+                    //             : Colors.white.withOpacity(0.3),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
             ),

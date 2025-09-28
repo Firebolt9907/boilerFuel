@@ -418,37 +418,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                   )
-                : SafeArea(
-                    bottom: false,
+                : FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.only(
+                        left: 24,
+                        right: 24,
+                        top: 24 + MediaQuery.of(context).padding.top,
+                        bottom:
+                            24 +
+                            MediaQuery.of(context).padding.bottom +
+                            MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header
+                          _buildHeader(),
+                          SizedBox(height: 32),
 
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Header
-                            _buildHeader(),
+                          // Loading or content
+                          if (_isLoading)
+                            _buildLoadingView(context)
+                          else ...[
+                            // Dining Hall Rankings
+
+                            // Suggested Meal Plan
+                            _buildSuggestedMealPlan(),
+                            SizedBox(height: 32),
+                            _buildDiningHallRankings(),
                             SizedBox(height: 32),
 
-                            // Loading or content
-                            if (_isLoading)
-                              _buildLoadingView(context)
-                            else ...[
-                              // Dining Hall Rankings
-
-                              // Suggested Meal Plan
-                              _buildSuggestedMealPlan(),
-                              SizedBox(height: 32),
-                              _buildDiningHallRankings(),
-                              SizedBox(height: 32),
-
-                              // Daily Macros Overview
-                              if (_userMacros != null) _buildMacrosOverview(),
-                            ],
+                            // Daily Macros Overview
+                            if (_userMacros != null) _buildMacrosOverview(),
                           ],
-                        ),
+                        ],
                       ),
                     ),
                   ),
@@ -718,26 +722,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final diningHallMeals = _suggestedMeals[_selectedMealTime] ?? {};
 
     return TitaniumContainer(
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.local_dining, color: Colors.green.shade300, size: 24),
-              SizedBox(width: 12),
-              Text(
-                'Suggested Meal Plan',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.local_dining,
+                  color: Colors.green.shade300,
+                  size: 24,
                 ),
-              ),
-            ],
+                SizedBox(width: 12),
+                Text(
+                  'Suggested Meal Plan',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
           SizedBox(height: 16),
           if (_suggestedMeals.isEmpty)
             Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
@@ -782,6 +795,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           else ...[
             // Meal time dropdown
             Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
@@ -831,6 +845,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
             if (diningHallMeals.isEmpty)
               Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -882,6 +897,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                   controller: _scrollController,
                   itemCount: diningHallMeals.length,
+                  padEnds: false,
                   itemBuilder: (context, index) {
                     final diningHall = diningHallMeals.keys.elementAt(index);
                     final meal = diningHallMeals[diningHall]!;
@@ -899,8 +915,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         );
                       },
                       child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 8),
-                        padding: EdgeInsets.all(16),
+                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 16,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: Colors.white.withOpacity(0.08),
@@ -979,55 +998,58 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               AnimatedBuilder(
                 animation: _statusBarAnimation,
                 builder: (context, child) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(diningHallMeals.length, (index) {
-                      bool isActive = _currentMealIndex == index;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(diningHallMeals.length, (index) {
+                        bool isActive = _currentMealIndex == index;
 
-                      return AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        width: isActive ? 24 : 8,
-                        height: 8,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: isActive
-                                ? Colors.green.shade400
-                                : Colors.white.withOpacity(0.3),
-                            boxShadow: isActive
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.green.shade400.withOpacity(
-                                        0.4,
+                        return AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          margin: EdgeInsets.symmetric(horizontal: 4),
+                          width: isActive ? 24 : 8,
+                          height: 8,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: isActive
+                                  ? Colors.green.shade400
+                                  : Colors.white.withOpacity(0.3),
+                              boxShadow: isActive
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.green.shade400
+                                            .withOpacity(0.4),
+                                        blurRadius:
+                                            8 * _statusBarAnimation.value,
+                                        spreadRadius:
+                                            2 * _statusBarAnimation.value,
                                       ),
-                                      blurRadius: 8 * _statusBarAnimation.value,
-                                      spreadRadius:
-                                          2 * _statusBarAnimation.value,
+                                    ]
+                                  : null,
+                            ),
+                            child: isActive
+                                ? Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.green.shade300,
+                                          Colors.green.shade500,
+                                          Colors.green.shade300,
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
                                     ),
-                                  ]
+                                  )
                                 : null,
                           ),
-                          child: isActive
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.green.shade300,
-                                        Colors.green.shade500,
-                                        Colors.green.shade300,
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                        ),
-                      );
-                    }),
+                        );
+                      }),
+                    ),
                   );
                 },
               ),

@@ -834,9 +834,13 @@ class DietaryRestrictions {
       var ingredient = ingredientPreferences[i];
 
       // Expand aliases
-      if (ingredientAliases[ingredient] != null) {
-        ingredientPreferences.addAll(ingredientAliases[ingredient]!);
-      }
+      // if (ingredientAliases[ingredient] != null &&
+      //     ingredientsWithAliasesPlaced[ingredient] == null) {
+      //   print(ingredientsWithAliasesPlaced);
+      //   print("i = $i adding aliases for: " + ingredient);
+      //   ingredientsWithAliasesPlaced.addEntries({ingredient: true}.entries);
+      //   ingredientPreferences.addAll(ingredientAliases[ingredient]!);
+      // }
 
       // Check food name for restricted ingredients
       if (food.name.toLowerCase().contains(ingredient.toLowerCase())) {

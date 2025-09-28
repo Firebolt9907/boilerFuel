@@ -1,4 +1,5 @@
 import 'package:boiler_fuel/api/database.dart';
+import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -105,7 +106,11 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
     _animationController.forward();
 
-    _loadDiningHallMenu();
+    Future.delayed(Duration(milliseconds: 200), () {
+      if (mounted) {
+        _loadDiningHallMenu();
+      }
+    });
   }
 
   @override
@@ -866,7 +871,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
     Navigator.of(context).push(
       CupertinoPageRoute(
-        builder: (context) => MealDetailsScreen(
+        builder: (context) => ItemDetailsScreen(
           meal: singleFoodMeal,
           diningHall: widget.diningHall,
         ),

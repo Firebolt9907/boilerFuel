@@ -1,7 +1,10 @@
+import 'package:boiler_fuel/api/local_database.dart';
+import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/dietary_restrictions_screen.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
 import 'package:boiler_fuel/screens/meal_plan_screen.dart';
 import 'package:boiler_fuel/screens/user_info_screen.dart';
+import 'package:boiler_fuel/screens/welcome_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/titanium_button.dart';
 import 'package:boiler_fuel/widgets/titanium_container.dart';
@@ -96,95 +99,115 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
               // Floating decorative elements
 
               // Main content
-              SafeArea(
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Quick Actions
-                        // _buildQuickActions(),
-                        TitaniumButton(
-                          title: "User Settings",
-                          subtitle:
-                              "Change your user preferences, like name, age, weight, and dietary goals.",
-                          icon: Icons.person,
-                          onTap: () async {
-                            User? user = await Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                builder: (context) =>
-                                    UserInfoScreen(user: currentUser),
+              FadeTransition(
+                opacity: _fadeAnimation,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    top: 24 + MediaQuery.of(context).padding.top,
+                    bottom:
+                        24 +
+                        MediaQuery.of(context).padding.bottom +
+                        MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Quick Actions
+                      // _buildQuickActions(),
+                      TitaniumButton(
+                        title: "User Settings",
+                        subtitle:
+                            "Change your user preferences, like name, age, weight, and dietary goals.",
+                        icon: Icons.person,
+                        onTap: () async {
+                          User? user = await Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) =>
+                                  UserInfoScreen(user: currentUser),
+                            ),
+                          );
+                          if (user != null) {
+                            widget.onUserUpdated(user);
+                          }
+                        },
+                      ),
+                      // TitaniumButton(
+                      //   title: "Dietary Restrictions",
+                      //   subtitle:
+                      //       "Change your dietary restrictions, like allergies and food preferences.",
+                      //   icon: Icons.no_food,
+                      //   onTap: () async {
+                      //     User? user = await Navigator.push(
+                      //       context,
+                      //       CupertinoPageRoute(
+                      //         builder: (context) => DietaryRestrictionsScreen(
+                      //           user: currentUser!,
+                      //           isEditing: true,
+                      //         ),
+                      //       ),
+                      //     );
+                      //     if (user != null) {
+                      //       widget.onUserUpdated(user);
+                      //     }
+                      //   },
+                      // ),
+                      TitaniumButton(
+                        title: "Dining Hall Rankings",
+                        subtitle:
+                            "Change your dining hall rankings to prioritize your favorite dining halls.",
+                        icon: Icons.dining,
+                        onTap: () async {
+                          User? user = await Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => DiningHallRankingScreen(
+                                user: currentUser!,
+                                isEditing: true,
                               ),
-                            );
-                            if (user != null) {
-                              widget.onUserUpdated(user);
-                            }
-                          },
-                        ),
-                        // TitaniumButton(
-                        //   title: "Deitary Restrictions",
-                        //   subtitle:
-                        //       "Change your deitary Restrictions, like allergies and food preferences.",
-                        //   icon: Icons.no_food,
-                        //   onTap: () async {
-                        //     User? user = await Navigator.push(
-                        //       context,
-                        //       CupertinoPageRoute(
-                        //         builder: (context) => DietaryRestrictionsScreen(
-                        //           user: currentUser!,
-                        //           isEditing: true,
-                        //         ),
-                        //       ),
-                        //     );
-                        //     if (user != null) {
-                        //       widget.onUserUpdated(user);
-                        //     }
-                        //   },
-                        // ),
-                        TitaniumButton(
-                          title: "Dining Hall Rankings",
-                          subtitle:
-                              "Change your dining hall rankings to prioritize your favorite dining halls.",
-                          icon: Icons.dining,
-                          onTap: () async {
-                            User? user = await Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                builder: (context) => DiningHallRankingScreen(
-                                  user: currentUser!,
-                                  isEditing: true,
-                                ),
+                            ),
+                          );
+                          if (user != null) {
+                            widget.onUserUpdated(user);
+                          }
+                        },
+                      ),
+                      TitaniumButton(
+                        title: "Purdue Meal Plan",
+                        subtitle: "Change your current purdue meal plan",
+                        icon: Icons.dinner_dining,
+                        onTap: () async {
+                          User? user = await Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => MealPlanScreen(
+                                user: currentUser!,
+                                isEditing: true,
                               ),
-                            );
-                            if (user != null) {
-                              widget.onUserUpdated(user);
-                            }
-                          },
-                        ),
-                        TitaniumButton(
-                          title: "Purdue Meal Plan",
-                          subtitle: "Change your current purdue meal plan",
-                          icon: Icons.dinner_dining,
-                          onTap: () async {
-                            User? user = await Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                builder: (context) => MealPlanScreen(
-                                  user: currentUser!,
-                                  isEditing: true,
-                                ),
-                              ),
-                            );
-                            if (user != null) {
-                              widget.onUserUpdated(user);
-                            }
-                          },
-                        ),
-                      ],
-                    ),
+                            ),
+                          );
+                          if (user != null) {
+                            widget.onUserUpdated(user);
+                          }
+                        },
+                      ),
+                      TitaniumButton(
+                        title: "Delete User Data",
+                        subtitle: "Permanently delete your user data",
+                        icon: Icons.delete,
+                        onTap: () async {
+                          await LocalDatabase().deleteDB(true);
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => WelcomeScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),

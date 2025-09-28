@@ -133,6 +133,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -201,224 +202,230 @@ class _UserInfoScreenState extends State<UserInfoScreen>
               ),
 
               // Main content
-              SafeArea(
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Back button with modern styling
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.1),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () => Navigator.pop(context),
+              FadeTransition(
+                opacity: _fadeAnimation,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    left: 24.0,
+                    right: 24.0,
+                    top: 24.0 + MediaQuery.of(context).padding.top,
+                    bottom:
+                        24.0 +
+                        MediaQuery.of(context).padding.bottom +
+                        MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Back button with modern styling
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.1),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 1,
                           ),
                         ),
-                        SizedBox(height: 16),
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+                      SizedBox(height: 16),
 
-                        // Enhanced title with styling (moved higher)
-                        ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            colors: [
-                              Colors.white,
-                              Colors.blue.shade300,
-                              Colors.cyan.shade200,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ).createShader(bounds),
-                          child: Text(
-                            widget.user == null
-                                ? 'Tell us about yourself'
-                                : 'Update your info',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
+                      // Enhanced title with styling (moved higher)
+                      ShaderMask(
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: [
+                            Colors.white,
+                            Colors.blue.shade300,
+                            Colors.cyan.shade200,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          widget.user == null
+                              ? 'Tell us about yourself'
+                              : 'Update your info',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
                           ),
                         ),
-                        SizedBox(height: 8),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: Colors.white.withOpacity(0.05),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.1),
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            widget.user == null
-                                ? 'Help us personalize your experience'
-                                : 'Make changes to your personal info',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white.withOpacity(0.8),
-                              fontWeight: FontWeight.w300,
-                            ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: Colors.white.withOpacity(0.05),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.1),
+                            width: 1,
                           ),
                         ),
-                        SizedBox(height: 40),
-                        AnimatedTextField(
-                          controller: _nameController,
-                          label: 'Name',
-                          keyboardType: TextInputType.text,
+                        child: Text(
+                          widget.user == null
+                              ? 'Help us personalize your experience'
+                              : 'Make changes to your personal info',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.8),
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
-                        SizedBox(height: 12),
-                        AnimatedTextField(
-                          controller: _ageController,
-                          label: 'Age',
-                          keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 40),
+                      AnimatedTextField(
+                        controller: _nameController,
+                        label: 'Name',
+                        keyboardType: TextInputType.text,
+                      ),
+                      SizedBox(height: 12),
+                      AnimatedTextField(
+                        controller: _ageController,
+                        label: 'Age',
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 12),
+                      AnimatedDropdownMenu<Gender>(
+                        value: _selectedGender,
+                        label: "Sex",
+                        hint: "Choose your sex",
+                        items: [
+                          DropdownMenuItem(
+                            value: Gender.male,
+                            child: Text("Male"),
+                          ),
+                          DropdownMenuItem(
+                            value: Gender.female,
+                            child: Text("Female"),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedGender = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 12),
+                      // Enhanced input fields
+                      AnimatedTextField(
+                        controller: _weightController,
+                        label: 'Weight (lbs)',
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 12),
+                      AnimatedTextField(
+                        controller: _heightController,
+                        label: 'Height (inches)',
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 40),
+
+                      // Goal selection section
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white.withOpacity(0.05),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.15),
+                            width: 1,
+                          ),
                         ),
-                        SizedBox(height: 12),
-                        AnimatedDropdownMenu<Gender>(
-                          value: _selectedGender,
-                          label: "Sex",
-                          hint: "Choose your sex",
-                          items: [
-                            DropdownMenuItem(
-                              value: Gender.male,
-                              child: Text("Male"),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Health Goal',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
                             ),
-                            DropdownMenuItem(
-                              value: Gender.female,
-                              child: Text("Female"),
+                            SizedBox(height: 16),
+                            ...['Cutting', 'Maintain', 'Bulking'].map(
+                              (goal) => AnimatedGoalOption(
+                                text: goal,
+                                isSelected: _selectedGoal.toString() == goal,
+                                onTap: () => setState(
+                                  () => _selectedGoal = Goal.fromString(goal),
+                                ),
+                              ),
                             ),
                           ],
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedGender = value;
-                            });
-                          },
                         ),
-                        SizedBox(height: 12),
-                        // Enhanced input fields
-                        AnimatedTextField(
-                          controller: _weightController,
-                          label: 'Weight (lbs)',
-                          keyboardType: TextInputType.number,
-                        ),
-                        SizedBox(height: 12),
-                        AnimatedTextField(
-                          controller: _heightController,
-                          label: 'Height (inches)',
-                          keyboardType: TextInputType.number,
-                        ),
-                        SizedBox(height: 40),
+                      ),
 
-                        // Goal selection section
-                        Container(
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.white.withOpacity(0.05),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.15),
-                              width: 1,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Health Goal',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                              ...['Cutting', 'Maintain', 'Bulking'].map(
-                                (goal) => AnimatedGoalOption(
-                                  text: goal,
-                                  isSelected: _selectedGoal.toString() == goal,
-                                  onTap: () => setState(
-                                    () => _selectedGoal = Goal.fromString(goal),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      SizedBox(height: 60),
 
-                        SizedBox(height: 60),
-
-                        // Enhanced continue button
-                        AnimatedBuilder(
-                          animation: _pulseAnimation,
-                          builder: (context, child) => Transform.scale(
-                            scale:
-                                (_weightController.text.isNotEmpty &&
-                                    _heightController.text.isNotEmpty &&
-                                    _selectedGoal != null &&
-                                    _nameController.text.isNotEmpty &&
-                                    _selectedGender != null &&
-                                    _ageController.text.isNotEmpty)
-                                ? 1.0
-                                : 0.98,
-                            child: AnimatedButton(
-                              text:
-                                  _weightController.text.isNotEmpty &&
-                                      _heightController.text.isNotEmpty &&
-                                      _selectedGoal != null &&
-                                      _nameController.text.isNotEmpty &&
-                                      _selectedGender != null &&
-                                      _ageController.text.isNotEmpty
-                                  ? widget.user == null
-                                        ? 'Continue Your Journey'
-                                        : 'Update Info'
-                                  : 'Enter your info',
-                              onTap: _continue,
-                              isEnabled:
-                                  _weightController.text.isNotEmpty &&
+                      // Enhanced continue button
+                      AnimatedBuilder(
+                        animation: _pulseAnimation,
+                        builder: (context, child) => Transform.scale(
+                          scale:
+                              (_weightController.text.isNotEmpty &&
                                   _heightController.text.isNotEmpty &&
                                   _selectedGoal != null &&
                                   _nameController.text.isNotEmpty &&
                                   _selectedGender != null &&
-                                  _ageController.text.isNotEmpty,
-                            ),
+                                  _ageController.text.isNotEmpty)
+                              ? 1.0
+                              : 0.98,
+                          child: AnimatedButton(
+                            text:
+                                _weightController.text.isNotEmpty &&
+                                    _heightController.text.isNotEmpty &&
+                                    _selectedGoal != null &&
+                                    _nameController.text.isNotEmpty &&
+                                    _selectedGender != null &&
+                                    _ageController.text.isNotEmpty
+                                ? widget.user == null
+                                      ? 'Continue Your Journey'
+                                      : 'Update Info'
+                                : 'Enter your info',
+                            onTap: _continue,
+                            isEnabled:
+                                _weightController.text.isNotEmpty &&
+                                _heightController.text.isNotEmpty &&
+                                _selectedGoal != null &&
+                                _nameController.text.isNotEmpty &&
+                                _selectedGender != null &&
+                                _ageController.text.isNotEmpty,
                           ),
                         ),
-                        SizedBox(height: 20),
+                      ),
+                      SizedBox(height: 20),
 
-                        // Progress indicator
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: List.generate(
-                        //     3,
-                        //     (index) => Container(
-                        //       margin: EdgeInsets.symmetric(horizontal: 4),
-                        //       width: index == 0 ? 20 : 8,
-                        //       height: 8,
-                        //       decoration: BoxDecoration(
-                        //         borderRadius: BorderRadius.circular(4),
-                        //         color: index == 0
-                        //             ? Colors.blue.shade400
-                        //             : Colors.white.withOpacity(0.3),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
-                    ),
+                      // Progress indicator
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: List.generate(
+                      //     3,
+                      //     (index) => Container(
+                      //       margin: EdgeInsets.symmetric(horizontal: 4),
+                      //       width: index == 0 ? 20 : 8,
+                      //       height: 8,
+                      //       decoration: BoxDecoration(
+                      //         borderRadius: BorderRadius.circular(4),
+                      //         color: index == 0
+                      //             ? Colors.blue.shade400
+                      //             : Colors.white.withOpacity(0.3),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ),
               ),

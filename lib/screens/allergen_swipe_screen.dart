@@ -246,208 +246,214 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
             ),
 
             // Main content
-            SafeArea(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Column(
-                  children: [
-                    // Header
-                    Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Back button
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white.withOpacity(0.1),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.2),
-                                width: 1,
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: Icon(Icons.arrow_back, color: Colors.white),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ),
-                          SizedBox(height: 24),
-
-                          // Title
-                          ShaderMask(
-                            shaderCallback: (bounds) => LinearGradient(
-                              colors: [
-                                Colors.white,
-                                Colors.red.shade300,
-                                Colors.orange.shade200,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ).createShader(bounds),
-                            child: Text(
-                              'Food Allergies',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
+                children: [
+                  // Header
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      top: 24 + MediaQuery.of(context).padding.top,
+                      bottom:
+                          24 +
+                          MediaQuery.of(context).padding.bottom +
+                          MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Back button
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.1),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                        SizedBox(height: 24),
 
-                          // Progress and description
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: Colors.white.withOpacity(0.05),
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.1),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    isCompleted
-                                        ? 'Swipe through complete!'
-                                        : 'Swipe right if you have this allergy',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white.withOpacity(0.8),
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Container(
+                        // Title
+                        ShaderMask(
+                          shaderCallback: (bounds) => LinearGradient(
+                            colors: [
+                              Colors.white,
+                              Colors.red.shade300,
+                              Colors.orange.shade200,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds),
+                          child: Text(
+                            'Food Allergies',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+
+                        // Progress and description
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: 12,
+                                  horizontal: 16,
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
-                                  color: Colors.blue.withOpacity(0.2),
+                                  color: Colors.white.withOpacity(0.05),
                                   border: Border.all(
-                                    color: Colors.blue.withOpacity(0.5),
+                                    color: Colors.white.withOpacity(0.1),
                                     width: 1,
                                   ),
                                 ),
                                 child: Text(
-                                  '${_currentIndex}/${_allergens.length}',
+                                  isCompleted
+                                      ? 'Swipe through complete!'
+                                      : 'Swipe right if you have this allergy',
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.blue.shade300,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontWeight: FontWeight.w300,
                                   ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: Colors.blue.withOpacity(0.2),
+                                border: Border.all(
+                                  color: Colors.blue.withOpacity(0.5),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                '${_currentIndex}/${_allergens.length}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue.shade300,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Card stack area
+                  Expanded(
+                    child: Center(
+                      child: isCompleted
+                          ? _buildCompletionView()
+                          : _buildCardStack(),
+                    ),
+                  ),
+
+                  if (!isCompleted)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //Swap the order if swapSides is true
+                      children: [
+                        // Reject hint
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.red.withOpacity(0.2),
+                            border: Border.all(
+                              color: Colors.red.withOpacity(0.5),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.arrow_left,
+                                color: Colors.red.shade300,
+                                size: 16,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Not Allergic',
+                                style: TextStyle(
+                                  color: Colors.red.shade300,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
 
-                    // Card stack area
-                    Expanded(
-                      child: Center(
-                        child: isCompleted
-                            ? _buildCompletionView()
-                            : _buildCardStack(),
-                      ),
-                    ),
-
-                    if (!isCompleted)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        //Swap the order if swapSides is true
-                        children: [
-                          // Reject hint
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.red.withOpacity(0.2),
-                              border: Border.all(
-                                color: Colors.red.withOpacity(0.5),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.arrow_left,
-                                  color: Colors.red.shade300,
-                                  size: 16,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Not Allergic',
-                                  style: TextStyle(
-                                    color: Colors.red.shade300,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                        // Accept hint
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.green.withOpacity(0.2),
+                            border: Border.all(
+                              color: Colors.green.withOpacity(0.5),
+                              width: 1,
                             ),
                           ),
-
-                          // Accept hint
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Colors.green.withOpacity(0.2),
-                              border: Border.all(
-                                color: Colors.green.withOpacity(0.5),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Allergic',
-                                  style: TextStyle(
-                                    color: Colors.green.shade300,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(
-                                  Icons.arrow_right,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Allergic',
+                                style: TextStyle(
                                   color: Colors.green.shade300,
-                                  size: 16,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_right,
+                                color: Colors.green.shade300,
+                                size: 16,
+                              ),
+                            ],
                           ),
-                        ],
-                      )
-                    else
-                      SizedBox(height: 24),
-
-                    // Bottom section
-                    if (isCompleted) _buildBottomButtons(),
+                        ),
+                      ],
+                    )
+                  else
                     SizedBox(height: 24),
-                  ],
-                ),
+
+                  // Bottom section
+                  if (isCompleted) _buildBottomButtons(),
+                  SizedBox(height: 24),
+                ],
               ),
             ),
           ],
