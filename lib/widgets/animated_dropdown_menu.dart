@@ -56,7 +56,7 @@ class _AnimatedDropdownMenuState<T> extends State<AnimatedDropdownMenu<T>>
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(16),
           hintText: widget.hint,
-          hintStyle: TextStyle(color: Colors.white54, fontSize: 16),
+          hintStyle: TextStyle(color: Colors.white, fontSize: 16),
         ),
         validator: (value) {
           // Auto-unfocus when validation occurs (typically after selection)

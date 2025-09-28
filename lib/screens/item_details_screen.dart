@@ -8,12 +8,12 @@ import '../styling.dart';
 import 'dart:math' as math;
 
 class ItemDetailsScreen extends StatefulWidget {
-  final Meal meal;
+  final Food food;
   final String diningHall;
 
   const ItemDetailsScreen({
     Key? key,
-    required this.meal,
+    required this.food,
     required this.diningHall,
   });
 
@@ -233,7 +233,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.meal.name,
+                      widget.food.name,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -322,7 +322,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
               Expanded(
                 child: _buildNutritionCard(
                   'Calories',
-                  '${widget.meal.calories.round()}',
+                  '${widget.food.calories.round()}',
                   Colors.orange.shade300,
                   CupertinoIcons.flame_fill,
                 ),
@@ -331,7 +331,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
               Expanded(
                 child: _buildNutritionCard(
                   'Protein',
-                  '${widget.meal.protein.round()}g',
+                  '${widget.food.protein.round()}g',
                   Colors.green,
                   CupertinoIcons.bolt_fill,
                 ),
@@ -344,7 +344,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
               Expanded(
                 child: _buildNutritionCard(
                   'Fat',
-                  '${widget.meal.fat.round()}g',
+                  '${widget.food.fat.round()}g',
                   Colors.purple,
                   CupertinoIcons.drop_fill,
                 ),
@@ -353,7 +353,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
               Expanded(
                 child: _buildNutritionCard(
                   'Carbs',
-                  '${widget.meal.carbs.round()}g',
+                  '${widget.food.carbs.round()}g',
                   Colors.orange,
                   CupertinoIcons.heart_fill,
                 ),
@@ -407,10 +407,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
   }
 
   Widget _buildDetailedMacros() {
-    double totalCalories = widget.meal.calories;
-    double proteinCalories = widget.meal.protein * 4;
-    double carbCalories = widget.meal.carbs * 4;
-    double fatCalories = widget.meal.fat * 9;
+    double totalCalories = widget.food.calories;
+    double proteinCalories = widget.food.protein * 4;
+    double carbCalories = widget.food.carbs * 4;
+    double fatCalories = widget.food.fat * 9;
 
     return Container(
       padding: EdgeInsets.all(20),
@@ -541,11 +541,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
             ],
           ),
           SizedBox(height: 10),
-          ...widget.meal.foods.asMap().entries.map((entry) {
-            int index = entry.key;
-            Food food = entry.value;
-            return _buildIngredients(food, index);
-          }).toList(),
+
+          _buildIngredients(widget.food, 0),
         ],
       ),
     );

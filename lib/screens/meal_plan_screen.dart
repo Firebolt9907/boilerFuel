@@ -114,7 +114,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
       // Navigate to dietary restrictions flow
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen(user: widget.user)),
+        CupertinoPageRoute(builder: (context) => HomeScreen(user: widget.user)),
         (route) => false,
       );
     }

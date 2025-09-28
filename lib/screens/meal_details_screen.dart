@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/titanium_container.dart';
 import 'package:flutter/cupertino.dart';
@@ -552,136 +553,153 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
   }
 
   Widget _buildFoodItem(Food food, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white.withOpacity(0.08),
-        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: [
-                    Colors.blue,
-                    Colors.green,
-                    Colors.orange,
-                    Colors.purple,
-                    Colors.cyan,
-                    Colors.pink,
-                  ][index % 6].withOpacity(0.2),
-                ),
-                child: Center(
-                  child: Text(
-                    '${index + 1}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      fontFamily: '.SF Pro Text',
-                      decoration: TextDecoration.none,
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+            builder: (context) =>
+                ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16),
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Colors.white.withOpacity(0.08),
+          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: [
+                      Colors.blue,
+                      Colors.green,
+                      Colors.orange,
+                      Colors.purple,
+                      Colors.cyan,
+                      Colors.pink,
+                    ][index % 6].withOpacity(0.2),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        fontFamily: '.SF Pro Text',
+                        decoration: TextDecoration.none,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      food.name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    Text(
-                      food.station.isNotEmpty
-                          ? food.station
-                          : "Unknown Station",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.white.withOpacity(0.6),
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    if (food.ingredients.isNotEmpty) ...[
-                      SizedBox(height: 4),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        food.ingredients,
+                        food.name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      Text(
+                        food.station.isNotEmpty
+                            ? food.station
+                            : "Unknown Station",
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.white.withOpacity(0.6),
                           fontFamily: '.SF Pro Text',
                           decoration: TextDecoration.none,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
+                      if (food.ingredients.isNotEmpty) ...[
+                        SizedBox(height: 4),
+                        Text(
+                          food.ingredients,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.white.withOpacity(0.6),
+                            fontFamily: '.SF Pro Text',
+                            decoration: TextDecoration.none,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
+              ],
+            ),
+            SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                _buildNutritionChip(
+                  '${food.calories.round()} cal',
+                  Colors.blue,
+                ),
+                _buildNutritionChip('${food.protein.round()}g P', Colors.green),
+                _buildNutritionChip('${food.carbs.round()}g C', Colors.orange),
+                _buildNutritionChip('${food.fat.round()}g F', Colors.purple),
+              ],
+            ),
+            if (food.labels.isNotEmpty) ...[
+              SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: food.labels
+                    .take(4)
+                    .map(
+                      (label) => Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          color: Colors.cyan.withOpacity(0.2),
+                          border: Border.all(
+                            color: Colors.cyan.withOpacity(0.5),
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Text(
+                          label,
+                          style: TextStyle(
+                            color: Colors.cyan.shade200,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: '.SF Pro Text',
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
             ],
-          ),
-          SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 6,
-            children: [
-              _buildNutritionChip('${food.calories.round()} cal', Colors.blue),
-              _buildNutritionChip('${food.protein.round()}g P', Colors.green),
-              _buildNutritionChip('${food.carbs.round()}g C', Colors.orange),
-              _buildNutritionChip('${food.fat.round()}g F', Colors.purple),
-            ],
-          ),
-          if (food.labels.isNotEmpty) ...[
-            SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              runSpacing: 4,
-              children: food.labels
-                  .take(4)
-                  .map(
-                    (label) => Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: Colors.cyan.withOpacity(0.2),
-                        border: Border.all(
-                          color: Colors.cyan.withOpacity(0.5),
-                          width: 0.5,
-                        ),
-                      ),
-                      child: Text(
-                        label,
-                        style: TextStyle(
-                          color: Colors.cyan.shade200,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: '.SF Pro Text',
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
           ],
-        ],
+        ),
       ),
     );
   }

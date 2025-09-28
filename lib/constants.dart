@@ -72,7 +72,7 @@ class Food {
       station: map['station'] ?? "",
       rejectedReason: map['rejectedReason'] ?? "",
       collection: map['collection'],
-      restricted: map['restricted'],
+      restricted: map['restricted'] ?? false,
     );
   }
 
@@ -964,7 +964,6 @@ ${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}
     );
   }
 }
-
 
 extension StringExtension on String {
   String capitalize() {
