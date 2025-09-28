@@ -178,6 +178,8 @@ class LocalDatabase {
         UsersTableCompanion(
           uid: Value(user.uid),
           name: Value(user.name),
+          offlineDataFeatures: Value(user.offlineDataFeatures),
+          aiDataFeatures: Value(user.aiDataFeatures),
           weight: Value(user.weight),
           height: Value(user.height),
           age: Value(user.age),
@@ -199,6 +201,8 @@ class LocalDatabase {
             UsersTableCompanion(
               uid: Value(user.uid),
               name: Value(user.name),
+              offlineDataFeatures: Value(user.offlineDataFeatures),
+              aiDataFeatures: Value(user.aiDataFeatures),
               weight: Value(user.weight),
               height: Value(user.height),
               age: Value(user.age),
