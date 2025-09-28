@@ -556,6 +556,33 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (food.labels.isNotEmpty) ...[
+          if (food.restricted) ...[
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: Colors.red.withOpacity(0.2),
+                border: Border.all(
+                  color: Colors.red.withOpacity(0.5),
+                  width: 0.5,
+                ),
+              ),
+              child: Text(
+                "Restriction: " +
+                    food.rejectedReason
+                        .replaceAll("Contains dispreferred ingredient: ", "")
+                        .capitalize(),
+                style: TextStyle(
+                  color: Colors.red.shade200,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: '.SF Pro Text',
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ),
+            SizedBox(height: 6),
+          ],
           Wrap(
             spacing: 6,
             runSpacing: 4,

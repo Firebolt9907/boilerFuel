@@ -11,6 +11,7 @@ class Food {
   final String ingredients;
   String station;
   final List<String> labels;
+  bool restricted;
   String rejectedReason;
   String? collection;
 
@@ -24,6 +25,7 @@ class Food {
     required this.sugar,
     required this.ingredients,
     required this.labels,
+    this.restricted = false,
     this.rejectedReason = "",
     this.station = "",
     this.collection,
@@ -43,6 +45,7 @@ class Food {
       'rejectedReason': rejectedReason,
       'station': station,
       'collection': collection,
+      'restricted': restricted,
     };
   }
 
@@ -52,7 +55,7 @@ class Food {
   }
 
   String toMiniString() {
-    return '{name:$name,id:$id,calories:$calories,protein:$protein,carbs:$carbs,fat:$fat,sugar:$sugar}';
+    return '{name:$name,id:$id,calories:$calories,protein:$protein,carbs:$carbs,fat:$fat,sugar:$sugar,restricted:$restricted}';
   }
 
   factory Food.fromMap(Map<String, dynamic> map) {
@@ -69,6 +72,7 @@ class Food {
       station: map['station'] ?? "",
       rejectedReason: map['rejectedReason'] ?? "",
       collection: map['collection'],
+      restricted: map['restricted'],
     );
   }
 
@@ -114,6 +118,7 @@ class Food {
       sugar: sugar,
       ingredients: data['ingredients'] ?? '',
       labels: labels,
+      restricted: data['restricted'] ?? false,
     );
   }
 }
@@ -863,8 +868,16 @@ class DietaryRestrictions {
 
   List<List<Food>> filterFoodList(List<Food> allFoods) {
     return [
-      allFoods.where((food) => isFoodSuitable(food)).toList(),
-      allFoods.where((food) => !isFoodSuitable(food)).toList(),
+      allFoods.where((food) {
+        bool suitable = isFoodSuitable(food);
+        food.restricted = !suitable;
+        return suitable;
+      }).toList(),
+      allFoods.where((food) {
+        bool suitable = isFoodSuitable(food);
+        food.restricted = !suitable;
+        return !suitable;
+      }).toList(),
     ];
   }
 }
@@ -949,5 +962,15 @@ ${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}
       ),
       diningHall: map['diningHall'],
     );
+  }
+}
+
+
+extension StringExtension on String {
+  String capitalize() {
+    if (isEmpty) {
+      return this; // Return empty string if it's empty
+    }
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

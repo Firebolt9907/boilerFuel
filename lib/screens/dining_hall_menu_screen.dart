@@ -620,8 +620,15 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Colors.white.withOpacity(0.08),
-            border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+            color: foodItem.firstFood.restricted
+                ? Colors.red.withAlpha(40)
+                : Colors.white.withOpacity(0.08),
+            border: Border.all(
+              color: foodItem.firstFood.restricted
+                  ? Colors.red.withAlpha(120)
+                  : Colors.white.withOpacity(0.15),
+              width: 1,
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -676,6 +683,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                 ),
                               ),
                             ),
+
                             // if (foodItem.isCollection) ...[
                             //   SizedBox(width: 8),
                             //   Container(
@@ -705,6 +713,21 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                             // ],
                           ],
                         ),
+
+                        if (!foodItem.isCollection &&
+                            foodItem.firstFood.restricted) ...[
+                          SizedBox(height: 4),
+                          _buildNutritionChip(
+                            "Restriction: " +
+                                foodItem.firstFood.rejectedReason
+                                    .replaceAll(
+                                      "Contains dispreferred ingredient: ",
+                                      "",
+                                    )
+                                    .capitalize(),
+                            Colors.red,
+                          ),
+                        ],
                         if (!foodItem.isCollection &&
                             foodItem.firstFood.ingredients.isNotEmpty) ...[
                           SizedBox(height: 4),
@@ -915,15 +938,18 @@ _MenuProcessingResult _processMenuData(_MenuProcessingData data) {
     MealTime mealTime = entry.key;
     List<Food> diningHallFoods = entry.value;
 
-    List<Food> filteredFoods = data.dietaryRestrictions.filterFoodList(
+    List<List<Food>> temp = data.dietaryRestrictions.filterFoodList(
       diningHallFoods,
-    )[0];
+    );
+    List<Food> filteredFoods = temp[0];
+    List<Food> restrictedFoods = temp[1];
+    List<Food> allFoods = [...filteredFoods, ...restrictedFoods];
 
-    if (filteredFoods.isNotEmpty) {
+    if (allFoods.isNotEmpty) {
       Map<String, List<FoodItem>> stationGroups = {};
 
       Map<String, List<Food>> stationRawFoods = {};
-      for (Food food in filteredFoods) {
+      for (Food food in allFoods) {
         String station = food.station.isNotEmpty ? food.station : 'Other';
         if (!stationRawFoods.containsKey(station)) {
           stationRawFoods[station] = [];

@@ -143,12 +143,14 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
 
   void _continue() {
     int initialLength = _customIngredients.length;
+    print("Initial custom ingredients: $_customIngredients");
     for (int i = 0; i < initialLength; i++) {
       String ingredient = _customIngredients[i];
       if (ingredientAliases[ingredient] != null) {
         _customIngredients.addAll(ingredientAliases[ingredient]!);
       }
     }
+    print("Final custom ingredients with aliases: $_customIngredients");
     widget.onIngredientsSelected(_customIngredients);
     Navigator.pop(context, true); // Return success
   }
