@@ -105,7 +105,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                   padding: EdgeInsets.only(
                     left: 24,
                     right: 24,
-                    top: 24 + MediaQuery.of(context).padding.top,
+                    top: 24,
                     bottom:
                         24 +
                         MediaQuery.of(context).padding.bottom +

@@ -7,6 +7,8 @@ import 'package:boiler_fuel/widgets/animated_button.dart';
 import 'package:boiler_fuel/widgets/animated_dropdown_menu.dart';
 import 'package:boiler_fuel/widgets/animated_goal_option.dart';
 import 'package:boiler_fuel/widgets/animated_text_field.dart';
+import 'package:boiler_fuel/widgets/animated_toggle.dart';
+import 'package:boiler_fuel/widgets/titanium_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +36,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
   Gender? _selectedGender;
+  bool offlineDietFeatures = true;
+  bool aiDietFeatures = false;
+  MacroResult? _userMacros;
 
   @override
   void initState() {
@@ -74,6 +79,38 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       _selectedGoal = widget.user!.goal;
       _ageController.text = widget.user!.age.toString();
       _selectedGender = widget.user!.gender;
+    }
+    MacroResult result = CalorieMacroCalculator.calculateMacros(
+      age: int.parse(
+        _ageController.text.isNotEmpty ? _ageController.text : "0",
+      ),
+      weightLbs: double.parse(
+        _weightController.text.isNotEmpty ? _weightController.text : "0",
+      ),
+      heightInches: double.parse(
+        _heightController.text.isNotEmpty ? _heightController.text : "0",
+      ),
+      gender: _selectedGender ?? Gender.male,
+      goal: _selectedGoal ?? Goal.maintain,
+    );
+
+    print("Initial macro calc: $result");
+  }
+
+  void _updateMacros() {
+    if (_weightController.text.isNotEmpty &&
+        _heightController.text.isNotEmpty &&
+        _selectedGoal != null &&
+        _ageController.text.isNotEmpty &&
+        _selectedGender != null) {
+      MacroResult result = CalorieMacroCalculator.calculateMacros(
+        age: int.parse(_ageController.text),
+        weightLbs: double.parse(_weightController.text),
+        heightInches: double.parse(_heightController.text),
+        gender: _selectedGender ?? Gender.male,
+        goal: _selectedGoal ?? Goal.maintain,
+      );
+      print("Updated macro calc: $result");
     }
   }
 
@@ -288,84 +325,166 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         label: 'Name',
                         keyboardType: TextInputType.text,
                       ),
-                      SizedBox(height: 12),
-                      AnimatedTextField(
-                        controller: _ageController,
-                        label: 'Age',
-                        keyboardType: TextInputType.number,
-                      ),
-                      SizedBox(height: 12),
-                      AnimatedDropdownMenu<Gender>(
-                        value: _selectedGender,
-                        label: "Sex",
-                        hint: "Choose your sex",
-                        items: [
-                          DropdownMenuItem(
-                            value: Gender.male,
-                            child: Text("Male"),
-                          ),
-                          DropdownMenuItem(
-                            value: Gender.female,
-                            child: Text("Female"),
-                          ),
-                        ],
-                        onChanged: (value) {
+                      AnimatedSwitch(
+                        text: "Offline Diet Features",
+                        onTap: (bool value) {
                           setState(() {
-                            _selectedGender = value;
+                            offlineDietFeatures = value;
                           });
                         },
+                        isEnabled: true,
+                        initialValue: offlineDietFeatures,
                       ),
-                      SizedBox(height: 12),
-                      // Enhanced input fields
-                      AnimatedTextField(
-                        controller: _weightController,
-                        label: 'Weight (lbs)',
-                        keyboardType: TextInputType.number,
-                      ),
-                      SizedBox(height: 12),
-                      AnimatedTextField(
-                        controller: _heightController,
-                        label: 'Height (inches)',
-                        keyboardType: TextInputType.number,
-                      ),
-                      SizedBox(height: 40),
 
-                      // Goal selection section
-                      Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white.withOpacity(0.05),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.15),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Health Goal',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
+                      AnimatedOpacity(
+                        duration: Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        opacity: offlineDietFeatures ? 1 : 0.5,
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.white.withOpacity(0.05),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.15),
+                              width: 1,
                             ),
-                            SizedBox(height: 16),
-                            ...['Cutting', 'Maintain', 'Bulking'].map(
-                              (goal) => AnimatedGoalOption(
-                                text: goal,
-                                isSelected: _selectedGoal.toString() == goal,
-                                onTap: () => setState(
-                                  () => _selectedGoal = Goal.fromString(goal),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 0,
+                            children: [
+                              Text(
+                                'Nutritional Formula Inputs',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
-                            ),
-                          ],
+                              Text(
+                                'None of these values will leave your device',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              AnimatedTextField(
+                                controller: _ageController,
+                                label: 'Age',
+                                keyboardType: TextInputType.number,
+                              ),
+                              SizedBox(height: 12),
+                              AnimatedDropdownMenu<Gender>(
+                                value: _selectedGender,
+                                label: "Sex",
+                                hint: "Choose your sex",
+                                items: [
+                                  DropdownMenuItem(
+                                    value: Gender.male,
+                                    child: Text("Male"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: Gender.female,
+                                    child: Text("Female"),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedGender = value;
+                                  });
+                                },
+                              ),
+                              SizedBox(height: 12),
+                              // Enhanced input fields
+                              AnimatedTextField(
+                                controller: _weightController,
+                                label: 'Weight (lbs)',
+                                keyboardType: TextInputType.number,
+                              ),
+                              SizedBox(height: 12),
+                              AnimatedTextField(
+                                controller: _heightController,
+                                label: 'Height (inches)',
+                                keyboardType: TextInputType.number,
+                              ),
+                              SizedBox(height: 20),
+                              Text(
+                                'Health Goal',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              ...['Cutting', 'Maintain', 'Bulking'].map(
+                                (goal) => AnimatedGoalOption(
+                                  text: goal,
+                                  isSelected: _selectedGoal.toString() == goal,
+                                  onTap: () => setState(
+                                    () => _selectedGoal = Goal.fromString(goal),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+                      AnimatedOpacity(
+                        duration: Duration(milliseconds: 200),
+                        opacity: offlineDietFeatures ? 1 : 0.5,
+                        child: AnimatedSwitch(
+                          text: "AI Meal Planning",
+                          onTap: (bool value) {
+                            setState(() {
+                              aiDietFeatures = value;
+                              if (aiDietFeatures) {
+                                _userMacros =
+                                    CalorieMacroCalculator.calculateMacros(
+                                      age: int.parse(
+                                        _ageController.text.isNotEmpty
+                                            ? _ageController.text
+                                            : "0",
+                                      ),
+                                      weightLbs: double.parse(
+                                        _weightController.text.isNotEmpty
+                                            ? _weightController.text
+                                            : "0",
+                                      ),
+                                      heightInches: double.parse(
+                                        _heightController.text.isNotEmpty
+                                            ? _heightController.text
+                                            : "0",
+                                      ),
+                                      goal: _selectedGoal ?? Goal.maintain,
+                                      gender: _selectedGender ?? Gender.male,
+                                    );
+                              } else {
+                                _userMacros = null;
+                              }
+                            });
+                          },
+                          isEnabled:
+                              offlineDietFeatures &&
+                              _weightController.text.isNotEmpty &&
+                              _heightController.text.isNotEmpty &&
+                              _selectedGoal != null &&
+                              _nameController.text.isNotEmpty &&
+                              _selectedGender != null &&
+                              _ageController.text.isNotEmpty,
+                          initialValue: aiDietFeatures,
+                        ),
+                      ),
+
+                      _userMacros != null
+                          ? _buildMacrosOverview(_userMacros!)
+                          : Container(),
 
                       SizedBox(height: 60),
 
@@ -432,6 +551,120 @@ class _UserInfoScreenState extends State<UserInfoScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildMacrosOverview(MacroResult _userMacros) {
+    return TitaniumContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.analytics, color: Colors.cyan.shade300, size: 24),
+              SizedBox(width: 12),
+              Text(
+                'Data To Be Uploaded',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildMacroCard(
+                  'Calories',
+                  '${_userMacros!.calories.round()}',
+                  'kcal',
+                  Colors.blue,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: _buildMacroCard(
+                  'Protein',
+                  '${_userMacros!.protein.round()}',
+                  'g',
+                  Colors.green,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildMacroCard(
+                  'Carbs',
+                  '${_userMacros!.carbs.round()}',
+                  'g',
+                  Colors.orange,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: _buildMacroCard(
+                  'Fat',
+                  '${_userMacros!.fat.round()}',
+                  'g',
+                  Colors.purple,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMacroCard(String label, String value, String unit, Color color) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: color.withOpacity(0.1),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.white.withOpacity(0.7),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: 2),
+              Text(
+                unit,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white.withOpacity(0.6),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
