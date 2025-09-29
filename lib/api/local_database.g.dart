@@ -40,6 +40,33 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _offlineDataFeaturesMeta =
+      const VerificationMeta('offlineDataFeatures');
+  @override
+  late final GeneratedColumn<bool> offlineDataFeatures = GeneratedColumn<bool>(
+    'offline_data_features',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("offline_data_features" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _aiDataFeaturesMeta = const VerificationMeta(
+    'aiDataFeatures',
+  );
+  @override
+  late final GeneratedColumn<bool> aiDataFeatures = GeneratedColumn<bool>(
+    'ai_data_features',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("ai_data_features" IN (0, 1))',
+    ),
+  );
   static const VerificationMeta _genderMeta = const VerificationMeta('gender');
   @override
   late final GeneratedColumn<String> gender = GeneratedColumn<String>(
@@ -123,6 +150,8 @@ class $UsersTableTable extends UsersTable
     id,
     uid,
     name,
+    offlineDataFeatures,
+    aiDataFeatures,
     gender,
     age,
     weight,
@@ -162,6 +191,28 @@ class $UsersTableTable extends UsersTable
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('offline_data_features')) {
+      context.handle(
+        _offlineDataFeaturesMeta,
+        offlineDataFeatures.isAcceptableOrUnknown(
+          data['offline_data_features']!,
+          _offlineDataFeaturesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_offlineDataFeaturesMeta);
+    }
+    if (data.containsKey('ai_data_features')) {
+      context.handle(
+        _aiDataFeaturesMeta,
+        aiDataFeatures.isAcceptableOrUnknown(
+          data['ai_data_features']!,
+          _aiDataFeaturesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_aiDataFeaturesMeta);
     }
     if (data.containsKey('gender')) {
       context.handle(
@@ -254,6 +305,14 @@ class $UsersTableTable extends UsersTable
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      offlineDataFeatures: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}offline_data_features'],
+      )!,
+      aiDataFeatures: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}ai_data_features'],
+      )!,
       gender: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}gender'],
@@ -299,6 +358,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
   final int id;
   final String uid;
   final String name;
+  final bool offlineDataFeatures;
+  final bool aiDataFeatures;
   final String gender;
   final int age;
   final int weight;
@@ -311,6 +372,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     required this.id,
     required this.uid,
     required this.name,
+    required this.offlineDataFeatures,
+    required this.aiDataFeatures,
     required this.gender,
     required this.age,
     required this.weight,
@@ -326,6 +389,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     map['id'] = Variable<int>(id);
     map['uid'] = Variable<String>(uid);
     map['name'] = Variable<String>(name);
+    map['offline_data_features'] = Variable<bool>(offlineDataFeatures);
+    map['ai_data_features'] = Variable<bool>(aiDataFeatures);
     map['gender'] = Variable<String>(gender);
     map['age'] = Variable<int>(age);
     map['weight'] = Variable<int>(weight);
@@ -342,6 +407,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       id: Value(id),
       uid: Value(uid),
       name: Value(name),
+      offlineDataFeatures: Value(offlineDataFeatures),
+      aiDataFeatures: Value(aiDataFeatures),
       gender: Value(gender),
       age: Value(age),
       weight: Value(weight),
@@ -362,6 +429,10 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       id: serializer.fromJson<int>(json['id']),
       uid: serializer.fromJson<String>(json['uid']),
       name: serializer.fromJson<String>(json['name']),
+      offlineDataFeatures: serializer.fromJson<bool>(
+        json['offlineDataFeatures'],
+      ),
+      aiDataFeatures: serializer.fromJson<bool>(json['aiDataFeatures']),
       gender: serializer.fromJson<String>(json['gender']),
       age: serializer.fromJson<int>(json['age']),
       weight: serializer.fromJson<int>(json['weight']),
@@ -383,6 +454,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       'id': serializer.toJson<int>(id),
       'uid': serializer.toJson<String>(uid),
       'name': serializer.toJson<String>(name),
+      'offlineDataFeatures': serializer.toJson<bool>(offlineDataFeatures),
+      'aiDataFeatures': serializer.toJson<bool>(aiDataFeatures),
       'gender': serializer.toJson<String>(gender),
       'age': serializer.toJson<int>(age),
       'weight': serializer.toJson<int>(weight),
@@ -398,6 +471,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     int? id,
     String? uid,
     String? name,
+    bool? offlineDataFeatures,
+    bool? aiDataFeatures,
     String? gender,
     int? age,
     int? weight,
@@ -410,6 +485,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     id: id ?? this.id,
     uid: uid ?? this.uid,
     name: name ?? this.name,
+    offlineDataFeatures: offlineDataFeatures ?? this.offlineDataFeatures,
+    aiDataFeatures: aiDataFeatures ?? this.aiDataFeatures,
     gender: gender ?? this.gender,
     age: age ?? this.age,
     weight: weight ?? this.weight,
@@ -424,6 +501,12 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       id: data.id.present ? data.id.value : this.id,
       uid: data.uid.present ? data.uid.value : this.uid,
       name: data.name.present ? data.name.value : this.name,
+      offlineDataFeatures: data.offlineDataFeatures.present
+          ? data.offlineDataFeatures.value
+          : this.offlineDataFeatures,
+      aiDataFeatures: data.aiDataFeatures.present
+          ? data.aiDataFeatures.value
+          : this.aiDataFeatures,
       gender: data.gender.present ? data.gender.value : this.gender,
       age: data.age.present ? data.age.value : this.age,
       weight: data.weight.present ? data.weight.value : this.weight,
@@ -445,6 +528,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
           ..write('id: $id, ')
           ..write('uid: $uid, ')
           ..write('name: $name, ')
+          ..write('offlineDataFeatures: $offlineDataFeatures, ')
+          ..write('aiDataFeatures: $aiDataFeatures, ')
           ..write('gender: $gender, ')
           ..write('age: $age, ')
           ..write('weight: $weight, ')
@@ -462,6 +547,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     id,
     uid,
     name,
+    offlineDataFeatures,
+    aiDataFeatures,
     gender,
     age,
     weight,
@@ -478,6 +565,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
           other.id == this.id &&
           other.uid == this.uid &&
           other.name == this.name &&
+          other.offlineDataFeatures == this.offlineDataFeatures &&
+          other.aiDataFeatures == this.aiDataFeatures &&
           other.gender == this.gender &&
           other.age == this.age &&
           other.weight == this.weight &&
@@ -492,6 +581,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
   final Value<int> id;
   final Value<String> uid;
   final Value<String> name;
+  final Value<bool> offlineDataFeatures;
+  final Value<bool> aiDataFeatures;
   final Value<String> gender;
   final Value<int> age;
   final Value<int> weight;
@@ -504,6 +595,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     this.id = const Value.absent(),
     this.uid = const Value.absent(),
     this.name = const Value.absent(),
+    this.offlineDataFeatures = const Value.absent(),
+    this.aiDataFeatures = const Value.absent(),
     this.gender = const Value.absent(),
     this.age = const Value.absent(),
     this.weight = const Value.absent(),
@@ -517,6 +610,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     this.id = const Value.absent(),
     required String uid,
     required String name,
+    required bool offlineDataFeatures,
+    required bool aiDataFeatures,
     required String gender,
     required int age,
     required int weight,
@@ -527,6 +622,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     required String diningCourtRanking,
   }) : uid = Value(uid),
        name = Value(name),
+       offlineDataFeatures = Value(offlineDataFeatures),
+       aiDataFeatures = Value(aiDataFeatures),
        gender = Value(gender),
        age = Value(age),
        weight = Value(weight),
@@ -539,6 +636,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     Expression<int>? id,
     Expression<String>? uid,
     Expression<String>? name,
+    Expression<bool>? offlineDataFeatures,
+    Expression<bool>? aiDataFeatures,
     Expression<String>? gender,
     Expression<int>? age,
     Expression<int>? weight,
@@ -552,6 +651,9 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
       if (id != null) 'id': id,
       if (uid != null) 'uid': uid,
       if (name != null) 'name': name,
+      if (offlineDataFeatures != null)
+        'offline_data_features': offlineDataFeatures,
+      if (aiDataFeatures != null) 'ai_data_features': aiDataFeatures,
       if (gender != null) 'gender': gender,
       if (age != null) 'age': age,
       if (weight != null) 'weight': weight,
@@ -569,6 +671,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     Value<int>? id,
     Value<String>? uid,
     Value<String>? name,
+    Value<bool>? offlineDataFeatures,
+    Value<bool>? aiDataFeatures,
     Value<String>? gender,
     Value<int>? age,
     Value<int>? weight,
@@ -582,6 +686,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
       id: id ?? this.id,
       uid: uid ?? this.uid,
       name: name ?? this.name,
+      offlineDataFeatures: offlineDataFeatures ?? this.offlineDataFeatures,
+      aiDataFeatures: aiDataFeatures ?? this.aiDataFeatures,
       gender: gender ?? this.gender,
       age: age ?? this.age,
       weight: weight ?? this.weight,
@@ -604,6 +710,12 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (offlineDataFeatures.present) {
+      map['offline_data_features'] = Variable<bool>(offlineDataFeatures.value);
+    }
+    if (aiDataFeatures.present) {
+      map['ai_data_features'] = Variable<bool>(aiDataFeatures.value);
     }
     if (gender.present) {
       map['gender'] = Variable<String>(gender.value);
@@ -638,6 +750,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
           ..write('id: $id, ')
           ..write('uid: $uid, ')
           ..write('name: $name, ')
+          ..write('offlineDataFeatures: $offlineDataFeatures, ')
+          ..write('aiDataFeatures: $aiDataFeatures, ')
           ..write('gender: $gender, ')
           ..write('age: $age, ')
           ..write('weight: $weight, ')
@@ -2803,6 +2917,8 @@ typedef $$UsersTableTableCreateCompanionBuilder =
       Value<int> id,
       required String uid,
       required String name,
+      required bool offlineDataFeatures,
+      required bool aiDataFeatures,
       required String gender,
       required int age,
       required int weight,
@@ -2817,6 +2933,8 @@ typedef $$UsersTableTableUpdateCompanionBuilder =
       Value<int> id,
       Value<String> uid,
       Value<String> name,
+      Value<bool> offlineDataFeatures,
+      Value<bool> aiDataFeatures,
       Value<String> gender,
       Value<int> age,
       Value<int> weight,
@@ -2848,6 +2966,16 @@ class $$UsersTableTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get offlineDataFeatures => $composableBuilder(
+    column: $table.offlineDataFeatures,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get aiDataFeatures => $composableBuilder(
+    column: $table.aiDataFeatures,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2916,6 +3044,16 @@ class $$UsersTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get offlineDataFeatures => $composableBuilder(
+    column: $table.offlineDataFeatures,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get aiDataFeatures => $composableBuilder(
+    column: $table.aiDataFeatures,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get gender => $composableBuilder(
     column: $table.gender,
     builder: (column) => ColumnOrderings(column),
@@ -2974,6 +3112,16 @@ class $$UsersTableTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<bool> get offlineDataFeatures => $composableBuilder(
+    column: $table.offlineDataFeatures,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get aiDataFeatures => $composableBuilder(
+    column: $table.aiDataFeatures,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get gender =>
       $composableBuilder(column: $table.gender, builder: (column) => column);
@@ -3038,6 +3186,8 @@ class $$UsersTableTableTableManager
                 Value<int> id = const Value.absent(),
                 Value<String> uid = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<bool> offlineDataFeatures = const Value.absent(),
+                Value<bool> aiDataFeatures = const Value.absent(),
                 Value<String> gender = const Value.absent(),
                 Value<int> age = const Value.absent(),
                 Value<int> weight = const Value.absent(),
@@ -3050,6 +3200,8 @@ class $$UsersTableTableTableManager
                 id: id,
                 uid: uid,
                 name: name,
+                offlineDataFeatures: offlineDataFeatures,
+                aiDataFeatures: aiDataFeatures,
                 gender: gender,
                 age: age,
                 weight: weight,
@@ -3064,6 +3216,8 @@ class $$UsersTableTableTableManager
                 Value<int> id = const Value.absent(),
                 required String uid,
                 required String name,
+                required bool offlineDataFeatures,
+                required bool aiDataFeatures,
                 required String gender,
                 required int age,
                 required int weight,
@@ -3076,6 +3230,8 @@ class $$UsersTableTableTableManager
                 id: id,
                 uid: uid,
                 name: name,
+                offlineDataFeatures: offlineDataFeatures,
+                aiDataFeatures: aiDataFeatures,
                 gender: gender,
                 age: age,
                 weight: weight,
