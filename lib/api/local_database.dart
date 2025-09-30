@@ -103,13 +103,11 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 22) {
-        print("Deleting old database");
+      if (resetLocalDB <= 24) {
+        print("Deleting old database to add new columns");
         await file.delete();
-        await SharedPrefs.setResetLocalData(23);
-        // print("Deleted old database");
-        // await LocalDatabase().deleteOldResponse();
-        // print("Deleted old responses");
+        await SharedPrefs.setResetLocalData(25);
+        print("Deleted old database - new schema will be created");
       }
     } catch (e) {
       print(e);

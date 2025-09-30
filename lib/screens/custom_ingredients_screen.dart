@@ -239,348 +239,355 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
             // Main content
             FadeTransition(
               opacity: _fadeAnimation,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24 + MediaQuery.of(context).padding.top,
-                  bottom:
-                      24 +
-                      MediaQuery.of(context).padding.bottom +
-                      MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Back button
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.1),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-
-                    // Title
-                    ShaderMask(
-                      shaderCallback: (bounds) => LinearGradient(
-                        colors: [
-                          Colors.white,
-                          Colors.orange.shade300,
-                          Colors.amber.shade200,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ).createShader(bounds),
-                      child: Text(
-                        'Custom Restrictions',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white.withOpacity(0.05),
-                        border: Border.all(
+              child: SizedBox.expand(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                    top: 24 + MediaQuery.of(context).padding.top,
+                    bottom:
+                        24 +
+                        MediaQuery.of(context).padding.bottom +
+                        MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Back button
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
                           color: Colors.white.withOpacity(0.1),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        'Add specific ingredients you want to avoid',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.8),
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 40),
-
-                    // Input field
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white.withOpacity(0.05),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Add Ingredient',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 1,
                           ),
-                          SizedBox(height: 16),
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ),
+                      SizedBox(height: 24),
 
-                          // Text field with add button
-                          Row(
-                            children: [
-                              Expanded(
-                                child: AnimatedTextField(
-                                  controller: _ingredientController,
-                                  label: 'e.g., beef, pork, mushrooms',
-                                ),
+                      // Title
+                      ShaderMask(
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: [
+                            Colors.white,
+                            Colors.orange.shade300,
+                            Colors.amber.shade200,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          'Custom Restrictions',
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: Colors.white.withOpacity(0.05),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          'Add specific ingredients you want to avoid',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.8),
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 40),
+
+                      // Input field
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white.withOpacity(0.05),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.15),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Add Ingredient',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
                               ),
-                              SizedBox(width: 12),
-                              Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Colors.orange.shade400,
-                                      Colors.amber.shade300,
-                                    ],
+                            ),
+                            SizedBox(height: 16),
+
+                            // Text field with add button
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AnimatedTextField(
+                                    controller: _ingredientController,
+                                    label: 'e.g., beef, pork, mushrooms',
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.orange.withOpacity(0.3),
-                                      blurRadius: 15,
-                                      offset: Offset(0, 5),
-                                    ),
-                                  ],
                                 ),
-                                child: IconButton(
-                                  icon: Icon(Icons.add, color: Colors.white),
-                                  onPressed: () {
-                                    setState(() {
-                                      _suggestionChips.add(
-                                        _ingredientController.text
-                                            .toUpperCase(),
-                                      );
-                                    });
-                                    _addIngredient(_ingredientController.text);
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 32),
-
-                    // Quick suggestions
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white.withOpacity(0.05),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Quick Add',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: _suggestionChips.map((suggestion) {
-                                final isSelected = _customIngredients.contains(
-                                  suggestion.trim().toLowerCase(),
-                                );
-                                return GestureDetector(
-                                  onTap: () => isSelected
-                                      ? _removeIngredient(suggestion)
-                                      : _addFromSuggestion(suggestion),
-                                  child: AnimatedContainer(
-                                    duration: Duration(milliseconds: 200),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: isSelected
-                                          ? Colors.orange.withOpacity(0.3)
-                                          : Colors.white.withOpacity(0.1),
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? Colors.orange.withOpacity(0.7)
-                                            : Colors.white.withOpacity(0.3),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (isSelected) ...[
-                                          Icon(
-                                            Icons.check,
-                                            size: 16,
-                                            color: Colors.orange.shade300,
-                                          ),
-                                          SizedBox(width: 4),
-                                        ],
-                                        Text(
-                                          suggestion,
-                                          style: TextStyle(
-                                            color: isSelected
-                                                ? Colors.orange.shade200
-                                                : Colors.white.withOpacity(0.8),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
+                                SizedBox(width: 12),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.orange.shade400,
+                                        Colors.amber.shade300,
                                       ],
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.orange.withOpacity(0.3),
+                                        blurRadius: 15,
+                                        offset: Offset(0, 5),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              }).toList(),
+                                  child: IconButton(
+                                    icon: Icon(Icons.add, color: Colors.white),
+                                    onPressed: () {
+                                      setState(() {
+                                        _suggestionChips.add(
+                                          _ingredientController.text
+                                              .toUpperCase(),
+                                        );
+                                      });
+                                      _addIngredient(
+                                        _ingredientController.text,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 32),
 
-                    SizedBox(height: 32),
+                      // Quick suggestions
+                      Container(
+                        padding: EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white.withOpacity(0.05),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.15),
+                            width: 1,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Quick Add',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: _suggestionChips.map((suggestion) {
+                                  final isSelected = _customIngredients
+                                      .contains(
+                                        suggestion.trim().toLowerCase(),
+                                      );
+                                  return GestureDetector(
+                                    onTap: () => isSelected
+                                        ? _removeIngredient(suggestion)
+                                        : _addFromSuggestion(suggestion),
+                                    child: AnimatedContainer(
+                                      duration: Duration(milliseconds: 200),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: isSelected
+                                            ? Colors.orange.withOpacity(0.3)
+                                            : Colors.white.withOpacity(0.1),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? Colors.orange.withOpacity(0.7)
+                                              : Colors.white.withOpacity(0.3),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (isSelected) ...[
+                                            Icon(
+                                              Icons.check,
+                                              size: 16,
+                                              color: Colors.orange.shade300,
+                                            ),
+                                            SizedBox(width: 4),
+                                          ],
+                                          Text(
+                                            suggestion,
+                                            style: TextStyle(
+                                              color: isSelected
+                                                  ? Colors.orange.shade200
+                                                  : Colors.white.withOpacity(
+                                                      0.8,
+                                                    ),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
-                    // Current restrictions
-                    // if (_customIngredients.isNotEmpty) ...[
-                    //   Container(
-                    //     padding: EdgeInsets.all(20),
-                    //     decoration: BoxDecoration(
-                    //       borderRadius: BorderRadius.circular(20),
-                    //       color: Colors.white.withOpacity(0.05),
-                    //       border: Border.all(
-                    //         color: Colors.white.withOpacity(0.15),
-                    //         width: 1,
-                    //       ),
-                    //     ),
-                    //     child: Column(
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       children: [
-                    //         Row(
-                    //           children: [
-                    //             Text(
-                    //               'Your Restrictions',
-                    //               style: TextStyle(
-                    //                 fontSize: 18,
-                    //                 fontWeight: FontWeight.w600,
-                    //                 color: Colors.white,
-                    //                 letterSpacing: 0.5,
-                    //               ),
-                    //             ),
-                    //             Spacer(),
-                    //             Container(
-                    //               padding: EdgeInsets.symmetric(
-                    //                 horizontal: 12,
-                    //                 vertical: 4,
-                    //               ),
-                    //               decoration: BoxDecoration(
-                    //                 borderRadius: BorderRadius.circular(12),
-                    //                 color: Colors.orange.withOpacity(0.2),
-                    //                 border: Border.all(
-                    //                   color: Colors.orange.withOpacity(0.5),
-                    //                   width: 1,
-                    //                 ),
-                    //               ),
-                    //               child: Text(
-                    //                 '${_customIngredients.length} items',
-                    //                 style: TextStyle(
-                    //                   fontSize: 12,
-                    //                   color: Colors.orange.shade300,
-                    //                   fontWeight: FontWeight.w500,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //         SizedBox(height: 16),
-                    //         Wrap(
-                    //           spacing: 8,
-                    //           runSpacing: 8,
-                    //           children: _customIngredients.map((ingredient) {
-                    //             return Container(
-                    //               padding: EdgeInsets.symmetric(
-                    //                 horizontal: 12,
-                    //                 vertical: 8,
-                    //               ),
-                    //               decoration: BoxDecoration(
-                    //                 borderRadius: BorderRadius.circular(20),
-                    //                 color: Colors.red.withOpacity(0.2),
-                    //                 border: Border.all(
-                    //                   color: Colors.red.withOpacity(0.5),
-                    //                   width: 1,
-                    //                 ),
-                    //               ),
-                    //               child: Row(
-                    //                 mainAxisSize: MainAxisSize.min,
-                    //                 children: [
-                    //                   Text(
-                    //                     ingredient,
-                    //                     style: TextStyle(
-                    //                       color: Colors.red.shade200,
-                    //                       fontSize: 12,
-                    //                       fontWeight: FontWeight.w500,
-                    //                     ),
-                    //                   ),
-                    //                   SizedBox(width: 6),
-                    //                   GestureDetector(
-                    //                     onTap: () =>
-                    //                         _removeIngredient(ingredient),
-                    //                     child: Icon(
-                    //                       Icons.close,
-                    //                       size: 16,
-                    //                       color: Colors.red.shade300,
-                    //                     ),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //             );
-                    //           }).toList(),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    //   SizedBox(height: 40),
-                    // ],
+                      SizedBox(height: 32),
 
-                    // Bottom buttons
-                    AnimatedButton(text: 'Save', onTap: _continue),
-                    SizedBox(height: 12),
-                  ],
+                      // Current restrictions
+                      // if (_customIngredients.isNotEmpty) ...[
+                      //   Container(
+                      //     padding: EdgeInsets.all(20),
+                      //     decoration: BoxDecoration(
+                      //       borderRadius: BorderRadius.circular(20),
+                      //       color: Colors.white.withOpacity(0.05),
+                      //       border: Border.all(
+                      //         color: Colors.white.withOpacity(0.15),
+                      //         width: 1,
+                      //       ),
+                      //     ),
+                      //     child: Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       children: [
+                      //         Row(
+                      //           children: [
+                      //             Text(
+                      //               'Your Restrictions',
+                      //               style: TextStyle(
+                      //                 fontSize: 18,
+                      //                 fontWeight: FontWeight.w600,
+                      //                 color: Colors.white,
+                      //                 letterSpacing: 0.5,
+                      //               ),
+                      //             ),
+                      //             Spacer(),
+                      //             Container(
+                      //               padding: EdgeInsets.symmetric(
+                      //                 horizontal: 12,
+                      //                 vertical: 4,
+                      //               ),
+                      //               decoration: BoxDecoration(
+                      //                 borderRadius: BorderRadius.circular(12),
+                      //                 color: Colors.orange.withOpacity(0.2),
+                      //                 border: Border.all(
+                      //                   color: Colors.orange.withOpacity(0.5),
+                      //                   width: 1,
+                      //                 ),
+                      //               ),
+                      //               child: Text(
+                      //                 '${_customIngredients.length} items',
+                      //                 style: TextStyle(
+                      //                   fontSize: 12,
+                      //                   color: Colors.orange.shade300,
+                      //                   fontWeight: FontWeight.w500,
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         SizedBox(height: 16),
+                      //         Wrap(
+                      //           spacing: 8,
+                      //           runSpacing: 8,
+                      //           children: _customIngredients.map((ingredient) {
+                      //             return Container(
+                      //               padding: EdgeInsets.symmetric(
+                      //                 horizontal: 12,
+                      //                 vertical: 8,
+                      //               ),
+                      //               decoration: BoxDecoration(
+                      //                 borderRadius: BorderRadius.circular(20),
+                      //                 color: Colors.red.withOpacity(0.2),
+                      //                 border: Border.all(
+                      //                   color: Colors.red.withOpacity(0.5),
+                      //                   width: 1,
+                      //                 ),
+                      //               ),
+                      //               child: Row(
+                      //                 mainAxisSize: MainAxisSize.min,
+                      //                 children: [
+                      //                   Text(
+                      //                     ingredient,
+                      //                     style: TextStyle(
+                      //                       color: Colors.red.shade200,
+                      //                       fontSize: 12,
+                      //                       fontWeight: FontWeight.w500,
+                      //                     ),
+                      //                   ),
+                      //                   SizedBox(width: 6),
+                      //                   GestureDetector(
+                      //                     onTap: () =>
+                      //                         _removeIngredient(ingredient),
+                      //                     child: Icon(
+                      //                       Icons.close,
+                      //                       size: 16,
+                      //                       color: Colors.red.shade300,
+                      //                     ),
+                      //                   ),
+                      //                 ],
+                      //               ),
+                      //             );
+                      //           }).toList(),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      //   SizedBox(height: 40),
+                      // ],
+
+                      // Bottom buttons
+                      AnimatedButton(text: 'Save', onTap: _continue),
+                      SizedBox(height: 12),
+                    ],
+                  ),
                 ),
               ),
             ),

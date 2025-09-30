@@ -31,9 +31,6 @@ void main() async {
       systemNavigationBarContrastEnforced: false,
       systemNavigationBarDividerColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
-      systemNavigationBarIconBrightness: Brightness.light,
-      statusBarBrightness: Brightness.light,
-      systemStatusBarContrastEnforced: true,
     ),
   );
   // init firebase

@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
-
 import 'package:flutter/material.dart';
 
 class Food {
@@ -345,7 +343,7 @@ class User {
     required this.mealPlan,
     required this.diningHallRank,
     required this.age,
-    required this.gender ,
+    required this.gender,
   });
 
   Map<String, dynamic> toMap() {
