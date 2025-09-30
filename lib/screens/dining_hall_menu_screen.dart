@@ -718,7 +718,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                             foodItem.firstFood.restricted) ...[
                           SizedBox(height: 4),
                           _buildNutritionChip(
-                            "Restriction: ${foodItem.firstFood.rejectedReason.replaceAll("Contains dispreferred ingredient: ", "").replaceAll("Is dispreferred ingredient: ", "").capitalize()}",
+                            "Restriction: ${foodItem.firstFood.rejectedReason.capitalize()}",
                             Colors.red,
                           ),
                         ],

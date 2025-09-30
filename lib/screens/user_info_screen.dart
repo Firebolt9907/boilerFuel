@@ -74,14 +74,15 @@ class _UserInfoScreenState extends State<UserInfoScreen>
 
     if (widget.user != null) {
       _nameController.text = widget.user!.name;
-      _weightController.text = widget.user!.weight.toString();
-      _heightController.text = widget.user!.height.toString();
+      _weightController.text = checkNulls(widget.user!.weight.toString());
+      _heightController.text = checkNulls(widget.user!.height.toString());
       _selectedGoal = widget.user!.goal;
-      _ageController.text = widget.user!.age.toString();
+      _ageController.text = checkNulls(widget.user!.age.toString());
       _selectedGender = widget.user!.gender;
       _offlineDietFeatures = widget.user!.offlineDataFeatures;
       _aiDietFeatures = widget.user!.aiDataFeatures;
     }
+
     MacroResult result = CalorieMacroCalculator.calculateMacros(
       age: int.parse(
         _ageController.text.isNotEmpty ? _ageController.text : "0",
@@ -114,6 +115,13 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       );
       print("Updated macro calc: $result");
     }
+  }
+
+  String checkNulls(String input) {
+    if (input == "-1") {
+      return "";
+    }
+    return input;
   }
 
   @override

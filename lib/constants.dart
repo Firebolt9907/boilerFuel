@@ -829,11 +829,11 @@ class DietaryRestrictions {
     // Check allergies
     for (var allergy in allergies) {
       if (food.labels.contains(allergy.toString())) {
-        food.rejectedReason = "Contains allergen: ${allergy.toString()}";
+        food.rejectedReason = allergy.toString();
         return false;
       }
       if (food.labels.contains("Milk") && allergy == FoodAllergy.Dairy) {
-        food.rejectedReason = "Contains allergen: ${allergy.toString()}";
+        food.rejectedReason = allergy.toString();
         return false;
       }
     }
@@ -841,8 +841,7 @@ class DietaryRestrictions {
     // Check preferences
     for (var preference in preferences) {
       if (!food.labels.contains(preference.toString())) {
-        food.rejectedReason =
-            "Does not meet preference: ${preference.toString()}";
+        food.rejectedReason = "Not ${preference.toString()}";
         return false;
       }
     }
@@ -864,14 +863,14 @@ class DietaryRestrictions {
       if (food.name.toLowerCase().contains(ingredient.toLowerCase())) {
         bool falsePositive = false;
         if (ingredientAliasFalsePositives[ingredient] != null) {
-          food.rejectedReason = "Is dispreferred ingredient: $ingredient";
+          food.rejectedReason = ingredient;
           return false;
         }
       }
 
       // Check ingredients list for restricted ingredients
       if (food.ingredients.toLowerCase().contains(ingredient.toLowerCase())) {
-        food.rejectedReason = "Contains dispreferred ingredient: $ingredient";
+        food.rejectedReason = ingredient;
         return false;
       }
     }

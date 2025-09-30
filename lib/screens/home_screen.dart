@@ -453,7 +453,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             SizedBox(height: 32),
 
                             // Daily Macros Overview
-                            if (_userMacros != null) _buildMacrosOverview(),
+                            if (_userMacros != null &&
+                                _currentUser!.offlineDataFeatures)
+                              _buildMacrosOverview(),
                           ],
                         ],
                       ),
