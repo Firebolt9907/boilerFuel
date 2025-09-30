@@ -202,7 +202,10 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     //     );
     //   });
     // }
-    MealPlanner.generateDayMealPlan(user: widget.user);
+
+    if (widget.user.aiDataFeatures) {
+      MealPlanner.generateDayMealPlan(user: widget.user);
+    }
 
     Navigator.push(
       context,
@@ -247,7 +250,9 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     //     );
     //   });
     // }
-    MealPlanner.generateDayMealPlan(user: widget.user);
+    if (widget.user.aiDataFeatures) {
+      MealPlanner.generateDayMealPlan(user: widget.user);
+    }
 
     Navigator.push(
       context,

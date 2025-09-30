@@ -36,8 +36,8 @@ class _UserInfoScreenState extends State<UserInfoScreen>
   late Animation<double> _floatingAnimation;
   late Animation<double> _pulseAnimation;
   Gender? _selectedGender;
-  bool offlineDietFeatures = true;
-  bool aiDietFeatures = false;
+  bool _offlineDietFeatures = true;
+  bool _aiDietFeatures = false;
   MacroResult? _userMacros;
 
   @override
@@ -79,6 +79,8 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       _selectedGoal = widget.user!.goal;
       _ageController.text = widget.user!.age.toString();
       _selectedGender = widget.user!.gender;
+      _offlineDietFeatures = widget.user!.offlineDataFeatures;
+      _aiDietFeatures = widget.user!.aiDataFeatures;
     }
     MacroResult result = CalorieMacroCalculator.calculateMacros(
       age: int.parse(
@@ -125,20 +127,21 @@ class _UserInfoScreenState extends State<UserInfoScreen>
   }
 
   void _continue() async {
-    if (_weightController.text.isNotEmpty &&
-        _heightController.text.isNotEmpty &&
-        _selectedGoal != null &&
-        _nameController.text.isNotEmpty &&
-        _selectedGender != null &&
-        _ageController.text.isNotEmpty) {
+    if (_nameController.text.isNotEmpty &&
+        ((_heightController.text.isNotEmpty &&
+                _selectedGoal != null &&
+                _weightController.text.isNotEmpty &&
+                _selectedGender != null &&
+                _ageController.text.isNotEmpty) ||
+            !_offlineDietFeatures)) {
       User user = User(
         uid: widget.user?.uid ?? '',
         name: _nameController.text,
-        offlineDataFeatures: offlineDietFeatures,
-        aiDataFeatures: aiDietFeatures,
-        weight: int.tryParse(_weightController.text)!,
-        height: int.tryParse(_heightController.text)!,
-        goal: _selectedGoal!,
+        offlineDataFeatures: _offlineDietFeatures,
+        aiDataFeatures: _aiDietFeatures,
+        weight: int.tryParse(_weightController.text) ?? -1,
+        height: int.tryParse(_heightController.text) ?? -1,
+        goal: _selectedGoal ?? Goal.maintain,
         dietaryRestrictions:
             widget.user?.dietaryRestrictions ??
             DietaryRestrictions(
@@ -148,13 +151,15 @@ class _UserInfoScreenState extends State<UserInfoScreen>
             ),
         mealPlan: widget.user?.mealPlan ?? MealPlan.unset,
         diningHallRank: widget.user?.diningHallRank ?? [],
-        age: int.tryParse(_ageController.text)!,
-        gender: _selectedGender!,
+        age: int.tryParse(_ageController.text) ?? -1,
+        gender: _selectedGender ?? Gender.na,
       );
       if (widget.user != null) {
         LocalDatabase().saveUser(user);
         await LocalDatabase().deleteCurrentAndFutureMeals();
-        MealPlanner.generateDayMealPlan(user: user);
+        if (widget.user!.aiDataFeatures) {
+          MealPlanner.generateDayMealPlan(user: user);
+        }
         Navigator.pop(context, user);
         return;
       }
@@ -331,17 +336,17 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         text: "Offline Diet Features",
                         onTap: (bool value) {
                           setState(() {
-                            offlineDietFeatures = value;
+                            _offlineDietFeatures = value;
                           });
                         },
                         isEnabled: true,
-                        initialValue: offlineDietFeatures,
+                        initialValue: _offlineDietFeatures,
                       ),
 
                       AnimatedOpacity(
                         duration: Duration(milliseconds: 100),
                         curve: Curves.easeInOut,
-                        opacity: offlineDietFeatures ? 1 : 0.5,
+                        opacity: _offlineDietFeatures ? 1 : 0.5,
                         child: Container(
                           padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
@@ -440,13 +445,13 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       ),
                       AnimatedOpacity(
                         duration: Duration(milliseconds: 100),
-                        opacity: offlineDietFeatures ? 1 : 0.5,
+                        opacity: _offlineDietFeatures ? 1 : 0.5,
                         child: AnimatedSwitch(
                           text: "AI Meal Planning",
                           onTap: (bool value) {
                             setState(() {
-                              aiDietFeatures = value;
-                              if (aiDietFeatures) {
+                              _aiDietFeatures = value;
+                              if (_aiDietFeatures) {
                                 _userMacros =
                                     CalorieMacroCalculator.calculateMacros(
                                       age: int.parse(
@@ -473,14 +478,14 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                             });
                           },
                           isEnabled:
-                              offlineDietFeatures &&
+                              _offlineDietFeatures &&
                               _weightController.text.isNotEmpty &&
                               _heightController.text.isNotEmpty &&
                               _selectedGoal != null &&
                               _nameController.text.isNotEmpty &&
                               _selectedGender != null &&
                               _ageController.text.isNotEmpty,
-                          initialValue: aiDietFeatures,
+                          initialValue: _aiDietFeatures,
                         ),
                       ),
 
@@ -495,34 +500,37 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         animation: _pulseAnimation,
                         builder: (context, child) => Transform.scale(
                           scale:
-                              (_weightController.text.isNotEmpty &&
-                                  _heightController.text.isNotEmpty &&
-                                  _selectedGoal != null &&
-                                  _nameController.text.isNotEmpty &&
-                                  _selectedGender != null &&
-                                  _ageController.text.isNotEmpty)
+                              _nameController.text.isNotEmpty &&
+                                  ((_heightController.text.isNotEmpty &&
+                                          _selectedGoal != null &&
+                                          _weightController.text.isNotEmpty &&
+                                          _selectedGender != null &&
+                                          _ageController.text.isNotEmpty) ||
+                                      !_offlineDietFeatures)
                               ? 1.0
                               : 0.98,
                           child: AnimatedButton(
                             text:
-                                _weightController.text.isNotEmpty &&
-                                    _heightController.text.isNotEmpty &&
-                                    _selectedGoal != null &&
-                                    _nameController.text.isNotEmpty &&
-                                    _selectedGender != null &&
-                                    _ageController.text.isNotEmpty
+                                _nameController.text.isNotEmpty &&
+                                    ((_heightController.text.isNotEmpty &&
+                                            _selectedGoal != null &&
+                                            _weightController.text.isNotEmpty &&
+                                            _selectedGender != null &&
+                                            _ageController.text.isNotEmpty) ||
+                                        !_offlineDietFeatures)
                                 ? widget.user == null
                                       ? 'Continue Your Journey'
                                       : 'Update Info'
                                 : 'Enter your info',
                             onTap: _continue,
                             isEnabled:
-                                _weightController.text.isNotEmpty &&
-                                _heightController.text.isNotEmpty &&
-                                _selectedGoal != null &&
                                 _nameController.text.isNotEmpty &&
-                                _selectedGender != null &&
-                                _ageController.text.isNotEmpty,
+                                ((_heightController.text.isNotEmpty &&
+                                        _selectedGoal != null &&
+                                        _weightController.text.isNotEmpty &&
+                                        _selectedGender != null &&
+                                        _ageController.text.isNotEmpty) ||
+                                    !_offlineDietFeatures),
                           ),
                         ),
                       ),

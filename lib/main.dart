@@ -77,14 +77,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           print("Meal plan is up to date");
           return;
         }
-        print(
-          "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
-        );
         // await Future.delayed(Duration(seconds: 60));
-        MealPlanner.generateDayMealPlan(
-          user: user!,
-          date: latestMealPlanDate.add(Duration(days: 1)),
-        );
+
+        if (user!.aiDataFeatures) {
+          print(
+            "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
+          );
+          MealPlanner.generateDayMealPlan(
+            user: user!,
+            date: latestMealPlanDate.add(Duration(days: 1)),
+          );
+        } else {
+          print("User rejected permission to use AI");
+        }
       }
     });
   }
@@ -116,14 +121,19 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               print("Meal plan is up to date");
               return;
             }
-            print(
-              "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
-            );
             // await Future.delayed(Duration(seconds: 60));
-            MealPlanner.generateDayMealPlan(
-              user: user!,
-              date: latestMealPlanDate.add(Duration(days: 1)),
-            );
+
+            if (user!.aiDataFeatures) {
+              print(
+                "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
+              );
+              MealPlanner.generateDayMealPlan(
+                user: user!,
+                date: latestMealPlanDate.add(Duration(days: 1)),
+              );
+            } else {
+              print("User rejected permission to use AI");
+            }
           }
         });
         break;

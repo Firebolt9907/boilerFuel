@@ -176,7 +176,8 @@ enum MealPlan {
 
 enum Gender {
   male,
-  female;
+  female,
+  na;
 
   @override
   String toString() {
@@ -185,6 +186,8 @@ enum Gender {
         return "female";
       case Gender.male:
         return "male";
+      case Gender.na:
+        return "na";
     }
   }
 
@@ -194,6 +197,8 @@ enum Gender {
         return Gender.female;
       case "male":
         return Gender.male;
+      case "na":
+        return Gender.na;
       default:
         throw ArgumentError('Invalid Gender: $value');
     }

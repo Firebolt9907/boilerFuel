@@ -337,6 +337,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       setState(() {
         _isLoading = false;
       });
+
+      if (!user.aiDataFeatures) return;
       // Fetch meal suggestions for each meal time and dining hall
 
       await LocalDatabase().listenToDayMeals(_mealStreamController);
@@ -444,8 +446,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             // Dining Hall Rankings
 
                             // Suggested Meal Plan
-                            _buildSuggestedMealPlan(),
-                            SizedBox(height: 32),
+                            _currentUser!.aiDataFeatures
+                                ? _buildSuggestedMealPlan()
+                                : Container(),
                             _buildDiningHallRankings(),
                             SizedBox(height: 32),
 
@@ -721,342 +724,353 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildSuggestedMealPlan() {
     final diningHallMeals = _suggestedMeals[_selectedMealTime] ?? {};
 
-    return TitaniumContainer(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.local_dining,
-                  color: Colors.green.shade300,
-                  size: 24,
-                ),
-                SizedBox(width: 12),
-                Text(
-                  'Suggested Meal Plan',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 16),
-          if (_suggestedMeals.isEmpty)
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.white.withOpacity(0.05),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                children: [
-                  CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.green.shade300,
-                    ),
-                    strokeWidth: 3,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Generating personalized meals...',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: '.SF Pro Display',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'BoilerFuel is creating custom meal plans from today\'s dining hall menus',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
-                      fontSize: 13,
-                      fontFamily: '.SF Pro Text',
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            )
-          else ...[
-            // Meal time dropdown
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white.withOpacity(0.1),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1,
-                ),
-              ),
-              child: DropdownButton<MealTime>(
-                value: _selectedMealTime,
-                dropdownColor: Color(0xFF1B263B),
-                style: TextStyle(color: Colors.white, fontSize: 14),
-                underline: Container(),
-                icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-                onChanged: (MealTime? newValue) {
-                  if (newValue != null) {
-                    setState(() {
-                      _selectedMealTime = newValue;
-                      _currentMealIndex =
-                          0; // Reset to first meal when changing meal time
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (_scrollController.hasClients) {
-                          _scrollController.jumpToPage(0);
-                        }
-                      });
-                    });
-                  }
-                },
-                items: MealTime.values
-                    .where((v) => v != MealTime.lateLunch)
-                    .map<DropdownMenuItem<MealTime>>((MealTime value) {
-                      return DropdownMenuItem<MealTime>(
-                        value: value,
-                        child: Text(
-                          value.toString().substring(0, 1).toUpperCase() +
-                              value.toString().substring(1),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      );
-                    })
-                    .toList(),
-              ),
-            ),
-
-            SizedBox(height: 16),
-
-            if (diningHallMeals.isEmpty)
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.white.withOpacity(0.05),
-                ),
-                child: Column(
+    return Column(
+      children: [
+        TitaniumContainer(
+          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
                   children: [
                     Icon(
-                      Icons.restaurant_menu,
-                      color: Colors.white.withOpacity(0.4),
-                      size: 48,
+                      Icons.local_dining,
+                      color: Colors.green.shade300,
+                      size: 24,
                     ),
-                    SizedBox(height: 12),
+                    SizedBox(width: 12),
                     Text(
-                      'No meals available',
+                      'Suggested Meal Plan',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Check back later for personalized meal suggestions',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.4),
-                        fontSize: 12,
-                      ),
-                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-              )
-            else ...[
-              // Horizontal scrolling meal cards
-              Container(
-                height: 200,
-                child: PageView.builder(
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentMealIndex = index;
-                    });
-                    // Trigger a more pronounced animation for the new active indicator
-                    _statusBarController.reset();
-                    _statusBarController.forward();
+              ),
+              SizedBox(height: 16),
+              if (_suggestedMeals.isEmpty)
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.white.withOpacity(0.05),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.green.shade300,
+                        ),
+                        strokeWidth: 3,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Generating personalized meals...',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: '.SF Pro Display',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'BoilerFuel is creating custom meal plans from today\'s dining hall menus',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                          fontSize: 13,
+                          fontFamily: '.SF Pro Text',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                )
+              else ...[
+                // Meal time dropdown
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white.withOpacity(0.1),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: DropdownButton<MealTime>(
+                    value: _selectedMealTime,
+                    dropdownColor: Color(0xFF1B263B),
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    underline: Container(),
+                    icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                    onChanged: (MealTime? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          _selectedMealTime = newValue;
+                          _currentMealIndex =
+                              0; // Reset to first meal when changing meal time
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (_scrollController.hasClients) {
+                              _scrollController.jumpToPage(0);
+                            }
+                          });
+                        });
+                      }
+                    },
+                    items: MealTime.values
+                        .where((v) => v != MealTime.lateLunch)
+                        .map<DropdownMenuItem<MealTime>>((MealTime value) {
+                          return DropdownMenuItem<MealTime>(
+                            value: value,
+                            child: Text(
+                              value.toString().substring(0, 1).toUpperCase() +
+                                  value.toString().substring(1),
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
+                        })
+                        .toList(),
+                  ),
+                ),
 
-                    // Add haptic feedback for page changes
-                    HapticFeedback.selectionClick();
-                  },
-                  controller: _scrollController,
-                  itemCount: diningHallMeals.length,
-                  padEnds: false,
-                  itemBuilder: (context, index) {
-                    final diningHall = diningHallMeals.keys.elementAt(index);
-                    final meal = diningHallMeals[diningHall]!;
+                SizedBox(height: 16),
 
-                    return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        Navigator.of(context).push(
-                          CupertinoPageRoute(
-                            builder: (context) => MealDetailsScreen(
-                              meal: meal,
-                              diningHall: diningHall,
+                if (diningHallMeals.isEmpty)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white.withOpacity(0.05),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.restaurant_menu,
+                          color: Colors.white.withOpacity(0.4),
+                          size: 48,
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          'No meals available',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Check back later for personalized meal suggestions',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.4),
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  // Horizontal scrolling meal cards
+                  Container(
+                    height: 200,
+                    child: PageView.builder(
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentMealIndex = index;
+                        });
+                        // Trigger a more pronounced animation for the new active indicator
+                        _statusBarController.reset();
+                        _statusBarController.forward();
+
+                        // Add haptic feedback for page changes
+                        HapticFeedback.selectionClick();
+                      },
+                      controller: _scrollController,
+                      itemCount: diningHallMeals.length,
+                      padEnds: false,
+                      itemBuilder: (context, index) {
+                        final diningHall = diningHallMeals.keys.elementAt(
+                          index,
+                        );
+                        final meal = diningHallMeals[diningHall]!;
+
+                        return GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).push(
+                              CupertinoPageRoute(
+                                builder: (context) => MealDetailsScreen(
+                                  meal: meal,
+                                  diningHall: diningHall,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.white.withOpacity(0.08),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.15),
+                                width: 1,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        meal.name,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Icon(
+                                      CupertinoIcons.chevron_right,
+                                      color: Colors.white.withOpacity(0.5),
+                                      size: 16,
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "At $diningHall",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white.withOpacity(0.6),
+                                  ),
+                                ),
+                                SizedBox(height: 12),
+                                Expanded(
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      _buildNutritionChip(
+                                        '${meal.calories.round()} cal',
+                                        Colors.blue,
+                                      ),
+                                      _buildNutritionChip(
+                                        '${meal.protein.round()}g Protein',
+                                        Colors.green,
+                                      ),
+                                      _buildNutritionChip(
+                                        '${meal.carbs.round()}g Carbs',
+                                        Colors.orange,
+                                      ),
+                                      _buildNutritionChip(
+                                        '${meal.fat.round()}g Fat',
+                                        Colors.purple,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );
                       },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        padding: EdgeInsets.symmetric(
-                          vertical: 16,
-                          horizontal: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.white.withOpacity(0.08),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.15),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    meal.name,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Icon(
-                                  CupertinoIcons.chevron_right,
-                                  color: Colors.white.withOpacity(0.5),
-                                  size: 16,
-                                ),
-                              ],
-                            ),
-                            Text(
-                              "At $diningHall",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withOpacity(0.6),
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            Expanded(
-                              child: Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  _buildNutritionChip(
-                                    '${meal.calories.round()} cal',
-                                    Colors.blue,
-                                  ),
-                                  _buildNutritionChip(
-                                    '${meal.protein.round()}g Protein',
-                                    Colors.green,
-                                  ),
-                                  _buildNutritionChip(
-                                    '${meal.carbs.round()}g Carbs',
-                                    Colors.orange,
-                                  ),
-                                  _buildNutritionChip(
-                                    '${meal.fat.round()}g Fat',
-                                    Colors.purple,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              // Status bar (page indicator)
-              AnimatedBuilder(
-                animation: _statusBarAnimation,
-                builder: (context, child) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(diningHallMeals.length, (index) {
-                        bool isActive = _currentMealIndex == index;
-
-                        return AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          margin: EdgeInsets.symmetric(horizontal: 4),
-                          width: isActive ? 24 : 8,
-                          height: 8,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: isActive
-                                  ? Colors.green.shade400
-                                  : Colors.white.withOpacity(0.3),
-                              boxShadow: isActive
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.green.shade400
-                                            .withOpacity(0.4),
-                                        blurRadius:
-                                            8 * _statusBarAnimation.value,
-                                        spreadRadius:
-                                            2 * _statusBarAnimation.value,
-                                      ),
-                                    ]
-                                  : null,
-                            ),
-                            child: isActive
-                                ? Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.green.shade300,
-                                          Colors.green.shade500,
-                                          Colors.green.shade300,
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                    ),
-                                  )
-                                : null,
-                          ),
-                        );
-                      }),
                     ),
-                  );
-                },
-              ),
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Status bar (page indicator)
+                  AnimatedBuilder(
+                    animation: _statusBarAnimation,
+                    builder: (context, child) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(diningHallMeals.length, (
+                            index,
+                          ) {
+                            bool isActive = _currentMealIndex == index;
+
+                            return AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              margin: EdgeInsets.symmetric(horizontal: 4),
+                              width: isActive ? 24 : 8,
+                              height: 8,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: isActive
+                                      ? Colors.green.shade400
+                                      : Colors.white.withOpacity(0.3),
+                                  boxShadow: isActive
+                                      ? [
+                                          BoxShadow(
+                                            color: Colors.green.shade400
+                                                .withOpacity(0.4),
+                                            blurRadius:
+                                                8 * _statusBarAnimation.value,
+                                            spreadRadius:
+                                                2 * _statusBarAnimation.value,
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: isActive
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.green.shade300,
+                                              Colors.green.shade500,
+                                              Colors.green.shade300,
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                            );
+                          }),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ],
             ],
-          ],
-        ],
-      ),
+          ),
+        ),
+        SizedBox(height: 32),
+      ],
     );
   }
 
