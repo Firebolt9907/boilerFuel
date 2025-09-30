@@ -886,12 +886,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       diningHall: widget.diningHall,
     );
 
-    Navigator.of(context).push(
-      CupertinoPageRoute(
-        builder: (context) =>
-            ItemDetailsScreen(food: food, diningHall: widget.diningHall),
-      ),
-    );
+      showCupertinoSheet<void>(
+                  context: context,
+                  useNestedNavigation: true, builder: (BuildContext context) => ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+                );
   }
 
   void _showCollectionDetails(FoodItem foodItem) {
