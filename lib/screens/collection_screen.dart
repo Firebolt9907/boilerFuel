@@ -1,9 +1,11 @@
+import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants.dart';
 import 'meal_details_screen.dart';
+import "../custom/cupertinoSheet.dart" as customCupertinoSheet;
 
 class CollectionScreen extends StatefulWidget {
   final String collectionName;
@@ -419,13 +421,11 @@ class _CollectionScreenState extends State<CollectionScreen>
       diningHall: widget.diningHall,
     );
 
-    Navigator.of(context).push(
-      CupertinoPageRoute(
-        builder: (context) => MealDetailsScreen(
-          meal: singleFoodMeal,
-          diningHall: widget.diningHall,
-        ),
-      ),
+    customCupertinoSheet.showCupertinoSheet<void>(
+      context: context,
+      useNestedNavigation: true,
+      pageBuilder: (BuildContext context) =>
+          ItemDetailsScreen(food: food, diningHall: widget.diningHall),
     );
   }
 }

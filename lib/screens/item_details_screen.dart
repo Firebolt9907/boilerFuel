@@ -1,5 +1,6 @@
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/titanium_container.dart';
+import 'package:bottom_sheet_scroll_physics/bottom_sheet_scroll_physics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,7 +48,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _fadeAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _floatingAnimation = Tween<double>(begin: -10.0, end: 10.0).animate(
@@ -102,7 +103,11 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
               title: 'Food Details',
               showBackButton: true,
               onBackButtonPressed: (context) {
-                Navigator.of(context).pop();
+                if (Navigator.canPop(context)) {
+                  Navigator.of(context).pop();
+                } else {
+                  CupertinoSheetRoute.popSheet(context);
+                }
               },
             ),
           ),
@@ -172,6 +177,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                         MediaQuery.of(context).padding.bottom +
                         MediaQuery.of(context).viewInsets.bottom,
                   ),
+                  physics: BottomSheetScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -517,6 +523,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
 
   Widget _buildFoodsSection() {
     return TitaniumContainer(
+      warning: widget.food.restricted,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -552,35 +559,31 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (food.labels.isNotEmpty) ...[
-          if (food.restricted) ...[
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: Colors.red.withOpacity(0.2),
-                border: Border.all(
-                  color: Colors.red.withOpacity(0.5),
-                  width: 0.5,
-                ),
-              ),
-              child: Text(
-                "Restriction: " +
-                    food.rejectedReason
-                        .replaceAll("Contains dispreferred ingredient: ", "")
-                        .replaceAll("Is dispreferred ingredient: ", "")
-                        .capitalize(),
-                style: TextStyle(
-                  color: Colors.red.shade200,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: '.SF Pro Text',
-                  decoration: TextDecoration.none,
-                ),
+        if (food.restricted) ...[
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+              color: Colors.red.withOpacity(0.2),
+              border: Border.all(
+                color: Colors.red.withOpacity(0.5),
+                width: 0.5,
               ),
             ),
-            SizedBox(height: 6),
-          ],
+            child: Text(
+              "Restriction: " + food.rejectedReason.capitalize(),
+              style: TextStyle(
+                color: Colors.red.shade200,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                fontFamily: '.SF Pro Text',
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+          SizedBox(height: 6),
+        ],
+        if (food.labels.isNotEmpty) ...[
           Wrap(
             spacing: 6,
             runSpacing: 4,

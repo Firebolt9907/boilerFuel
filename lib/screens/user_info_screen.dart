@@ -78,7 +78,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       _heightController.text = checkNulls(widget.user!.height.toString());
       _selectedGoal = widget.user!.goal;
       _ageController.text = checkNulls(widget.user!.age.toString());
-      _selectedGender = widget.user!.gender;
+      _selectedGender = widget.user!.gender != Gender.na
+          ? widget.user!.gender
+          : null;
       _offlineDietFeatures = widget.user!.offlineDataFeatures;
       _aiDietFeatures = widget.user!.aiDataFeatures;
     }
@@ -146,7 +148,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
         uid: widget.user?.uid ?? '',
         name: _nameController.text,
         offlineDataFeatures: _offlineDietFeatures,
-        aiDataFeatures: _aiDietFeatures,
+        aiDataFeatures: _offlineDietFeatures && _aiDietFeatures,
         weight: int.tryParse(_weightController.text) ?? -1,
         height: int.tryParse(_heightController.text) ?? -1,
         goal: _selectedGoal ?? Goal.maintain,

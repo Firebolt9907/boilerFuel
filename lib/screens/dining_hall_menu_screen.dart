@@ -2,6 +2,7 @@ import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:flutter/cupertino.dart';
+import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -886,10 +887,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       diningHall: widget.diningHall,
     );
 
-      showCupertinoSheet<void>(
-                  context: context,
-                  useNestedNavigation: true, builder: (BuildContext context) => ItemDetailsScreen(food: food, diningHall: widget.diningHall),
-                );
+    customCupertinoSheet.showCupertinoSheet<void>(
+      context: context,
+      useNestedNavigation: true,
+      pageBuilder: (BuildContext context) =>
+          ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+    );
   }
 
   void _showCollectionDetails(FoodItem foodItem) {
