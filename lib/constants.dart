@@ -325,8 +325,8 @@ enum FoodAllergy {
 class User {
   final String uid;
   final String name;
-  final bool offlineDataFeatures;
-  final bool aiDataFeatures;
+  final bool useDietary;
+  final bool useMealPlanning;
   final int weight;
   final int height;
   final Goal goal;
@@ -339,8 +339,8 @@ class User {
   User({
     required this.uid,
     required this.name,
-    required this.offlineDataFeatures,
-    required this.aiDataFeatures,
+    required this.useDietary,
+    required this.useMealPlanning,
     required this.weight,
     required this.height,
     required this.goal,
@@ -355,8 +355,8 @@ class User {
     return {
       'uid': uid,
       'name': name,
-      'offlineDataFeatures': offlineDataFeatures,
-      'aiDataFeatures': aiDataFeatures,
+      'useDietary': useDietary,
+      'useMealPlanning': useMealPlanning,
       'weight': weight,
       'height': height,
       'goal': goal.toString(),
@@ -372,8 +372,8 @@ class User {
     return User(
       uid: map['uid'],
       name: map['name'],
-      offlineDataFeatures: map['offlineDataFeatures'],
-      aiDataFeatures: map['aiDataFeatures'],
+      useDietary: map['useDietary'] ?? false,
+      useMealPlanning: map['useMealPlanning'] ?? false,
       weight: map['weight'],
       height: map['height'],
       goal: Goal.fromString(map['goal']),
@@ -408,6 +408,21 @@ enum MealTime {
         return 'lunch'; // Treat late lunch as lunch
       case MealTime.dinner:
         return 'dinner';
+    }
+  }
+
+  String toDisplayString() {
+    switch (this) {
+      case MealTime.breakfast:
+        return 'Breakfast';
+      case MealTime.brunch:
+        return 'Brunch';
+      case MealTime.lunch:
+        return 'Lunch';
+      case MealTime.lateLunch:
+        return 'Late Lunch';
+      case MealTime.dinner:
+        return 'Dinner';
     }
   }
 
@@ -984,4 +999,21 @@ extension StringExtension on String {
     }
     return "${this[0].toUpperCase()}${substring(1)}";
   }
+}
+
+/// Tab Item Model
+class TabItem {
+  final String value;
+  final String label;
+
+  final IconData? icon;
+  final bool isSelected;
+
+  const TabItem({
+    required this.value,
+    required this.label,
+
+    this.icon,
+    this.isSelected = false,
+  });
 }

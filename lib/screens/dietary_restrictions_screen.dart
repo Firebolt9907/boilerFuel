@@ -1,8 +1,11 @@
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/api/shared_preferences.dart';
+import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
 import 'package:boiler_fuel/screens/home_screen.dart';
+import 'package:boiler_fuel/widgets/default_button.dart';
+import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
@@ -203,7 +206,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     //   });
     // }
 
-    if (widget.user.aiDataFeatures) {
+    if (widget.user.useMealPlanning) {
       MealPlanner.generateDayMealPlan(user: widget.user);
     }
 
@@ -250,7 +253,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     //     );
     //   });
     // }
-    if (widget.user.aiDataFeatures) {
+    if (widget.user.useMealPlanning) {
       MealPlanner.generateDayMealPlan(user: widget.user);
     }
 
@@ -265,243 +268,119 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0D1B2A),
-              Color(0xFF1B263B),
-              Color(0xFF415A77),
-              Color(0xFF778DA9),
-              Color(0xFF415A77),
-            ],
-            stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-          ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: MediaQuery.of(context).padding.top,
         ),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Floating decorative elements
-            ...List.generate(
-              8,
-              (index) => Positioned(
-                left: (index * 50.0) % MediaQuery.of(context).size.width,
-                top: (index * 90.0) % MediaQuery.of(context).size.height,
-                child: AnimatedBuilder(
-                  animation: _floatingAnimation,
-                  builder: (context, child) => Transform.translate(
-                    offset: Offset(
-                      math.sin(_floatingAnimation.value / 20 + index) * 12,
-                      _floatingAnimation.value +
-                          math.cos(_floatingAnimation.value / 16 + index) * 8,
-                    ),
-                    child: AnimatedBuilder(
-                      animation: _pulseAnimation,
-                      builder: (context, child) => Transform.scale(
-                        scale: _pulseAnimation.value * (0.05 + index * 0.02),
-                        child: Container(
-                          width: 8 + (index * 2),
-                          height: 8 + (index * 2),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: [
-                              Colors.red.withOpacity(0.12),
-                              Colors.orange.withOpacity(0.1),
-                              Colors.yellow.withOpacity(0.09),
-                              Colors.green.withOpacity(0.08),
-                              Colors.blue.withOpacity(0.07),
-                              Colors.indigo.withOpacity(0.06),
-                              Colors.purple.withOpacity(0.05),
-                              Colors.pink.withOpacity(0.04),
-                            ][index],
-                            boxShadow: [
-                              BoxShadow(
-                                color: [
-                                  Colors.red,
-                                  Colors.orange,
-                                  Colors.yellow,
-                                  Colors.green,
-                                  Colors.blue,
-                                  Colors.indigo,
-                                  Colors.purple,
-                                  Colors.pink,
-                                ][index].withOpacity(0.15),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+            Text(
+              'Dietary Preferences',
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+
+            SizedBox(height: 16),
+            Text(
+              widget.isEditing
+                  ? 'Update your dietary preferences and restrictions below.'
+                  : 'Let\'s personalize your dining experience based on your dietary preferences and restrictions!',
+              style: TextStyle(
+                fontSize: 18,
+                color: styling.darkGray,
+
+                height: 1.4,
+              ),
+            ),
+
+            SizedBox(height: 32),
+
+            // Feature cards
+            _buildFeatureCard(
+              icon: Icons.warning,
+              title: 'Food Allergies',
+              description:
+                  'Swipe through common allergens to identify what you need to avoid',
+              color: Colors.red,
+              onTap: () => _startAllergenFlow(),
+            ),
+            SizedBox(height: 20),
+
+            _buildFeatureCard(
+              icon: Icons.eco,
+              title: 'Diet Preferences',
+              description:
+                  'Tell us about your lifestyle choices like vegan, vegetarian, or kosher',
+              color: Colors.green,
+              onTap: () => _startPreferenceFlow(),
+            ),
+            SizedBox(height: 20),
+
+            _buildFeatureCard(
+              icon: Icons.restaurant_menu,
+              title: 'Custom Restrictions',
+              description:
+                  'Add specific ingredients you prefer to avoid like beef, pork, or mushrooms',
+              color: Colors.orange,
+              onTap: () => _startCustomIngredientsFlow(),
+            ),
+            SizedBox(height: 24),
+
+            // Start journey button
+            DefaultButton(
+              text: Text(
+                widget.isEditing ? 'Save Changes' : 'Continue',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: () {
+                _completeSetup();
+              },
+            ),
+            if (!widget.isEditing) SizedBox(height: 8),
+            if (!widget.isEditing)
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Back',
+                    style: TextStyle(color: styling.darkGray, fontSize: 16),
                   ),
                 ),
               ),
-            ),
 
-            // Main content
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24 + MediaQuery.of(context).padding.top,
-                  bottom: 24 + MediaQuery.of(context).padding.bottom,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Back button
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.1),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                    ),
-                    SizedBox(height: 32),
-
-                    // Title section
-                    ShaderMask(
-                      shaderCallback: (bounds) => LinearGradient(
-                        colors: [
-                          Colors.white,
-                          Colors.red.shade300,
-                          Colors.orange.shade200,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ).createShader(bounds),
-                      child: Text(
-                        'Dietary Preferences',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(18),
-                        color: Colors.white.withOpacity(0.05),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        widget.isEditing
-                            ? 'Update your dietary preferences and restrictions below.'
-                            : 'Let\'s personalize your dining experience with a fun swipe-through setup!',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white.withOpacity(0.85),
-                          fontWeight: FontWeight.w300,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 48),
-
-                    // Feature cards
-                    _buildFeatureCard(
-                      icon: Icons.warning,
-                      title: 'Food Allergies',
-                      description:
-                          'Swipe through common allergens to identify what you need to avoid',
-                      color: Colors.red,
-                      onTap: () => _startAllergenFlow(),
-                    ),
-                    SizedBox(height: 20),
-
-                    _buildFeatureCard(
-                      icon: Icons.eco,
-                      title: 'Diet Preferences',
-                      description:
-                          'Tell us about your lifestyle choices like vegan, vegetarian, or kosher',
-                      color: Colors.green,
-                      onTap: () => _startPreferenceFlow(),
-                    ),
-                    SizedBox(height: 20),
-
-                    _buildFeatureCard(
-                      icon: Icons.restaurant_menu,
-                      title: 'Custom Restrictions',
-                      description:
-                          'Add specific ingredients you prefer to avoid like beef, pork, or mushrooms',
-                      color: Colors.orange,
-                      onTap: () => _startCustomIngredientsFlow(),
-                    ),
-                    SizedBox(height: 48),
-
-                    // Start journey button
-                    AnimatedBuilder(
-                      animation: _pulseAnimation,
-                      builder: (context, child) => Transform.scale(
-                        scale: _pulseAnimation.value,
-                        child: AnimatedButton(
-                          text: 'Save',
-                          onTap: () {
-                            _completeSetup();
-                          },
-                        ),
-                      ),
-                    ),
-                    if (!widget.isEditing) SizedBox(height: 16),
-                    if (!widget.isEditing)
-                      Center(
-                        child: TextButton(
-                          onPressed: _skipAll,
-                          child: Text(
-                            'Skip for now',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.6),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                    // Progress indicator
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: List.generate(
-                    //     4, // Updated to match meal plan screen
-                    //     (index) => Container(
-                    //       margin: EdgeInsets.symmetric(horizontal: 4),
-                    //       width: index == 3
-                    //           ? 20
-                    //           : 8, // Changed to index == 3 for final step
-                    //       height: 8,
-                    //       decoration: BoxDecoration(
-                    //         borderRadius: BorderRadius.circular(4),
-                    //         color: index == 3
-                    //             ? Colors.purple.shade400
-                    //             : Colors.white.withOpacity(0.3),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-            ),
+            // Progress indicator
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: List.generate(
+            //     4, // Updated to match meal plan screen
+            //     (index) => Container(
+            //       margin: EdgeInsets.symmetric(horizontal: 4),
+            //       width: index == 3
+            //           ? 20
+            //           : 8, // Changed to index == 3 for final step
+            //       height: 8,
+            //       decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(4),
+            //         color: index == 3
+            //             ? Colors.purple.shade400
+            //             : Colors.white.withOpacity(0.3),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -517,69 +396,45 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedBuilder(
-        animation: _pulseAnimation,
-        builder: (context, child) => Transform.scale(
-          scale: 1.0 + (_pulseAnimation.value - 1.0) * 0.02,
-          child: Container(
-            padding: EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white.withOpacity(0.05),
-              border: Border.all(color: color.withOpacity(0.3), width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: Offset(0, 8),
-                ),
-              ],
+      child: DefaultContainer(
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Color(0xffe5e5e7),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Colors.black, size: 28),
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: color.withOpacity(0.2),
-                    border: Border.all(color: color.withOpacity(0.4), width: 2),
+            SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      letterSpacing: 0.3,
+                    ),
                   ),
-                  child: Icon(icon, color: color.withOpacity(0.9), size: 28),
-                ),
-                SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.7),
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
+                  SizedBox(height: 8),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: styling.darkGray,
+                      height: 1.3,
+                    ),
                   ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: color.withOpacity(0.6),
-                  size: 18,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            Icon(Icons.arrow_forward_ios, color: Colors.black, size: 18),
+          ],
         ),
       ),
     );

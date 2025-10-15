@@ -1,5 +1,7 @@
+import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
+import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,68 +56,99 @@ class _CollectionScreenState extends State<CollectionScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF0D1B2A),
-                Color(0xFF1B263B),
-                Color(0xFF415A77),
-                Color(0xFF778DA9),
-                Color(0xFF415A77),
-              ],
-              stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-            ),
-          ),
-        ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: CustomAppBar(
-              title: widget.collectionName,
-              showBackButton: true,
-              onBackButtonPressed: (context) {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF0D1B2A),
-                  Color(0xFF1B263B),
-                  Color(0xFF415A77),
-                  Color(0xFF778DA9),
-                  Color(0xFF415A77),
-                ],
-                stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-              ),
-            ),
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: widget.foods.isEmpty
-                  ? _buildEmptyView()
-                  : Column(
-                      children: [
-                        // Collection info header
-                        // _buildCollectionHeader(),
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
 
-                        // Foods list
-                        Expanded(child: _buildFoodsList()),
+      body: SingleChildScrollView(
+        physics: customCupertinoSheet.BottomSheetScrollPhysics(),
+        child: widget.foods.isEmpty
+            ? _buildEmptyView()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey[100]!),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).padding.top - 12,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).pop();
+                          },
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  Icons.arrow_back_ios_new,
+                                  color: styling.gray,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+
+                              Text(
+                                'Back',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: styling.gray,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 24.0,
+                            bottom: 18,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.collectionName,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-            ),
-          ),
-        ),
-      ],
+                  ),
+                  // Collection info header
+                  // _buildCollectionHeader(),
+
+                  // Foods list
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      // Use a fraction of available height as an upper bound
+                      maxHeight: MediaQuery.of(context).size.height,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _buildFoodsList(),
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 
@@ -218,90 +251,59 @@ class _CollectionScreenState extends State<CollectionScreen>
   }
 
   Widget _buildFoodsList() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: widget.foods.length,
-      itemBuilder: (context, index) {
-        Food food = widget.foods[index];
-        return _buildFoodItem(food, index);
-      },
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (int index = 0; index < widget.foods.length; index++) ...[
+            _buildFoodItem(widget.foods[index], index),
+          ],
+        ],
+      ),
     );
   }
 
-  Widget _buildFoodItem(Food food, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
+  Widget _buildFoodItem(Food foodItem, int index) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
-          _showFoodDetails(food);
+
+          _showFoodDetails(foodItem);
         },
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white.withOpacity(0.08),
-            border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
-          ),
+        child: DefaultContainer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: [
-                        Colors.blue,
-                        Colors.green,
-                        Colors.orange,
-                        Colors.purple,
-                        Colors.cyan,
-                        Colors.pink,
-                      ][index % 6].withOpacity(0.2),
-                    ),
-                    child: Icon(
-                      Icons.restaurant,
-                      color: [
-                        Colors.blue,
-                        Colors.green,
-                        Colors.orange,
-                        Colors.purple,
-                        Colors.cyan,
-                        Colors.pink,
-                      ][index % 6],
-                      size: 20,
-                    ),
-                  ),
-                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          food.name,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            fontFamily: '.SF Pro Text',
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                        if (food.ingredients.isNotEmpty) ...[
-                          SizedBox(height: 4),
-                          Text(
-                            food.ingredients,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.6),
-                              fontFamily: '.SF Pro Text',
-                              decoration: TextDecoration.none,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                foodItem.name,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black,
+                                  fontFamily: '.SF Pro Text',
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          ],
+                        ),
+
+                        if (foodItem.restricted) ...[
+                          SizedBox(height: 4),
+                          _buildNutritionChip(
+                            "Restriction: ${foodItem.rejectedReason.capitalize()}",
+                            Colors.red,
                           ),
                         ],
                       ],
@@ -314,43 +316,26 @@ class _CollectionScreenState extends State<CollectionScreen>
                   ),
                 ],
               ),
-              SizedBox(height: 12),
 
-              // Nutrition info
-              Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                children: [
-                  if (food.calories > 0)
-                    _buildNutritionChip(
-                      '${food.calories.round()} cal',
-                      Colors.blue,
-                    ),
-                  if (food.protein > 0)
-                    _buildNutritionChip(
-                      '${food.protein.round()}g P',
-                      Colors.green,
-                    ),
-                  if (food.carbs > 0)
-                    _buildNutritionChip(
-                      '${food.carbs.round()}g C',
-                      Colors.orange,
-                    ),
-                  if (food.fat > 0)
-                    _buildNutritionChip(
-                      '${food.fat.round()}g F',
-                      Colors.purple,
-                    ),
-                ],
-              ),
+              // Nutrition info (show only for individual items)
+              if (foodItem.calories > 0)
+                Text(
+                  foodItem.calories.round().toString() + " cal",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: styling.darkGray,
+                    fontFamily: '.SF Pro Text',
+                    decoration: TextDecoration.none,
+                  ),
+                ),
 
               // Labels/allergens
-              if (food.labels.isNotEmpty) ...[
+              if (foodItem.labels.isNotEmpty) ...[
                 SizedBox(height: 8),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
-                  children: food.labels
+                  children: foodItem.labels
                       .take(4)
                       .map(
                         (label) => Container(
@@ -360,17 +345,13 @@ class _CollectionScreenState extends State<CollectionScreen>
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6),
-                            color: Colors.amber.withOpacity(0.2),
-                            border: Border.all(
-                              color: Colors.amber.withOpacity(0.5),
-                              width: 0.5,
-                            ),
+                            color: styling.darkGray.withOpacity(0.1),
                           ),
                           child: Text(
                             label,
                             style: TextStyle(
+                              color: styling.darkGray,
                               fontSize: 10,
-                              color: Colors.amber,
                               fontWeight: FontWeight.w500,
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,

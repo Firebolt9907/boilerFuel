@@ -20,8 +20,8 @@ class UsersTable extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get uid => text()();
   TextColumn get name => text()();
-  BoolColumn get offlineDataFeatures => boolean()();
-  BoolColumn get aiDataFeatures => boolean()();
+  BoolColumn get useDietary => boolean()();
+  BoolColumn get useMealPlanning => boolean()();
   TextColumn get gender => text()();
   IntColumn get age => integer()();
   IntColumn get weight => integer()();
@@ -103,10 +103,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 24) {
+      if (resetLocalDB <= 28) {
         print("Deleting old database to add new columns");
         await file.delete();
-        await SharedPrefs.setResetLocalData(25);
+        await SharedPrefs.setResetLocalData(29);
         print("Deleted old database - new schema will be created");
       }
     } catch (e) {
@@ -120,13 +120,42 @@ LazyDatabase _openConnection() {
 class LocalDatabase {
   Future<void> deleteDB(bool fully) async {
     try {
-      //Delete all calendars
-
-      final dbFolder = await getApplicationDocumentsDirectory();
-      final file = File(p.join(dbFolder.path, 'db.sqlite'));
-      await file.delete();
-      print("Database deleted successfully.");
-      // await _recreateDB();
+      //delete all tables
+      final users = await (localDb.select(localDb.usersTable)).get();
+      for (var user in users) {
+        await (localDb.delete(
+          localDb.usersTable,
+        )..where((tbl) => tbl.id.equals(user.id))).go();
+      }
+      final meals = await (localDb.select(localDb.mealsTable)).get();
+      for (var meal in meals) {
+        await (localDb.delete(
+          localDb.mealsTable,
+        )..where((tbl) => tbl.id.equals(meal.id))).go();
+      }
+      final foods = await (localDb.select(localDb.foodsTable)).get();
+      for (var food in foods) {
+        await (localDb.delete(
+          localDb.foodsTable,
+        )..where((tbl) => tbl.id.equals(food.id))).go();
+      }
+      final dhfs = await (localDb.select(localDb.diningHallFoodsTable)).get();
+      for (var dhf in dhfs) {
+        await (localDb.delete(
+          localDb.diningHallFoodsTable,
+        )..where((tbl) => tbl.id.equals(dhf.id))).go();
+      }
+      if (fully) {
+        final diningHalls = await (localDb.select(
+          localDb.diningHallsTable,
+        )).get();
+        for (var dh in diningHalls) {
+          await (localDb.delete(
+            localDb.diningHallsTable,
+          )..where((tbl) => tbl.id.equals(dh.id))).go();
+        }
+      }
+      print("Local database cleared");
     } catch (e) {
       print(e);
     }
@@ -148,8 +177,8 @@ class LocalDatabase {
       return User(
         uid: usersRes.first.uid,
         name: usersRes.first.name,
-        offlineDataFeatures: usersRes.first.offlineDataFeatures,
-        aiDataFeatures: usersRes.first.aiDataFeatures,
+        useDietary: usersRes.first.useDietary,
+        useMealPlanning: usersRes.first.useMealPlanning,
         weight: usersRes.first.weight,
         height: usersRes.first.height,
         age: usersRes.first.age,
@@ -176,8 +205,8 @@ class LocalDatabase {
         UsersTableCompanion(
           uid: Value(user.uid),
           name: Value(user.name),
-          offlineDataFeatures: Value(user.offlineDataFeatures),
-          aiDataFeatures: Value(user.aiDataFeatures),
+          useDietary: Value(user.useDietary),
+          useMealPlanning: Value(user.useMealPlanning),
           weight: Value(user.weight),
           height: Value(user.height),
           age: Value(user.age),
@@ -199,8 +228,8 @@ class LocalDatabase {
             UsersTableCompanion(
               uid: Value(user.uid),
               name: Value(user.name),
-              offlineDataFeatures: Value(user.offlineDataFeatures),
-              aiDataFeatures: Value(user.aiDataFeatures),
+              useDietary: Value(user.useDietary),
+              useMealPlanning: Value(user.useMealPlanning),
               weight: Value(user.weight),
               height: Value(user.height),
               age: Value(user.age),

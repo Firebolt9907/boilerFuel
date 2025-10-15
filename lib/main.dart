@@ -79,7 +79,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         }
         // await Future.delayed(Duration(seconds: 60));
 
-        if (user!.aiDataFeatures) {
+        if (user!.useMealPlanning) {
           print(
             "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
           );
@@ -123,7 +123,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             }
             // await Future.delayed(Duration(seconds: 60));
 
-            if (user!.aiDataFeatures) {
+            if (user!.useMealPlanning) {
               print(
                 "generating meal plan for next day, latestMealPlanDate: $latestMealPlanDate",
               );

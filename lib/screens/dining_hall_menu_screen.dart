@@ -1,6 +1,9 @@
 import 'package:boiler_fuel/api/database.dart';
+import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
+import 'package:boiler_fuel/widgets/custom_tabs.dart';
+import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:flutter/cupertino.dart';
 import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:flutter/foundation.dart';
@@ -296,82 +299,106 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF0D1B2A),
-                Color(0xFF1B263B),
-                Color(0xFF415A77),
-                Color(0xFF778DA9),
-                Color(0xFF415A77),
-              ],
-              stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-            ),
-          ),
-        ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: CustomAppBar(
-              title: widget.diningHall,
-              showBackButton: true,
-              onBackButtonPressed: (context) {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-          body: Container(
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      body: Column(
+        children: [
+          // Header
+          Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF0D1B2A),
-                  Color(0xFF1B263B),
-                  Color(0xFF415A77),
-                  Color(0xFF778DA9),
-                  Color(0xFF415A77),
-                ],
-                stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-              ),
+              color: Colors.white,
+              border: Border(bottom: BorderSide(color: Colors.grey[100]!)),
             ),
-            child: Stack(
+            child: Column(
               children: [
-                // Floating decorative elements
-
-                // Main content
-                FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: _isLoading
-                      ? _buildLoadingView()
-                      : _availableMealTimes.isEmpty
-                      ? _buildEmptyView()
-                      : Column(
-                          children: [
-                            // Meal time selector
-                            SizedBox(height: 8),
-                            _buildMealTimeSelector(),
-
-                            // Station indicator
-                            if (_stationFoods.isNotEmpty)
-                              _buildStationIndicator(),
-
-                            // PageView for stations
-                            Expanded(child: _buildStationPageView()),
-                          ],
+                SizedBox(height: MediaQuery.of(context).padding.top - 12),
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.of(context).pop();
+                  },
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: styling.gray,
                         ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+
+                      Text(
+                        'Back',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: styling.gray,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 24.0, bottom: 18),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.diningHall,
+                            style: TextStyle(fontSize: 24, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-      ],
+
+          // Content
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  _isLoading
+                      ? _buildLoadingView()
+                      : _availableMealTimes.isEmpty
+                      ? _buildEmptyView()
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Meal time selector
+                            _buildMealTimeSelector(),
+
+                            const SizedBox(height: 8),
+                            // Station selector
+
+                            // PageView for stations - give it a bounded max height
+                            ConstrainedBox(
+                              constraints: BoxConstraints(
+                                // Use a fraction of available height as an upper bound
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.7,
+                              ),
+                              child: _buildStationPageView(),
+                            ),
+                          ],
+                        ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -442,59 +469,58 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     if (_availableMealTimes.isEmpty) return SizedBox.shrink();
 
     return Container(
-      height: 60,
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        controller: _mealTimeScrollController,
-        itemCount: _availableMealTimes.length,
-        itemBuilder: (context, index) {
-          MealTime mealTime = _availableMealTimes[index];
-          bool isSelected = _selectedMealTime == mealTime;
+      height: 44,
 
-          return GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              print("calling setState");
-              setState(() {
-                _selectedMealTime = mealTime;
-                _updateStationFoods();
-              });
-            },
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 200),
-              margin: EdgeInsets.only(right: 12),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: isSelected
-                    ? Colors.green.shade400
-                    : Colors.white.withOpacity(0.1),
-                border: Border.all(
-                  color: isSelected
-                      ? Colors.green.shade300
-                      : Colors.white.withOpacity(0.2),
-                  width: 1,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  _getMealTimeDisplayName(mealTime),
-                  style: TextStyle(
-                    color: isSelected
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    fontFamily: '.SF Pro Text',
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ),
-            ),
-          );
+      decoration: BoxDecoration(
+        color: Color(0xffececf0),
+        borderRadius: BorderRadius.circular(20),
+      ),
+
+      child: CustomTabs(
+        initialValue: _selectedMealTime.toString(),
+        onValueChanged: (value) {
+          print("Meal time changed to $value");
+          setState(() {
+            _selectedMealTime = MealTime.fromString(value);
+            _updateStationFoods();
+          });
         },
+        tabs: [
+          for (MealTime mealTime in _availableMealTimes)
+            TabItem(
+              label: mealTime.toDisplayString(),
+              value: mealTime.toString(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStationSelector() {
+    List<String> stationNames = _stationFoods.keys.toList();
+    if (stationNames.isEmpty) return SizedBox.shrink();
+    return Container(
+      height: 44,
+
+      decoration: BoxDecoration(
+        color: Color(0xffececf0),
+        borderRadius: BorderRadius.circular(20),
+      ),
+
+      child: CustomTabs(
+        initialValue: _selectedMealTime.toString(),
+        onValueChanged: (value) {
+          setState(() {
+            _selectedMealTime = MealTime.values.firstWhere(
+              (mt) => mt.toString() == value,
+              orElse: () => _availableMealTimes.first,
+            );
+          });
+        },
+        tabs: [
+          for (String station in stationNames)
+            TabItem(label: station, value: station),
+        ],
       ),
     );
   }
@@ -573,41 +599,42 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
     List<String> stationNames = _stationFoods.keys.toList();
 
-    return PageView.builder(
-      controller: _stationPageController,
-      onPageChanged: (index) {
-        print("calling setState");
-        setState(() {
-          if (!tappedSection) _currentStationIndex = index;
-          if (index == _currentStationIndex && tappedSection)
-            tappedSection = false;
-        });
-
-        // Use the improved scroll positioning
-        _scrollToStationIndex(index);
-
-        HapticFeedback.selectionClick();
-      },
-      itemCount: stationNames.length,
-      itemBuilder: (context, index) {
-        String stationName = stationNames[index];
-        List<FoodItem> foodItems = _stationFoods[stationName]!;
-
-        return ListView.builder(
-          padding: EdgeInsets.all(16),
-          itemCount: foodItems.length,
-          itemBuilder: (context, foodIndex) {
-            FoodItem foodItem = foodItems[foodIndex];
-            return _buildFoodItem(foodItem, foodIndex);
-          },
-        );
-      },
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (
+            int stationIndex = 0;
+            stationIndex < stationNames.length;
+            stationIndex++
+          ) ...[
+            const SizedBox(width: double.infinity),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                stationNames[stationIndex],
+                style: TextStyle(fontSize: 20, color: Colors.black),
+                textAlign: TextAlign.left,
+              ),
+            ),
+            for (
+              int foodIndex = 0;
+              foodIndex < _stationFoods[stationNames[stationIndex]]!.length;
+              foodIndex++
+            )
+              _buildFoodItem(
+                _stationFoods[stationNames[stationIndex]]![foodIndex],
+                foodIndex,
+              ),
+          ],
+        ],
+      ),
     );
   }
 
   Widget _buildFoodItem(FoodItem foodItem, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
@@ -617,55 +644,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             _showFoodDetails(foodItem.firstFood);
           }
         },
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: foodItem.firstFood.restricted
-                ? Colors.red.withAlpha(40)
-                : Colors.white.withOpacity(0.08),
-            border: Border.all(
-              color: foodItem.firstFood.restricted
-                  ? Colors.red.withAlpha(120)
-                  : Colors.white.withOpacity(0.15),
-              width: 1,
-            ),
-          ),
+        child: DefaultContainer(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: [
-                        Colors.blue,
-                        Colors.green,
-                        Colors.orange,
-                        Colors.purple,
-                        Colors.cyan,
-                        Colors.pink,
-                      ][index % 6].withOpacity(0.2),
-                    ),
-                    child: Icon(
-                      foodItem.isCollection
-                          ? Icons.collections
-                          : Icons.restaurant,
-                      color: [
-                        Colors.blue,
-                        Colors.green,
-                        Colors.orange,
-                        Colors.purple,
-                        Colors.cyan,
-                        Colors.pink,
-                      ][index % 6],
-                      size: 20,
-                    ),
-                  ),
-                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -678,40 +662,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontFamily: '.SF Pro Text',
                                   decoration: TextDecoration.none,
                                 ),
                               ),
                             ),
-
-                            // if (foodItem.isCollection) ...[
-                            //   SizedBox(width: 8),
-                            //   Container(
-                            //     padding: EdgeInsets.symmetric(
-                            //       horizontal: 6,
-                            //       vertical: 2,
-                            //     ),
-                            //     decoration: BoxDecoration(
-                            //       borderRadius: BorderRadius.circular(8),
-                            //       color: Colors.blue.withOpacity(0.2),
-                            //       border: Border.all(
-                            //         color: Colors.blue.withOpacity(0.5),
-                            //         width: 1,
-                            //       ),
-                            //     ),
-                            //     child: Text(
-                            //       '${foodItem.foods.length} items',
-                            //       style: TextStyle(
-                            //         color: Colors.blue,
-                            //         fontSize: 10,
-                            //         fontWeight: FontWeight.w500,
-                            //         fontFamily: '.SF Pro Text',
-                            //         decoration: TextDecoration.none,
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ],
                           ],
                         ),
 
@@ -721,33 +677,6 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                           _buildNutritionChip(
                             "Restriction: ${foodItem.firstFood.rejectedReason.capitalize()}",
                             Colors.red,
-                          ),
-                        ],
-                        if (!foodItem.isCollection &&
-                            foodItem.firstFood.ingredients.isNotEmpty) ...[
-                          SizedBox(height: 4),
-                          Text(
-                            foodItem.firstFood.ingredients,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.6),
-                              fontFamily: '.SF Pro Text',
-                              decoration: TextDecoration.none,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                        if (foodItem.isCollection) ...[
-                          SizedBox(height: 4),
-                          Text(
-                            'Collection with ${foodItem.foods.length} items',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withOpacity(0.6),
-                              fontFamily: '.SF Pro Text',
-                              decoration: TextDecoration.none,
-                            ),
                           ),
                         ],
                       ],
@@ -760,36 +689,19 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                   ),
                 ],
               ),
-              SizedBox(height: 12),
 
               // Nutrition info (show only for individual items)
               if (!foodItem.isCollection) ...[
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  children: [
-                    if (foodItem.firstFood.calories > 0)
-                      _buildNutritionChip(
-                        '${foodItem.firstFood.calories.round()} cal',
-                        Colors.blue,
-                      ),
-                    if (foodItem.firstFood.protein > 0)
-                      _buildNutritionChip(
-                        '${foodItem.firstFood.protein.round()}g P',
-                        Colors.green,
-                      ),
-                    if (foodItem.firstFood.carbs > 0)
-                      _buildNutritionChip(
-                        '${foodItem.firstFood.carbs.round()}g C',
-                        Colors.orange,
-                      ),
-                    if (foodItem.firstFood.fat > 0)
-                      _buildNutritionChip(
-                        '${foodItem.firstFood.fat.round()}g F',
-                        Colors.purple,
-                      ),
-                  ],
-                ),
+                if (foodItem.firstFood.calories > 0)
+                  Text(
+                    foodItem.firstFood.calories.round().toString() + " cal",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: styling.darkGray,
+                      fontFamily: '.SF Pro Text',
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
 
                 // Labels/allergens
                 if (foodItem.firstFood.labels.isNotEmpty) ...[
@@ -807,16 +719,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(6),
-                              color: Colors.amber.withOpacity(0.2),
-                              border: Border.all(
-                                color: Colors.amber.withOpacity(0.5),
-                                width: 0.5,
-                              ),
+                              color: styling.darkGray.withOpacity(0.1),
                             ),
                             child: Text(
                               label,
                               style: TextStyle(
-                                color: Colors.amber.shade200,
+                                color: styling.darkGray,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 fontFamily: '.SF Pro Text',
@@ -837,7 +745,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                         'Tap to view all items in this collection',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.6),
+                          color: styling.darkGray,
                           fontFamily: '.SF Pro Text',
                           decoration: TextDecoration.none,
                           fontStyle: FontStyle.italic,

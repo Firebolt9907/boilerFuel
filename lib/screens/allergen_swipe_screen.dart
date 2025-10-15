@@ -1,5 +1,9 @@
+import 'package:boiler_fuel/main.dart';
+import 'package:boiler_fuel/widgets/default_button.dart';
+import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../widgets/swipe_card.dart';
 import '../widgets/animated_button.dart';
@@ -176,429 +180,111 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
     final isCompleted = _currentIndex >= _allergens.length;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0D1B2A),
-              Color(0xFF1B263B),
-              Color(0xFF415A77),
-              Color(0xFF778DA9),
-              Color(0xFF415A77),
-            ],
-            stops: [0.0, 0.25, 0.5, 0.75, 1.0],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Floating decorative elements
-            ...List.generate(
-              5,
-              (index) => Positioned(
-                left: (index * 70.0) % MediaQuery.of(context).size.width,
-                top: (index * 120.0) % MediaQuery.of(context).size.height,
-                child: AnimatedBuilder(
-                  animation: _floatingAnimation,
-                  builder: (context, child) => Transform.translate(
-                    offset: Offset(
-                      math.sin(_floatingAnimation.value / 15 + index) * 10,
-                      _floatingAnimation.value +
-                          math.cos(_floatingAnimation.value / 12 + index) * 6,
-                    ),
-                    child: AnimatedBuilder(
-                      animation: _pulseAnimation,
-                      builder: (context, child) => Transform.scale(
-                        scale: _pulseAnimation.value * (0.1 + index * 0.06),
-                        child: Container(
-                          width: 12 + (index * 6),
-                          height: 12 + (index * 6),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: [
-                              Colors.red.withOpacity(0.08),
-                              Colors.orange.withOpacity(0.06),
-                              Colors.yellow.withOpacity(0.05),
-                              Colors.green.withOpacity(0.04),
-                              Colors.blue.withOpacity(0.03),
-                            ][index],
-                            boxShadow: [
-                              BoxShadow(
-                                color: [
-                                  Colors.red,
-                                  Colors.orange,
-                                  Colors.yellow,
-                                  Colors.green,
-                                  Colors.blue,
-                                ][index].withOpacity(0.1),
-                                blurRadius: 6,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            // Main content
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: Column(
-                children: [
-                  // Header
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: 24,
-                      right: 24,
-                      top: 24 + MediaQuery.of(context).padding.top,
-                      bottom:
-                          24 +
-                          MediaQuery.of(context).padding.bottom +
-                          MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Back button
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.1),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                              width: 1,
-                            ),
-                          ),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ),
-                        SizedBox(height: 24),
-
-                        // Title
-                        ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            colors: [
-                              Colors.white,
-                              Colors.red.shade300,
-                              Colors.orange.shade200,
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ).createShader(bounds),
-                          child: Text(
-                            'Food Allergies',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-
-                        // Progress and description
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: Colors.white.withOpacity(0.05),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Text(
-                                  isCompleted
-                                      ? 'Swipe through complete!'
-                                      : 'Swipe right if you have this allergy',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white.withOpacity(0.8),
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: Colors.blue.withOpacity(0.2),
-                                border: Border.all(
-                                  color: Colors.blue.withOpacity(0.5),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Text(
-                                '${_currentIndex}/${_allergens.length}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.blue.shade300,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Card stack area
-                  Expanded(
-                    child: Center(
-                      child: isCompleted
-                          ? _buildCompletionView()
-                          : _buildCardStack(),
-                    ),
-                  ),
-
-                  if (!isCompleted)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      //Swap the order if swapSides is true
-                      children: [
-                        // Reject hint
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.red.withOpacity(0.2),
-                            border: Border.all(
-                              color: Colors.red.withOpacity(0.5),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.arrow_left,
-                                color: Colors.red.shade300,
-                                size: 16,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Not Allergic',
-                                style: TextStyle(
-                                  color: Colors.red.shade300,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Accept hint
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.green.withOpacity(0.2),
-                            border: Border.all(
-                              color: Colors.green.withOpacity(0.5),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Allergic',
-                                style: TextStyle(
-                                  color: Colors.green.shade300,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(
-                                Icons.arrow_right,
-                                color: Colors.green.shade300,
-                                size: 16,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    SizedBox(height: 24),
-
-                  // Bottom section
-                  if (isCompleted) _buildBottomButtons(),
-                  SizedBox(height: 24),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCardStack() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        for (
-          int i = math.min(
-            _currentIndex + _allergens.length,
-            _allergens.length - 1,
-          );
-          i >= _currentIndex;
-          i--
-        )
-          if (i < _allergens.length)
-            Positioned(
-              child: SwipeCard(
-                title: _allergens[i].toString(),
-                description: _allergenDescriptions[_allergens[i]] ?? '',
-                icon: _allergenIcons[_allergens[i]] ?? Icons.warning,
-                cardColor: _allergenColors[_allergens[i]] ?? Colors.grey,
-                onSwipe: i == _currentIndex ? _onSwipe : (swipe) {},
-                isTopCard: i == _currentIndex,
-                swapSides: false,
-              ),
-            ),
-      ],
-    );
-  }
-
-  Widget _buildCompletionView() {
-    return Container(
-      padding: EdgeInsets.all(32),
-      margin: EdgeInsets.symmetric(horizontal: 24),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white.withOpacity(0.05),
-        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      backgroundColor: Colors.white,
+      body: Column(
         children: [
-          Icon(Icons.check_circle, size: 80, color: Colors.green.shade400),
-          SizedBox(height: 24),
+          SizedBox(height: 48),
+          // Header
           Text(
-            'Allergies Recorded!',
+            'Food Allergies',
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
+              letterSpacing: 0.5,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Select your food allergies by tapping on each of your allergies.',
+            style: TextStyle(
+              fontSize: 16,
+              color: styling.darkGray,
+              height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 16),
-          if (_selectedAllergies.isNotEmpty) ...[
-            Text(
-              'Selected allergies:',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 12),
-            ListView(
-              shrinkWrap: true,
-              clipBehavior: Clip.hardEdge,
-
+          SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
               children: [
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _selectedAllergies.map((allergy) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                for (FoodAllergy a in _allergens)
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      setState(() {
+                        if (_selectedAllergies.contains(a)) {
+                          _selectedAllergies.remove(a);
+                        } else {
+                          _selectedAllergies.add(a);
+                        }
+                      });
+                    },
+                    child: DefaultContainer(
+                      decoration: _selectedAllergies.contains(a)
+                          ? BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.black, width: 2),
+                            )
+                          : null,
+
+                      child: Column(
+                        children: [
+                          Icon(
+                            _allergenIcons[a],
+                            color: _selectedAllergies.contains(a)
+                                ? Colors.black
+                                : Colors.grey.shade400,
+                            size: 32,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            a.name,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: _selectedAllergies.contains(a)
+                                  ? Colors.black
+                                  : Colors.grey.shade400,
+                              fontWeight: _selectedAllergies.contains(a)
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ],
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: _allergenColors[allergy]?.withOpacity(0.2),
-                        border: Border.all(
-                          color:
-                              _allergenColors[allergy]?.withOpacity(0.5) ??
-                              Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        allergy.toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                    ),
+                  ),
               ],
             ),
-          ] else ...[
-            Text(
-              'No allergies selected',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withOpacity(0.6),
-                fontStyle: FontStyle.italic,
+          ),
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DefaultButton(
+              text: Text(
+                "Save",
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
+              onTap: _continue,
             ),
-          ],
-        ],
-      ),
-    );
-  }
+          ),
 
-  Widget _buildBottomButtons() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _currentIndex = 0;
-                _selectedAllergies.clear();
-              });
-            },
-            child: Text(
-              'Restart Allergies',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 16,
-                decoration: TextDecoration.underline,
+          Center(
+            child: TextButton(
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                Navigator.pop(context);
+              },
+              child: Text(
+                'Back',
+                style: TextStyle(color: styling.darkGray, fontSize: 16),
               ),
             ),
           ),
-          AnimatedButton(text: 'Save & Continue', onTap: _continue),
-          SizedBox(height: 12),
         ],
       ),
     );
