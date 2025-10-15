@@ -4,6 +4,8 @@ import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:boiler_fuel/main.dart';
+import 'package:boiler_fuel/screens/saved_meals_screen.dart';
+import 'package:boiler_fuel/screens/suggested_meals_screen.dart';
 import 'package:boiler_fuel/screens/user_settings_screen.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:boiler_fuel/widgets/titanium_container.dart';
@@ -337,7 +339,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return MealTime.dinner;
   }
 
-  void onViewSavedMeals() {}
+  void onViewSavedMeals() {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => SavedMealsScreen(user: widget.user),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -460,58 +469,72 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         if (widget.user.useMealPlanning)
                           const SizedBox(height: 12),
                         if (widget.user.useMealPlanning)
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
+                          Card(
+                            elevation: 0,
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(color: Colors.grey[200]!),
                             ),
-                            padding: EdgeInsets.all(16),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xfffef2f2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    Icons.favorite_outline,
-                                    color: Color(0xfffb2c35),
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(maxWidth: 200),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Saved Meals',
-                                        style: TextStyle(fontSize: 16),
+                            child: InkWell(
+                              onTap: onViewSavedMeals,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xfffef2f2),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'View and manage your saved meals',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: styling.darkGray,
-                                        ),
+                                      child: Icon(
+                                        Icons.favorite_outline,
+                                        color: Color(0xfffb2c35),
+                                        size: 24,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: 200,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Saved Meals',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'View and manage your saved meals',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: styling.darkGray,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: Colors.grey[600],
+                                      size: 24,
+                                    ),
+                                  ],
                                 ),
-                                Spacer(),
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: Colors.grey[600],
-                                  size: 24,
-                                ),
-                              ],
+                              ),
                             ),
                           ),
+
                         if (widget.user.useMealPlanning)
                           const SizedBox(height: 24),
 
@@ -538,7 +561,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void onViewSuggestedMeals() {}
+  void onViewSuggestedMeals() {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => SuggestedMealsScreen(user: widget.user),
+      ),
+    );
+  }
 
   void onViewMeal() {
     if (displayMeal == null) return;
@@ -554,18 +584,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildSuggestedMealCard(BuildContext context) {
-    if (displayMeal == null) {
-      displayMeal = Meal(
-        name: 'No meals',
-        diningHall: '',
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
-        foods: [],
-      );
-      ;
-    }
     return Card(
       elevation: 0,
       color: Colors.white,
@@ -575,109 +593,131 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       child: Column(
         children: [
-          InkWell(
-            onTap: onViewMeal,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-            child: Padding(
+          if (displayMeal == null) ...[
+            Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    displayMeal!.name,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    'Meal Suggestion Generating...',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${displayMeal!.diningHall}',
+                    'BoilerFuel is working to find the best meal for you based on your preferences and dining hall hours. This may take a moment.',
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                  ),
-
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                styling.darkGray.withOpacity(0.05),
-                                styling.darkGray.withOpacity(0.1),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Calories',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${displayMeal!.calories}',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                styling.darkGray.withOpacity(0.05),
-                                styling.darkGray.withOpacity(0.1),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Protein',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${displayMeal!.protein}g',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
-          ),
+          ] else
+            InkWell(
+              onTap: onViewMeal,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayMeal!.name,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${displayMeal!.diningHall}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    ),
+
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  styling.darkGray.withOpacity(0.05),
+                                  styling.darkGray.withOpacity(0.1),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Calories',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${displayMeal!.calories.round()}',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  styling.darkGray.withOpacity(0.05),
+                                  styling.darkGray.withOpacity(0.1),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Protein',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${displayMeal!.protein.round()}g',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           Divider(height: 1, color: Colors.grey[200]),
           InkWell(
             onTap: onViewSuggestedMeals,

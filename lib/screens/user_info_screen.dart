@@ -4,6 +4,7 @@ import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/dietary_restrictions_screen.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
+import 'package:boiler_fuel/screens/suggested_macros_screen.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
 import 'package:boiler_fuel/widgets/animated_dropdown_menu.dart';
 import 'package:boiler_fuel/widgets/animated_goal_option.dart';
@@ -179,7 +180,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       Navigator.pop(context, user);
       return;
     }
-    if (useDietary) {
+    if (!useMealPlanning) {
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -190,7 +191,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => DiningHallRankingScreen(user: user),
+          builder: (context) => SuggestedMacrosScreen(user: user),
         ),
       );
     }
