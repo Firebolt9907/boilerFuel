@@ -437,7 +437,6 @@ enum MealTime {
       case 'dinner':
         return MealTime.dinner;
       default:
-  
         throw ArgumentError('Invalid meal time: $value');
     }
   }
@@ -941,6 +940,7 @@ class Meal {
   String diningHall;
   MealTime? mealTime;
   bool isFavorited = false;
+  bool isAIGenerated;
   final String id;
 
   Meal({
@@ -952,6 +952,7 @@ class Meal {
     required this.foods,
     required this.diningHall,
     required this.id,
+    required this.isAIGenerated,
     this.mealTime,
     this.isFavorited = false,
   });
@@ -980,6 +981,7 @@ ${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}
       'mealTime': mealTime?.toString(),
       'isFavorited': isFavorited,
       'id': id,
+      'isAIGenerated': isAIGenerated,
     };
   }
 
@@ -991,6 +993,7 @@ ${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}
       carbs: (map['carbs'] ?? -1) * 1.0,
       fat: (map['fat'] ?? -1) * 1.0,
       id: map['id'],
+      isAIGenerated: map['isAIGenerated'] ?? false,
       foods: List<Food>.from(
         (map['foods'] as List<dynamic>).map(
           (f) => Food.fromMap(f as Map<String, dynamic>),

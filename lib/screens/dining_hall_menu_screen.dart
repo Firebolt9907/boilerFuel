@@ -793,6 +793,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       carbs: food.carbs,
       fat: food.fat,
       diningHall: widget.diningHall,
+      isAIGenerated: false,
       id: food.id,
     );
 

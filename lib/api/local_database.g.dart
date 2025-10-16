@@ -898,6 +898,21 @@ class $MealsTableTable extends MealsTable
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _isAIMealMeta = const VerificationMeta(
+    'isAIMeal',
+  );
+  @override
+  late final GeneratedColumn<bool> isAIMeal = GeneratedColumn<bool>(
+    'is_a_i_meal',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_a_i_meal" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
     'lastUpdated',
   );
@@ -923,6 +938,7 @@ class $MealsTableTable extends MealsTable
     totalCarbs,
     totalFats,
     isFavorited,
+    isAIMeal,
     lastUpdated,
   ];
   @override
@@ -1038,6 +1054,12 @@ class $MealsTableTable extends MealsTable
         ),
       );
     }
+    if (data.containsKey('is_a_i_meal')) {
+      context.handle(
+        _isAIMealMeta,
+        isAIMeal.isAcceptableOrUnknown(data['is_a_i_meal']!, _isAIMealMeta),
+      );
+    }
     if (data.containsKey('last_updated')) {
       context.handle(
         _lastUpdatedMeta,
@@ -1106,6 +1128,10 @@ class $MealsTableTable extends MealsTable
         DriftSqlType.bool,
         data['${effectivePrefix}is_favorited'],
       )!,
+      isAIMeal: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_a_i_meal'],
+      )!,
       lastUpdated: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}last_updated'],
@@ -1132,6 +1158,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
   final double totalCarbs;
   final double totalFats;
   final bool isFavorited;
+  final bool isAIMeal;
   final int lastUpdated;
   const MealsTableData({
     required this.id,
@@ -1146,6 +1173,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     required this.totalCarbs,
     required this.totalFats,
     required this.isFavorited,
+    required this.isAIMeal,
     required this.lastUpdated,
   });
   @override
@@ -1163,6 +1191,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     map['total_carbs'] = Variable<double>(totalCarbs);
     map['total_fats'] = Variable<double>(totalFats);
     map['is_favorited'] = Variable<bool>(isFavorited);
+    map['is_a_i_meal'] = Variable<bool>(isAIMeal);
     map['last_updated'] = Variable<int>(lastUpdated);
     return map;
   }
@@ -1181,6 +1210,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       totalCarbs: Value(totalCarbs),
       totalFats: Value(totalFats),
       isFavorited: Value(isFavorited),
+      isAIMeal: Value(isAIMeal),
       lastUpdated: Value(lastUpdated),
     );
   }
@@ -1203,6 +1233,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       totalCarbs: serializer.fromJson<double>(json['totalCarbs']),
       totalFats: serializer.fromJson<double>(json['totalFats']),
       isFavorited: serializer.fromJson<bool>(json['isFavorited']),
+      isAIMeal: serializer.fromJson<bool>(json['isAIMeal']),
       lastUpdated: serializer.fromJson<int>(json['lastUpdated']),
     );
   }
@@ -1222,6 +1253,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       'totalCarbs': serializer.toJson<double>(totalCarbs),
       'totalFats': serializer.toJson<double>(totalFats),
       'isFavorited': serializer.toJson<bool>(isFavorited),
+      'isAIMeal': serializer.toJson<bool>(isAIMeal),
       'lastUpdated': serializer.toJson<int>(lastUpdated),
     };
   }
@@ -1239,6 +1271,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     double? totalCarbs,
     double? totalFats,
     bool? isFavorited,
+    bool? isAIMeal,
     int? lastUpdated,
   }) => MealsTableData(
     id: id ?? this.id,
@@ -1253,6 +1286,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     totalCarbs: totalCarbs ?? this.totalCarbs,
     totalFats: totalFats ?? this.totalFats,
     isFavorited: isFavorited ?? this.isFavorited,
+    isAIMeal: isAIMeal ?? this.isAIMeal,
     lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   MealsTableData copyWithCompanion(MealsTableCompanion data) {
@@ -1279,6 +1313,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       isFavorited: data.isFavorited.present
           ? data.isFavorited.value
           : this.isFavorited,
+      isAIMeal: data.isAIMeal.present ? data.isAIMeal.value : this.isAIMeal,
       lastUpdated: data.lastUpdated.present
           ? data.lastUpdated.value
           : this.lastUpdated,
@@ -1300,6 +1335,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
           ..write('totalCarbs: $totalCarbs, ')
           ..write('totalFats: $totalFats, ')
           ..write('isFavorited: $isFavorited, ')
+          ..write('isAIMeal: $isAIMeal, ')
           ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
@@ -1319,6 +1355,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     totalCarbs,
     totalFats,
     isFavorited,
+    isAIMeal,
     lastUpdated,
   );
   @override
@@ -1337,6 +1374,7 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
           other.totalCarbs == this.totalCarbs &&
           other.totalFats == this.totalFats &&
           other.isFavorited == this.isFavorited &&
+          other.isAIMeal == this.isAIMeal &&
           other.lastUpdated == this.lastUpdated);
 }
 
@@ -1353,6 +1391,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
   final Value<double> totalCarbs;
   final Value<double> totalFats;
   final Value<bool> isFavorited;
+  final Value<bool> isAIMeal;
   final Value<int> lastUpdated;
   const MealsTableCompanion({
     this.id = const Value.absent(),
@@ -1367,6 +1406,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     this.totalCarbs = const Value.absent(),
     this.totalFats = const Value.absent(),
     this.isFavorited = const Value.absent(),
+    this.isAIMeal = const Value.absent(),
     this.lastUpdated = const Value.absent(),
   });
   MealsTableCompanion.insert({
@@ -1382,6 +1422,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     required double totalCarbs,
     required double totalFats,
     this.isFavorited = const Value.absent(),
+    this.isAIMeal = const Value.absent(),
     required int lastUpdated,
   }) : diningCourt = Value(diningCourt),
        date = Value(date),
@@ -1407,6 +1448,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     Expression<double>? totalCarbs,
     Expression<double>? totalFats,
     Expression<bool>? isFavorited,
+    Expression<bool>? isAIMeal,
     Expression<int>? lastUpdated,
   }) {
     return RawValuesInsertable({
@@ -1422,6 +1464,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
       if (totalCarbs != null) 'total_carbs': totalCarbs,
       if (totalFats != null) 'total_fats': totalFats,
       if (isFavorited != null) 'is_favorited': isFavorited,
+      if (isAIMeal != null) 'is_a_i_meal': isAIMeal,
       if (lastUpdated != null) 'last_updated': lastUpdated,
     });
   }
@@ -1439,6 +1482,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     Value<double>? totalCarbs,
     Value<double>? totalFats,
     Value<bool>? isFavorited,
+    Value<bool>? isAIMeal,
     Value<int>? lastUpdated,
   }) {
     return MealsTableCompanion(
@@ -1454,6 +1498,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
       totalCarbs: totalCarbs ?? this.totalCarbs,
       totalFats: totalFats ?? this.totalFats,
       isFavorited: isFavorited ?? this.isFavorited,
+      isAIMeal: isAIMeal ?? this.isAIMeal,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
@@ -1497,6 +1542,9 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     if (isFavorited.present) {
       map['is_favorited'] = Variable<bool>(isFavorited.value);
     }
+    if (isAIMeal.present) {
+      map['is_a_i_meal'] = Variable<bool>(isAIMeal.value);
+    }
     if (lastUpdated.present) {
       map['last_updated'] = Variable<int>(lastUpdated.value);
     }
@@ -1518,6 +1566,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
           ..write('totalCarbs: $totalCarbs, ')
           ..write('totalFats: $totalFats, ')
           ..write('isFavorited: $isFavorited, ')
+          ..write('isAIMeal: $isAIMeal, ')
           ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
@@ -3375,6 +3424,7 @@ typedef $$MealsTableTableCreateCompanionBuilder =
       required double totalCarbs,
       required double totalFats,
       Value<bool> isFavorited,
+      Value<bool> isAIMeal,
       required int lastUpdated,
     });
 typedef $$MealsTableTableUpdateCompanionBuilder =
@@ -3391,6 +3441,7 @@ typedef $$MealsTableTableUpdateCompanionBuilder =
       Value<double> totalCarbs,
       Value<double> totalFats,
       Value<bool> isFavorited,
+      Value<bool> isAIMeal,
       Value<int> lastUpdated,
     });
 
@@ -3460,6 +3511,11 @@ class $$MealsTableTableFilterComposer
 
   ColumnFilters<bool> get isFavorited => $composableBuilder(
     column: $table.isFavorited,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isAIMeal => $composableBuilder(
+    column: $table.isAIMeal,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3538,6 +3594,11 @@ class $$MealsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isAIMeal => $composableBuilder(
+    column: $table.isAIMeal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get lastUpdated => $composableBuilder(
     column: $table.lastUpdated,
     builder: (column) => ColumnOrderings(column),
@@ -3599,6 +3660,9 @@ class $$MealsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<bool> get isAIMeal =>
+      $composableBuilder(column: $table.isAIMeal, builder: (column) => column);
+
   GeneratedColumn<int> get lastUpdated => $composableBuilder(
     column: $table.lastUpdated,
     builder: (column) => column,
@@ -3648,6 +3712,7 @@ class $$MealsTableTableTableManager
                 Value<double> totalCarbs = const Value.absent(),
                 Value<double> totalFats = const Value.absent(),
                 Value<bool> isFavorited = const Value.absent(),
+                Value<bool> isAIMeal = const Value.absent(),
                 Value<int> lastUpdated = const Value.absent(),
               }) => MealsTableCompanion(
                 id: id,
@@ -3662,6 +3727,7 @@ class $$MealsTableTableTableManager
                 totalCarbs: totalCarbs,
                 totalFats: totalFats,
                 isFavorited: isFavorited,
+                isAIMeal: isAIMeal,
                 lastUpdated: lastUpdated,
               ),
           createCompanionCallback:
@@ -3678,6 +3744,7 @@ class $$MealsTableTableTableManager
                 required double totalCarbs,
                 required double totalFats,
                 Value<bool> isFavorited = const Value.absent(),
+                Value<bool> isAIMeal = const Value.absent(),
                 required int lastUpdated,
               }) => MealsTableCompanion.insert(
                 id: id,
@@ -3692,6 +3759,7 @@ class $$MealsTableTableTableManager
                 totalCarbs: totalCarbs,
                 totalFats: totalFats,
                 isFavorited: isFavorited,
+                isAIMeal: isAIMeal,
                 lastUpdated: lastUpdated,
               ),
           withReferenceMapper: (p0) => p0

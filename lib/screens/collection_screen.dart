@@ -401,6 +401,7 @@ class _CollectionScreenState extends State<CollectionScreen>
       fat: food.fat,
       diningHall: widget.diningHall,
       id: food.id,
+      isAIGenerated: false,
     );
 
     customCupertinoSheet.showCupertinoSheet<void>(

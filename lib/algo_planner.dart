@@ -415,6 +415,7 @@ class MealOptimizerGA {
       diningHall: diningHall,
       mealTime: mealTime,
       id: mealId,
+      isAIGenerated: true,
     );
   }
 

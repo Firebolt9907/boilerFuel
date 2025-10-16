@@ -38,6 +38,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Animation<double> _statusBarAnimation;
   PageController _scrollController = PageController();
 
+  // animated ellipsis for generating text
+  String _generatingEllipsis = '';
+  Timer? _ellipsisTimer;
+
   StreamController<Map<MealTime, Map<String, Meal>>> _mealStreamController =
       StreamController.broadcast();
 
@@ -99,6 +103,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     _loadHomeData(widget.user);
+
+    // start ellipsis animation (cycles: '', '.', '..', '...')
+    _ellipsisTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      setState(() {
+        if (_generatingEllipsis.length >= 3) {
+          _generatingEllipsis = '';
+        } else {
+          _generatingEllipsis = '${_generatingEllipsis}.';
+        }
+      });
+    });
   }
 
   @override
@@ -108,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _pulseController.dispose();
     _statusBarController.dispose();
     _mealStreamController.close();
+    _ellipsisTimer?.cancel();
     super.dispose();
   }
 
@@ -274,8 +290,51 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // Generate meal suggestions for all dining halls
     if (_diningHalls.isNotEmpty && user.useMealPlanning) {
       // Fetch meal suggestions for each meal time and dining hall
+      Map<MealTime, Map<String, Meal>>? dayMeals = await LocalDatabase()
+          .getAIDayMeals();
+      print("Day Meals fetched: $dayMeals");
+      if (dayMeals != null) {
+        Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
+        for (MealTime mealTime in dayMeals.keys) {
+          Map<String, Meal> originalMeals = dayMeals[mealTime]!;
+          Map<String, Meal> sortedMeals = {};
 
-      await LocalDatabase().listenToDayMeals(_mealStreamController);
+          // First, add dining halls in the order of user's ranking
+          for (String rankedHall in _rankedDiningHalls) {
+            if (originalMeals.containsKey(rankedHall)) {
+              sortedMeals[rankedHall] = originalMeals[rankedHall]!;
+            }
+          }
+
+          // Then, add any remaining dining halls that weren't in the user's ranking
+          for (String diningHall in originalMeals.keys) {
+            if (!sortedMeals.containsKey(diningHall)) {
+              sortedMeals[diningHall] = originalMeals[diningHall]!;
+            }
+          }
+
+          sortedSuggestions[mealTime] = sortedMeals;
+        }
+
+        setState(() {
+          print("Sorted Suggestions:");
+          print(
+            "Sorted Suggestions:" +
+                sortedSuggestions
+                    .map((k, v) => MapEntry(k.toString(), v.keys.toList()))
+                    .toString(),
+          );
+          _suggestedMeals = sortedSuggestions;
+          displayMeal = _suggestedMeals[_getMealTime()]?.values.first;
+          print(displayMeal?.mealTime);
+
+          print("Display Meal: ${displayMeal?.name}");
+        });
+      } else {
+        MealPlanner.generateDayMealPlan(user: user, date: DateTime.now());
+      }
+      await LocalDatabase().listenToAIDayMeals(_mealStreamController);
+
       _mealStreamController.stream.listen((meals) {
         Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
         for (MealTime mealTime in meals.keys) {
@@ -301,7 +360,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
         setState(() {
           print("Sorted Suggestions:");
-          print(sortedSuggestions);
+          print(
+            "Sorted Suggestions:" +
+                sortedSuggestions
+                    .map((k, v) => MapEntry(k.toString(), v.keys.toList()))
+                    .toString(),
+          );
           _suggestedMeals = sortedSuggestions;
           displayMeal = _suggestedMeals[_getMealTime()]?.values.first;
           print(displayMeal?.mealTime);
@@ -600,7 +664,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   Text(
-                    'Meal Suggestion Generating...',
+                    'Meal Suggestion Generating${_generatingEllipsis}',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),

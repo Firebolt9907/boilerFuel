@@ -355,6 +355,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
       carbs: food.carbs,
       fat: food.fat,
       diningHall: widget.diningHall,
+      isAIGenerated: false,
       id: food.id,
     );
 

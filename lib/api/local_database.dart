@@ -45,6 +45,7 @@ class MealsTable extends Table {
   RealColumn get totalCarbs => real()();
   RealColumn get totalFats => real()();
   BoolColumn get isFavorited => boolean().withDefault(const Constant(false))();
+  BoolColumn get isAIMeal => boolean().withDefault(const Constant(false))();
   IntColumn get lastUpdated => integer()();
 }
 
@@ -104,10 +105,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 29) {
+      if (resetLocalDB <= 30) {
         print("Deleting old database to add new columns");
         await file.delete();
-        await SharedPrefs.setResetLocalData(30);
+        await SharedPrefs.setResetLocalData(31);
         print("Deleted old database - new schema will be created");
       }
     } catch (e) {
@@ -279,6 +280,7 @@ class LocalDatabase {
           lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
           isFavorited: Value(meal.isFavorited),
           mealId: Value(meal.id),
+          isAIMeal: Value(meal.isAIGenerated),
         ),
       );
       print("Meal updated: ${meal.name} at ${meal.diningHall}");
@@ -300,19 +302,22 @@ class LocalDatabase {
               isFavorited: Value(meal.isFavorited),
               lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
               mealId: Value(meal.id),
+              isAIMeal: Value(meal.isAIGenerated),
             ),
           );
       print("Meal inserted: ${meal.name} at ${meal.diningHall}");
     }
   }
 
-  Future<Map<MealTime, Map<String, Meal>>?> getDayMeals() async {
+  Future<Map<MealTime, Map<String, Meal>>?> getAIDayMeals() async {
     DateTime now = DateTime.now();
     String dateStr = "${now.year}-${now.month}-${now.day}";
 
-    final mealsRes = await (localDb.select(
-      localDb.mealsTable,
-    )..where((tbl) => tbl.date.equals(dateStr))).get();
+    final mealsRes =
+        await (localDb.select(localDb.mealsTable)
+              ..where((tbl) => tbl.date.equals(dateStr))
+              ..where((tbl) => tbl.isAIMeal))
+            .get();
 
     if (mealsRes.isEmpty) {
       print("No meals found for today.");
@@ -344,6 +349,7 @@ class LocalDatabase {
         isFavorited: row.isFavorited,
         id: row.mealId,
         mealTime: mealTime,
+        isAIGenerated: row.isAIMeal,
       );
 
       meals.putIfAbsent(mealTime, () => {});
@@ -354,15 +360,17 @@ class LocalDatabase {
     return meals;
   }
 
-  Future<void> listenToDayMeals(
+  Future<void> listenToAIDayMeals(
     StreamController<Map<MealTime, Map<String, Meal>>> controller,
   ) async {
     DateTime now = DateTime.now();
     String dateStr = "${now.year}-${now.month}-${now.day}";
 
-    final query = (localDb.select(
-      localDb.mealsTable,
-    )..where((tbl) => tbl.date.equals(dateStr))).watch();
+    final query =
+        (localDb.select(localDb.mealsTable)
+              ..where((tbl) => tbl.date.equals(dateStr))
+              ..where((tbl) => tbl.isAIMeal))
+            .watch();
 
     query.listen((mealsRes) {
       if (controller.isClosed) {
@@ -371,9 +379,9 @@ class LocalDatabase {
       Map<MealTime, Map<String, Meal>> meals = {};
 
       for (var row in mealsRes) {
-        MealTime mealTime = MealTime.values.firstWhere(
-          (e) => e.toString().split('.').last == row.mealTime,
-          orElse: () => MealTime.breakfast,
+        print("Meal row: ${row.name}, ${row.mealTime}, ${row.diningCourt}");
+        MealTime mealTime = MealTime.fromString(
+          row.mealTime != "null" ? row.mealTime : "breakfast",
         );
         String diningHall = row.diningCourt;
 
@@ -392,6 +400,7 @@ class LocalDatabase {
           foods: foods,
           isFavorited: row.isFavorited,
           id: row.mealId,
+          isAIGenerated: row.isAIMeal,
           mealTime: mealTime,
         );
 
@@ -453,6 +462,7 @@ class LocalDatabase {
           lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
           isFavorited: Value(meal.isFavorited),
           mealTime: Value(meal.mealTime.toString()),
+          isAIMeal: Value(meal.isAIGenerated),
         ),
       );
       print("Meal updated: ${meal.name} at ${meal.diningHall} with");
@@ -484,6 +494,7 @@ class LocalDatabase {
         foods: foods,
         isFavorited: row.isFavorited,
         id: row.mealId,
+        isAIGenerated: row.isAIMeal,
         mealTime: MealTime.fromString(
           row.mealTime != "null" ? row.mealTime : "breakfast",
         ),
@@ -665,6 +676,9 @@ class LocalDatabase {
     print(
       "Retrieved ${miniFoods.length} dining hall foods for $diningCourt on $dateStr",
     );
+    if (miniFoods.isEmpty) {
+      return null;
+    }
     return miniFoods;
   }
 

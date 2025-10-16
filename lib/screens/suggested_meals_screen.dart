@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:boiler_fuel/api/database.dart';
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
@@ -71,18 +74,140 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
   bool _isLoading = true;
   List<MealTime> _availableMealTimes = [];
   MealTime _selectedMealTime = MealTime.breakfast;
-
+  Map<MealTime, List<Meal>> _meals = {};
+  final StreamController<Map<MealTime, Map<String, Meal>>>
+  _mealStreamController = StreamController.broadcast();
   // Spacing between station items
 
   bool tappedSection = false;
+
+  void _fetchMenuData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    Map<MealTime, Map<String, Meal>>? dayMeals = await LocalDatabase()
+        .getAIDayMeals();
+    print("Day Meals fetched: $dayMeals");
+    if (dayMeals != null) {
+      Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
+      for (MealTime mealTime in dayMeals.keys) {
+        Map<String, Meal> originalMeals = dayMeals[mealTime]!;
+        Map<String, Meal> sortedMeals = {};
+
+        // First, add dining halls in the order of user's ranking
+        for (String rankedHall in widget.user.diningHallRank) {
+          if (originalMeals.containsKey(rankedHall)) {
+            sortedMeals[rankedHall] = originalMeals[rankedHall]!;
+          }
+        }
+
+        // Then, add any remaining dining halls that weren't in the user's ranking
+        for (String diningHall in originalMeals.keys) {
+          if (!sortedMeals.containsKey(diningHall)) {
+            sortedMeals[diningHall] = originalMeals[diningHall]!;
+          }
+        }
+
+        sortedSuggestions[mealTime] = sortedMeals;
+      }
+      Map<MealTime, List<Meal>> flattenedMeals = {};
+      for (MealTime mealTime in sortedSuggestions.keys) {
+        for (String diningHall in sortedSuggestions[mealTime]!.keys) {
+          if (!flattenedMeals.containsKey(mealTime)) {
+            flattenedMeals[mealTime] = [];
+          }
+          flattenedMeals[mealTime]!.add(
+            sortedSuggestions[mealTime]![diningHall]!,
+          );
+          // Only take the first dining hall's meal for each meal time
+        }
+      }
+
+      setState(() {
+        print("Sorted Suggestions:");
+        print(
+          "Sorted Suggestions:" +
+              sortedSuggestions
+                  .map((k, v) => MapEntry(k.toString(), v.keys.toList()))
+                  .toString(),
+        );
+
+        _availableMealTimes = sortedSuggestions.keys.toList();
+        //Sort available meal times based on breakfast, lunch, dinner
+        _availableMealTimes.sort((a, b) => a.index.compareTo(b.index));
+        _meals = flattenedMeals;
+
+        _isLoading = false;
+        _selectedMealTime = _availableMealTimes.first;
+      });
+    }
+    await LocalDatabase().listenToAIDayMeals(_mealStreamController);
+
+    _mealStreamController.stream.listen((meals) {
+      Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
+      for (MealTime mealTime in meals.keys) {
+        Map<String, Meal> originalMeals = meals[mealTime]!;
+        Map<String, Meal> sortedMeals = {};
+
+        // First, add dining halls in the order of user's ranking
+        for (String rankedHall in widget.user.diningHallRank) {
+          if (originalMeals.containsKey(rankedHall)) {
+            sortedMeals[rankedHall] = originalMeals[rankedHall]!;
+          }
+        }
+
+        // Then, add any remaining dining halls that weren't in the user's ranking
+        for (String diningHall in originalMeals.keys) {
+          if (!sortedMeals.containsKey(diningHall)) {
+            sortedMeals[diningHall] = originalMeals[diningHall]!;
+          }
+        }
+
+        sortedSuggestions[mealTime] = sortedMeals;
+      }
+
+      Map<MealTime, List<Meal>> flattenedMeals = {};
+      for (MealTime mealTime in sortedSuggestions.keys) {
+        for (String diningHall in sortedSuggestions[mealTime]!.keys) {
+          if (!flattenedMeals.containsKey(mealTime)) {
+            flattenedMeals[mealTime] = [];
+          }
+          flattenedMeals[mealTime]!.add(
+            sortedSuggestions[mealTime]![diningHall]!,
+          );
+          // Only take the first dining hall's meal for each meal time
+        }
+      }
+      setState(() {
+        print("Sorted Suggestions:");
+        print(
+          "Sorted Suggestions:" +
+              sortedSuggestions
+                  .map((k, v) => MapEntry(k.toString(), v.keys.toList()))
+                  .toString(),
+        );
+        _meals = flattenedMeals;
+        _availableMealTimes = sortedSuggestions.keys.toList();
+        _availableMealTimes.sort((a, b) => a.index.compareTo(b.index));
+        _isLoading = false;
+        if (!_availableMealTimes.contains(_selectedMealTime)) {
+          _selectedMealTime = _availableMealTimes.first;
+        }
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    _fetchMenuData();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _mealStreamController.close();
   }
 
   int menuCallCount = 0;
@@ -285,8 +410,151 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
 
   Widget _buildMealsView() {
     return SingleChildScrollView(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-         
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_meals[_selectedMealTime] == null)
+            _buildEmptyView()
+          else
+            ..._meals[_selectedMealTime]!
+                .map(
+                  (meal) => Card(
+                    elevation: 0,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.grey[200]!),
+                    ),
+                    child: InkWell(
+                      onTap: () async {
+                        HapticFeedback.lightImpact();
+                        await Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) => MealDetailsScreen(
+                              meal: meal,
+                              diningHall: meal.diningHall,
+                            ),
+                          ),
+                        );
+                        _fetchMenuData();
+                      },
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              meal.name,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${meal.diningHall}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          styling.darkGray.withOpacity(0.05),
+                                          styling.darkGray.withOpacity(0.1),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Calories',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${meal.calories.round()}',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          styling.darkGray.withOpacity(0.05),
+                                          styling.darkGray.withOpacity(0.1),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Protein',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${meal.protein.round()}g',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: Colors.grey[400],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
         ],
       ),
     );

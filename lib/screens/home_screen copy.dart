@@ -341,7 +341,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (!user.useMealPlanning) return;
       // Fetch meal suggestions for each meal time and dining hall
 
-      await LocalDatabase().listenToDayMeals(_mealStreamController);
+      await LocalDatabase().listenToAIDayMeals(_mealStreamController);
       _mealStreamController.stream.listen((meals) {
         Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
         for (MealTime mealTime in meals.keys) {

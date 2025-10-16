@@ -73,10 +73,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           latestMealPlanDate.month,
           latestMealPlanDate.day,
         );
-        if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
-          print("Meal plan is up to date");
-          return;
-        }
+        // if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
+        // print("Meal plan is up to date");
+        return;
+        // }
         // await Future.delayed(Duration(seconds: 60));
 
         if (user!.useMealPlanning) {

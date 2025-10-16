@@ -273,6 +273,7 @@ DO NOT include any other text outside of the JSON block.
           carbs: (decoded['totalCarbs'] ?? 0).toDouble(),
           diningHall: diningHall, // Could be set based on food sources
           foods: foods,
+          isAIGenerated: true,
           id: mealId,
         );
       } catch (e) {
@@ -283,6 +284,7 @@ DO NOT include any other text outside of the JSON block.
           protein: 0,
           fat: 0,
           carbs: 0,
+          isAIGenerated: true,
           diningHall: "",
           foods: [],
           id: "error_meal",
@@ -422,6 +424,7 @@ DO NOT include any other text outside of the JSON block.
               diningHall: diningHall, // Could be set based on food sources
               foods: foods,
               mealTime: mealTime,
+              isAIGenerated: true,
               id: mealId,
             );
           }
@@ -681,13 +684,13 @@ DO NOT include any other text outside of the JSON block.
       "Average Prompt Tokens: $averagePromptTokens, Average Response Tokens: $averageResponseTokens, Total Prompts: $totalPrompts, Total Responses: $totalResponses",
     );
     //check if date is 3 days after now, if so stop
-    if (date == null || date.isBefore(DateTime.now().add(Duration(days: 2)))) {
-      //Wait 60 seconds between calls to avoid rate limiting
-      // await Future.delayed(Duration(seconds: 60));
-      await generateDayMealPlan(
-        user: user,
-        date: (date ?? DateTime.now()).add(Duration(days: 1)),
-      );
-    }
+    // if (date == null || date.isBefore(DateTime.now().add(Duration(days: 2)))) {
+    //   //Wait 60 seconds between calls to avoid rate limiting
+    //   // await Future.delayed(Duration(seconds: 60));
+    //   await generateDayMealPlan(
+    //     user: user,
+    //     date: (date ?? DateTime.now()).add(Duration(days: 1)),
+    //   );
+    // }
   }
 }
