@@ -440,6 +440,13 @@ enum MealTime {
         throw ArgumentError('Invalid meal time: $value');
     }
   }
+
+  static MealTime getCurrentMealTime() {
+    final hour = DateTime.now().hour;
+    if (hour < 11) return MealTime.breakfast;
+    if (hour < 16) return MealTime.lunch;
+    return MealTime.dinner;
+  }
 }
 
 class MiniFood {

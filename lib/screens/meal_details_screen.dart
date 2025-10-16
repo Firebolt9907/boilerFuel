@@ -170,8 +170,8 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                         ),
                         child: Icon(
                           _isFavorited
-                              ? Icons.favorite
-                              : Icons.favorite_outline,
+                              ? Icons.bookmark_added
+                              : Icons.bookmark_add_outlined,
                           color: _isFavorited ? Colors.red : styling.black,
                           size: 20,
                         ),

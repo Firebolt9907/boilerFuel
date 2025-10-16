@@ -42,9 +42,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String _generatingEllipsis = '';
   Timer? _ellipsisTimer;
 
-  StreamController<Map<MealTime, Map<String, Meal>>> _mealStreamController =
-      StreamController.broadcast();
-
   User? _currentUser = null;
   List<DiningHall> _diningHalls = [];
 
@@ -122,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _floatingController.dispose();
     _pulseController.dispose();
     _statusBarController.dispose();
-    _mealStreamController.close();
+
     _ellipsisTimer?.cancel();
     super.dispose();
   }
@@ -325,17 +322,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     .toString(),
           );
           _suggestedMeals = sortedSuggestions;
-          displayMeal = _suggestedMeals[_getMealTime()]?.values.first;
+          displayMeal =
+              _suggestedMeals[MealTime.getCurrentMealTime()]?.values.first;
           print(displayMeal?.mealTime);
 
           print("Display Meal: ${displayMeal?.name}");
         });
-      } else {
-        MealPlanner.generateDayMealPlan(user: user, date: DateTime.now());
       }
-      await LocalDatabase().listenToAIDayMeals(_mealStreamController);
 
-      _mealStreamController.stream.listen((meals) {
+      aiMealStream.stream.listen((meals) {
+        if (!mounted) return;
         Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
         for (MealTime mealTime in meals.keys) {
           Map<String, Meal> originalMeals = meals[mealTime]!;
@@ -367,7 +363,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     .toString(),
           );
           _suggestedMeals = sortedSuggestions;
-          displayMeal = _suggestedMeals[_getMealTime()]?.values.first;
+          displayMeal =
+              _suggestedMeals[MealTime.getCurrentMealTime()]?.values.first;
           print(displayMeal?.mealTime);
 
           print("Display Meal: ${displayMeal?.name}");
@@ -397,12 +394,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //             stops: [0.0, 0.25, 0.5, 0.75, 1.0],
   //           ),
   //         ),
-  MealTime _getMealTime() {
-    final hour = DateTime.now().hour;
-    if (hour < 11) return MealTime.breakfast;
-    if (hour < 16) return MealTime.lunch;
-    return MealTime.dinner;
-  }
 
   void onViewSavedMeals() {
     Navigator.push(
@@ -415,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final mealTime = _getMealTime();
+    final mealTime = MealTime.getCurrentMealTime();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -557,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
-                                        Icons.favorite_outline,
+                                        Icons.bookmark_outline,
                                         color: Color(0xfffb2c35),
                                         size: 24,
                                       ),

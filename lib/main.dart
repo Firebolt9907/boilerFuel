@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/api_key.dart';
 
@@ -20,6 +22,8 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 final Styling styling = Styling();
 AppDb localDb = AppDb();
 
+final StreamController<Map<MealTime, Map<String, Meal>>> aiMealStream =
+    StreamController<Map<MealTime, Map<String, Meal>>>.broadcast();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // random code to make the app look good on android
@@ -73,6 +77,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           latestMealPlanDate.month,
           latestMealPlanDate.day,
         );
+        LocalDatabase().listenToAIDayMeals(aiMealStream);
         // if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
         // print("Meal plan is up to date");
         return;

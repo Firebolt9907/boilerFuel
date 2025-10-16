@@ -75,8 +75,9 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
         _meals = meals;
         _availableMealTimes = mealTimesList;
         print(meals.map((e) => e.mealTime).toList());
-        if (mealTimesList.isNotEmpty) {
-          _selectedMealTime = mealTimesList.first;
+        _selectedMealTime = MealTime.getCurrentMealTime();
+        if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
+          _selectedMealTime = _availableMealTimes.first;
         }
         _isLoading = false;
       });
@@ -172,7 +173,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   _isLoading
                       ? _buildLoadingView()
                       : Column(
@@ -425,7 +426,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
                                         Text(
                                           '${meal.protein.round()}g',
                                           style: TextStyle(
-                                              fontSize: 18,
+                                            fontSize: 18,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),

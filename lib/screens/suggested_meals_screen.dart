@@ -75,8 +75,7 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
   List<MealTime> _availableMealTimes = [];
   MealTime _selectedMealTime = MealTime.breakfast;
   Map<MealTime, List<Meal>> _meals = {};
-  final StreamController<Map<MealTime, Map<String, Meal>>>
-  _mealStreamController = StreamController.broadcast();
+
   // Spacing between station items
 
   bool tappedSection = false;
@@ -139,12 +138,14 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
         _meals = flattenedMeals;
 
         _isLoading = false;
-        _selectedMealTime = _availableMealTimes.first;
+        _selectedMealTime = MealTime.getCurrentMealTime();
+        if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
+          _selectedMealTime = _availableMealTimes.first;
+        }
       });
     }
-    await LocalDatabase().listenToAIDayMeals(_mealStreamController);
 
-    _mealStreamController.stream.listen((meals) {
+    aiMealStream.stream.listen((meals) {
       Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
       for (MealTime mealTime in meals.keys) {
         Map<String, Meal> originalMeals = meals[mealTime]!;
@@ -191,7 +192,8 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
         _availableMealTimes = sortedSuggestions.keys.toList();
         _availableMealTimes.sort((a, b) => a.index.compareTo(b.index));
         _isLoading = false;
-        if (!_availableMealTimes.contains(_selectedMealTime)) {
+        _selectedMealTime = MealTime.getCurrentMealTime();
+        if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
           _selectedMealTime = _availableMealTimes.first;
         }
       });
@@ -207,7 +209,6 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
   @override
   void dispose() {
     super.dispose();
-    _mealStreamController.close();
   }
 
   int menuCallCount = 0;
@@ -283,7 +284,7 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   _isLoading
                       ? _buildLoadingView()
                       : Column(

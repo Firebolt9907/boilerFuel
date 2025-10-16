@@ -71,6 +71,7 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen> {
     widget.user.diningHallRank = halls.map((e) => e.id).toList();
     print(widget.user.diningHallRank);
     await LocalDatabase().saveUser(widget.user);
+    LocalDatabase().listenToAIDayMeals(aiMealStream);
     if (widget.isEditing) {
       Navigator.pop(context, widget.user);
     } else {

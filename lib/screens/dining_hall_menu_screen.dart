@@ -368,7 +368,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
                   _isLoading
                       ? _buildLoadingView()
                       : _availableMealTimes.isEmpty
