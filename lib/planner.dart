@@ -263,6 +263,8 @@ DO NOT include any other text outside of the JSON block.
             },
           );
         }).toList();
+        final mealId =
+            DateTime.now().millisecondsSinceEpoch.toString() + "_" + diningHall;
         return Meal(
           name: decoded['mealName'] ?? 'Generated Meal',
           calories: (decoded['totalCals'] ?? 0).toDouble(),
@@ -271,6 +273,7 @@ DO NOT include any other text outside of the JSON block.
           carbs: (decoded['totalCarbs'] ?? 0).toDouble(),
           diningHall: diningHall, // Could be set based on food sources
           foods: foods,
+          id: mealId,
         );
       } catch (e) {
         print("Error parsing response: $e");
@@ -282,6 +285,7 @@ DO NOT include any other text outside of the JSON block.
           carbs: 0,
           diningHall: "",
           foods: [],
+          id: "error_meal",
         );
       }
     } catch (e) {
@@ -403,6 +407,12 @@ DO NOT include any other text outside of the JSON block.
                 },
               );
             }).toList();
+            final mealId =
+                DateTime.now().millisecondsSinceEpoch.toString() +
+                "_" +
+                diningHall +
+                "_" +
+                mealTime.toString();
             meals[mealTime] = Meal(
               name: mealData['mealName'] ?? 'Generated Meal',
               calories: (mealData['totalCals'] ?? 0).toDouble(),
@@ -412,6 +422,7 @@ DO NOT include any other text outside of the JSON block.
               diningHall: diningHall, // Could be set based on food sources
               foods: foods,
               mealTime: mealTime,
+              id: mealId,
             );
           }
         }

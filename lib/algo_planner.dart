@@ -399,7 +399,12 @@ class MealOptimizerGA {
   Meal convertToMeal(List<FoodServing> optimizedMeal, String mealName) {
     final foods = optimizedMeal.map((serving) => serving.food).toList();
     final totals = calculateMealTotals(optimizedMeal);
-
+    final mealId =
+        DateTime.now().millisecondsSinceEpoch.toString() +
+        "_" +
+        diningHall +
+        "_" +
+        mealTime.toString();
     return Meal(
       name: mealName,
       calories: totals.calories,
@@ -409,6 +414,7 @@ class MealOptimizerGA {
       foods: foods,
       diningHall: diningHall,
       mealTime: mealTime,
+      id: mealId,
     );
   }
 

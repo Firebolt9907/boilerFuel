@@ -852,6 +852,15 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _mealIdMeta = const VerificationMeta('mealId');
+  @override
+  late final GeneratedColumn<String> mealId = GeneratedColumn<String>(
+    'meal_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _totalCarbsMeta = const VerificationMeta(
     'totalCarbs',
   );
@@ -874,6 +883,21 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _isFavoritedMeta = const VerificationMeta(
+    'isFavorited',
+  );
+  @override
+  late final GeneratedColumn<bool> isFavorited = GeneratedColumn<bool>(
+    'is_favorited',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_favorited" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
     'lastUpdated',
   );
@@ -895,8 +919,10 @@ class $MealsTableTable extends MealsTable
     foodItems,
     totalCalories,
     totalProtein,
+    mealId,
     totalCarbs,
     totalFats,
+    isFavorited,
     lastUpdated,
   ];
   @override
@@ -979,6 +1005,14 @@ class $MealsTableTable extends MealsTable
     } else if (isInserting) {
       context.missing(_totalProteinMeta);
     }
+    if (data.containsKey('meal_id')) {
+      context.handle(
+        _mealIdMeta,
+        mealId.isAcceptableOrUnknown(data['meal_id']!, _mealIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_mealIdMeta);
+    }
     if (data.containsKey('total_carbs')) {
       context.handle(
         _totalCarbsMeta,
@@ -994,6 +1028,15 @@ class $MealsTableTable extends MealsTable
       );
     } else if (isInserting) {
       context.missing(_totalFatsMeta);
+    }
+    if (data.containsKey('is_favorited')) {
+      context.handle(
+        _isFavoritedMeta,
+        isFavorited.isAcceptableOrUnknown(
+          data['is_favorited']!,
+          _isFavoritedMeta,
+        ),
+      );
     }
     if (data.containsKey('last_updated')) {
       context.handle(
@@ -1047,6 +1090,10 @@ class $MealsTableTable extends MealsTable
         DriftSqlType.double,
         data['${effectivePrefix}total_protein'],
       )!,
+      mealId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meal_id'],
+      )!,
       totalCarbs: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}total_carbs'],
@@ -1054,6 +1101,10 @@ class $MealsTableTable extends MealsTable
       totalFats: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}total_fats'],
+      )!,
+      isFavorited: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_favorited'],
       )!,
       lastUpdated: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1077,8 +1128,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
   final String foodItems;
   final double totalCalories;
   final double totalProtein;
+  final String mealId;
   final double totalCarbs;
   final double totalFats;
+  final bool isFavorited;
   final int lastUpdated;
   const MealsTableData({
     required this.id,
@@ -1089,8 +1142,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     required this.foodItems,
     required this.totalCalories,
     required this.totalProtein,
+    required this.mealId,
     required this.totalCarbs,
     required this.totalFats,
+    required this.isFavorited,
     required this.lastUpdated,
   });
   @override
@@ -1104,8 +1159,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     map['food_items'] = Variable<String>(foodItems);
     map['total_calories'] = Variable<double>(totalCalories);
     map['total_protein'] = Variable<double>(totalProtein);
+    map['meal_id'] = Variable<String>(mealId);
     map['total_carbs'] = Variable<double>(totalCarbs);
     map['total_fats'] = Variable<double>(totalFats);
+    map['is_favorited'] = Variable<bool>(isFavorited);
     map['last_updated'] = Variable<int>(lastUpdated);
     return map;
   }
@@ -1120,8 +1177,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       foodItems: Value(foodItems),
       totalCalories: Value(totalCalories),
       totalProtein: Value(totalProtein),
+      mealId: Value(mealId),
       totalCarbs: Value(totalCarbs),
       totalFats: Value(totalFats),
+      isFavorited: Value(isFavorited),
       lastUpdated: Value(lastUpdated),
     );
   }
@@ -1140,8 +1199,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       foodItems: serializer.fromJson<String>(json['foodItems']),
       totalCalories: serializer.fromJson<double>(json['totalCalories']),
       totalProtein: serializer.fromJson<double>(json['totalProtein']),
+      mealId: serializer.fromJson<String>(json['mealId']),
       totalCarbs: serializer.fromJson<double>(json['totalCarbs']),
       totalFats: serializer.fromJson<double>(json['totalFats']),
+      isFavorited: serializer.fromJson<bool>(json['isFavorited']),
       lastUpdated: serializer.fromJson<int>(json['lastUpdated']),
     );
   }
@@ -1157,8 +1218,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       'foodItems': serializer.toJson<String>(foodItems),
       'totalCalories': serializer.toJson<double>(totalCalories),
       'totalProtein': serializer.toJson<double>(totalProtein),
+      'mealId': serializer.toJson<String>(mealId),
       'totalCarbs': serializer.toJson<double>(totalCarbs),
       'totalFats': serializer.toJson<double>(totalFats),
+      'isFavorited': serializer.toJson<bool>(isFavorited),
       'lastUpdated': serializer.toJson<int>(lastUpdated),
     };
   }
@@ -1172,8 +1235,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     String? foodItems,
     double? totalCalories,
     double? totalProtein,
+    String? mealId,
     double? totalCarbs,
     double? totalFats,
+    bool? isFavorited,
     int? lastUpdated,
   }) => MealsTableData(
     id: id ?? this.id,
@@ -1184,8 +1249,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     foodItems: foodItems ?? this.foodItems,
     totalCalories: totalCalories ?? this.totalCalories,
     totalProtein: totalProtein ?? this.totalProtein,
+    mealId: mealId ?? this.mealId,
     totalCarbs: totalCarbs ?? this.totalCarbs,
     totalFats: totalFats ?? this.totalFats,
+    isFavorited: isFavorited ?? this.isFavorited,
     lastUpdated: lastUpdated ?? this.lastUpdated,
   );
   MealsTableData copyWithCompanion(MealsTableCompanion data) {
@@ -1204,10 +1271,14 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
       totalProtein: data.totalProtein.present
           ? data.totalProtein.value
           : this.totalProtein,
+      mealId: data.mealId.present ? data.mealId.value : this.mealId,
       totalCarbs: data.totalCarbs.present
           ? data.totalCarbs.value
           : this.totalCarbs,
       totalFats: data.totalFats.present ? data.totalFats.value : this.totalFats,
+      isFavorited: data.isFavorited.present
+          ? data.isFavorited.value
+          : this.isFavorited,
       lastUpdated: data.lastUpdated.present
           ? data.lastUpdated.value
           : this.lastUpdated,
@@ -1225,8 +1296,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
           ..write('foodItems: $foodItems, ')
           ..write('totalCalories: $totalCalories, ')
           ..write('totalProtein: $totalProtein, ')
+          ..write('mealId: $mealId, ')
           ..write('totalCarbs: $totalCarbs, ')
           ..write('totalFats: $totalFats, ')
+          ..write('isFavorited: $isFavorited, ')
           ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
@@ -1242,8 +1315,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
     foodItems,
     totalCalories,
     totalProtein,
+    mealId,
     totalCarbs,
     totalFats,
+    isFavorited,
     lastUpdated,
   );
   @override
@@ -1258,8 +1333,10 @@ class MealsTableData extends DataClass implements Insertable<MealsTableData> {
           other.foodItems == this.foodItems &&
           other.totalCalories == this.totalCalories &&
           other.totalProtein == this.totalProtein &&
+          other.mealId == this.mealId &&
           other.totalCarbs == this.totalCarbs &&
           other.totalFats == this.totalFats &&
+          other.isFavorited == this.isFavorited &&
           other.lastUpdated == this.lastUpdated);
 }
 
@@ -1272,8 +1349,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
   final Value<String> foodItems;
   final Value<double> totalCalories;
   final Value<double> totalProtein;
+  final Value<String> mealId;
   final Value<double> totalCarbs;
   final Value<double> totalFats;
+  final Value<bool> isFavorited;
   final Value<int> lastUpdated;
   const MealsTableCompanion({
     this.id = const Value.absent(),
@@ -1284,8 +1363,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     this.foodItems = const Value.absent(),
     this.totalCalories = const Value.absent(),
     this.totalProtein = const Value.absent(),
+    this.mealId = const Value.absent(),
     this.totalCarbs = const Value.absent(),
     this.totalFats = const Value.absent(),
+    this.isFavorited = const Value.absent(),
     this.lastUpdated = const Value.absent(),
   });
   MealsTableCompanion.insert({
@@ -1297,8 +1378,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     required String foodItems,
     required double totalCalories,
     required double totalProtein,
+    required String mealId,
     required double totalCarbs,
     required double totalFats,
+    this.isFavorited = const Value.absent(),
     required int lastUpdated,
   }) : diningCourt = Value(diningCourt),
        date = Value(date),
@@ -1307,6 +1390,7 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
        foodItems = Value(foodItems),
        totalCalories = Value(totalCalories),
        totalProtein = Value(totalProtein),
+       mealId = Value(mealId),
        totalCarbs = Value(totalCarbs),
        totalFats = Value(totalFats),
        lastUpdated = Value(lastUpdated);
@@ -1319,8 +1403,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     Expression<String>? foodItems,
     Expression<double>? totalCalories,
     Expression<double>? totalProtein,
+    Expression<String>? mealId,
     Expression<double>? totalCarbs,
     Expression<double>? totalFats,
+    Expression<bool>? isFavorited,
     Expression<int>? lastUpdated,
   }) {
     return RawValuesInsertable({
@@ -1332,8 +1418,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
       if (foodItems != null) 'food_items': foodItems,
       if (totalCalories != null) 'total_calories': totalCalories,
       if (totalProtein != null) 'total_protein': totalProtein,
+      if (mealId != null) 'meal_id': mealId,
       if (totalCarbs != null) 'total_carbs': totalCarbs,
       if (totalFats != null) 'total_fats': totalFats,
+      if (isFavorited != null) 'is_favorited': isFavorited,
       if (lastUpdated != null) 'last_updated': lastUpdated,
     });
   }
@@ -1347,8 +1435,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     Value<String>? foodItems,
     Value<double>? totalCalories,
     Value<double>? totalProtein,
+    Value<String>? mealId,
     Value<double>? totalCarbs,
     Value<double>? totalFats,
+    Value<bool>? isFavorited,
     Value<int>? lastUpdated,
   }) {
     return MealsTableCompanion(
@@ -1360,8 +1450,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
       foodItems: foodItems ?? this.foodItems,
       totalCalories: totalCalories ?? this.totalCalories,
       totalProtein: totalProtein ?? this.totalProtein,
+      mealId: mealId ?? this.mealId,
       totalCarbs: totalCarbs ?? this.totalCarbs,
       totalFats: totalFats ?? this.totalFats,
+      isFavorited: isFavorited ?? this.isFavorited,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
@@ -1393,11 +1485,17 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
     if (totalProtein.present) {
       map['total_protein'] = Variable<double>(totalProtein.value);
     }
+    if (mealId.present) {
+      map['meal_id'] = Variable<String>(mealId.value);
+    }
     if (totalCarbs.present) {
       map['total_carbs'] = Variable<double>(totalCarbs.value);
     }
     if (totalFats.present) {
       map['total_fats'] = Variable<double>(totalFats.value);
+    }
+    if (isFavorited.present) {
+      map['is_favorited'] = Variable<bool>(isFavorited.value);
     }
     if (lastUpdated.present) {
       map['last_updated'] = Variable<int>(lastUpdated.value);
@@ -1416,8 +1514,10 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
           ..write('foodItems: $foodItems, ')
           ..write('totalCalories: $totalCalories, ')
           ..write('totalProtein: $totalProtein, ')
+          ..write('mealId: $mealId, ')
           ..write('totalCarbs: $totalCarbs, ')
           ..write('totalFats: $totalFats, ')
+          ..write('isFavorited: $isFavorited, ')
           ..write('lastUpdated: $lastUpdated')
           ..write(')'))
         .toString();
@@ -3271,8 +3371,10 @@ typedef $$MealsTableTableCreateCompanionBuilder =
       required String foodItems,
       required double totalCalories,
       required double totalProtein,
+      required String mealId,
       required double totalCarbs,
       required double totalFats,
+      Value<bool> isFavorited,
       required int lastUpdated,
     });
 typedef $$MealsTableTableUpdateCompanionBuilder =
@@ -3285,8 +3387,10 @@ typedef $$MealsTableTableUpdateCompanionBuilder =
       Value<String> foodItems,
       Value<double> totalCalories,
       Value<double> totalProtein,
+      Value<String> mealId,
       Value<double> totalCarbs,
       Value<double> totalFats,
+      Value<bool> isFavorited,
       Value<int> lastUpdated,
     });
 
@@ -3339,6 +3443,11 @@ class $$MealsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get mealId => $composableBuilder(
+    column: $table.mealId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<double> get totalCarbs => $composableBuilder(
     column: $table.totalCarbs,
     builder: (column) => ColumnFilters(column),
@@ -3346,6 +3455,11 @@ class $$MealsTableTableFilterComposer
 
   ColumnFilters<double> get totalFats => $composableBuilder(
     column: $table.totalFats,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isFavorited => $composableBuilder(
+    column: $table.isFavorited,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3404,6 +3518,11 @@ class $$MealsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get mealId => $composableBuilder(
+    column: $table.mealId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get totalCarbs => $composableBuilder(
     column: $table.totalCarbs,
     builder: (column) => ColumnOrderings(column),
@@ -3411,6 +3530,11 @@ class $$MealsTableTableOrderingComposer
 
   ColumnOrderings<double> get totalFats => $composableBuilder(
     column: $table.totalFats,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isFavorited => $composableBuilder(
+    column: $table.isFavorited,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3459,6 +3583,9 @@ class $$MealsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get mealId =>
+      $composableBuilder(column: $table.mealId, builder: (column) => column);
+
   GeneratedColumn<double> get totalCarbs => $composableBuilder(
     column: $table.totalCarbs,
     builder: (column) => column,
@@ -3466,6 +3593,11 @@ class $$MealsTableTableAnnotationComposer
 
   GeneratedColumn<double> get totalFats =>
       $composableBuilder(column: $table.totalFats, builder: (column) => column);
+
+  GeneratedColumn<bool> get isFavorited => $composableBuilder(
+    column: $table.isFavorited,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get lastUpdated => $composableBuilder(
     column: $table.lastUpdated,
@@ -3512,8 +3644,10 @@ class $$MealsTableTableTableManager
                 Value<String> foodItems = const Value.absent(),
                 Value<double> totalCalories = const Value.absent(),
                 Value<double> totalProtein = const Value.absent(),
+                Value<String> mealId = const Value.absent(),
                 Value<double> totalCarbs = const Value.absent(),
                 Value<double> totalFats = const Value.absent(),
+                Value<bool> isFavorited = const Value.absent(),
                 Value<int> lastUpdated = const Value.absent(),
               }) => MealsTableCompanion(
                 id: id,
@@ -3524,8 +3658,10 @@ class $$MealsTableTableTableManager
                 foodItems: foodItems,
                 totalCalories: totalCalories,
                 totalProtein: totalProtein,
+                mealId: mealId,
                 totalCarbs: totalCarbs,
                 totalFats: totalFats,
+                isFavorited: isFavorited,
                 lastUpdated: lastUpdated,
               ),
           createCompanionCallback:
@@ -3538,8 +3674,10 @@ class $$MealsTableTableTableManager
                 required String foodItems,
                 required double totalCalories,
                 required double totalProtein,
+                required String mealId,
                 required double totalCarbs,
                 required double totalFats,
+                Value<bool> isFavorited = const Value.absent(),
                 required int lastUpdated,
               }) => MealsTableCompanion.insert(
                 id: id,
@@ -3550,8 +3688,10 @@ class $$MealsTableTableTableManager
                 foodItems: foodItems,
                 totalCalories: totalCalories,
                 totalProtein: totalProtein,
+                mealId: mealId,
                 totalCarbs: totalCarbs,
                 totalFats: totalFats,
+                isFavorited: isFavorited,
                 lastUpdated: lastUpdated,
               ),
           withReferenceMapper: (p0) => p0

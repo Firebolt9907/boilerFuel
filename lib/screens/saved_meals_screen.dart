@@ -1,4 +1,5 @@
 import 'package:boiler_fuel/api/database.dart';
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
@@ -46,14 +47,51 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
     with TickerProviderStateMixin {
   bool _isLoading = true;
   List<MealTime> _availableMealTimes = [];
-  MealTime _selectedMealTime = MealTime.breakfast;
+  MealTime _selectedMealTime = MealTime.dinner;
+  List<Meal> _meals = [];
 
   // Spacing between station items
 
   bool tappedSection = false;
+
+  void _fetchSavedMeals() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Fetch saved meals from the database
+      List<Meal> meals = await LocalDatabase().getFavoritedMeals();
+
+      // Determine available meal times from fetched meals (filter out nulls)
+      Set<MealTime> mealTimesSet = meals
+          .map((meal) => meal.mealTime)
+          .whereType<MealTime>()
+          .toSet();
+      List<MealTime> mealTimesList = mealTimesSet.toList()
+        ..sort((a, b) => a.index.compareTo(b.index));
+
+      setState(() {
+        _meals = meals;
+        _availableMealTimes = mealTimesList;
+        print(meals.map((e) => e.mealTime).toList());
+        if (mealTimesList.isNotEmpty) {
+          _selectedMealTime = mealTimesList.first;
+        }
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching saved meals: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _fetchSavedMeals();
   }
 
   @override
@@ -261,8 +299,154 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
 
   Widget _buildMealsView() {
     return SingleChildScrollView(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-         
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_meals
+              .where((meal) => meal.mealTime == _selectedMealTime)
+              .isEmpty)
+            _buildEmptyView()
+          else
+            ..._meals
+                .where((meal) => meal.mealTime == _selectedMealTime)
+                .map(
+                  (meal) => Card(
+                    elevation: 0,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.grey[200]!),
+                    ),
+                    child: InkWell(
+                      onTap: () async {
+                        HapticFeedback.lightImpact();
+                        await Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) => MealDetailsScreen(
+                              meal: meal,
+                              diningHall: meal.diningHall,
+                            ),
+                          ),
+                        );
+                        _fetchSavedMeals();
+                      },
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              meal.name,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${meal.diningHall}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          styling.darkGray.withOpacity(0.05),
+                                          styling.darkGray.withOpacity(0.1),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Calories',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${meal.calories.round()}',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          styling.darkGray.withOpacity(0.05),
+                                          styling.darkGray.withOpacity(0.1),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.all(12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Protein',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${meal.protein.round()}g',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: Colors.grey[400],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
         ],
       ),
     );

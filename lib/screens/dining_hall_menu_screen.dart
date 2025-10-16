@@ -408,7 +408,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade300),
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
           ),
           SizedBox(height: 16),
           Text(
@@ -793,6 +793,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       carbs: food.carbs,
       fat: food.fat,
       diningHall: widget.diningHall,
+      id: food.id,
     );
 
     customCupertinoSheet.showCupertinoSheet<void>(

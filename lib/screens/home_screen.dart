@@ -304,6 +304,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           print(sortedSuggestions);
           _suggestedMeals = sortedSuggestions;
           displayMeal = _suggestedMeals[_getMealTime()]?.values.first;
+          print(displayMeal?.mealTime);
 
           print("Display Meal: ${displayMeal?.name}");
         });
@@ -455,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Suggested for $mealTime',
+                                'Suggested Meal for ${mealTime.toDisplayString()}',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -711,6 +712,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ],
                             ),
                           ),
+                        ),
+                        const SizedBox(width: 12),
+                        Icon(
+                          Icons.chevron_right,
+                          color: styling.gray,
+                          size: 24,
                         ),
                       ],
                     ),

@@ -41,9 +41,10 @@ class MealsTable extends Table {
   TextColumn get foodItems => text()();
   RealColumn get totalCalories => real()();
   RealColumn get totalProtein => real()();
+  TextColumn get mealId => text()();
   RealColumn get totalCarbs => real()();
   RealColumn get totalFats => real()();
-
+  BoolColumn get isFavorited => boolean().withDefault(const Constant(false))();
   IntColumn get lastUpdated => integer()();
 }
 
@@ -103,10 +104,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 28) {
+      if (resetLocalDB <= 29) {
         print("Deleting old database to add new columns");
         await file.delete();
-        await SharedPrefs.setResetLocalData(29);
+        await SharedPrefs.setResetLocalData(30);
         print("Deleted old database - new schema will be created");
       }
     } catch (e) {
@@ -276,6 +277,8 @@ class LocalDatabase {
           totalCarbs: Value(meal.carbs),
           totalFats: Value(meal.fat),
           lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+          isFavorited: Value(meal.isFavorited),
+          mealId: Value(meal.id),
         ),
       );
       print("Meal updated: ${meal.name} at ${meal.diningHall}");
@@ -294,7 +297,9 @@ class LocalDatabase {
               totalProtein: Value(meal.protein),
               totalCarbs: Value(meal.carbs),
               totalFats: Value(meal.fat),
+              isFavorited: Value(meal.isFavorited),
               lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+              mealId: Value(meal.id),
             ),
           );
       print("Meal inserted: ${meal.name} at ${meal.diningHall}");
@@ -336,6 +341,9 @@ class LocalDatabase {
         carbs: row.totalCarbs,
         diningHall: diningHall,
         foods: foods,
+        isFavorited: row.isFavorited,
+        id: row.mealId,
+        mealTime: mealTime,
       );
 
       meals.putIfAbsent(mealTime, () => {});
@@ -382,6 +390,9 @@ class LocalDatabase {
           carbs: row.totalCarbs,
           diningHall: diningHall,
           foods: foods,
+          isFavorited: row.isFavorited,
+          id: row.mealId,
+          mealTime: mealTime,
         );
 
         meals.putIfAbsent(mealTime, () => {});
@@ -415,6 +426,74 @@ class LocalDatabase {
       print("No meals found.");
       return null;
     }
+  }
+
+  Future<void> updateMeal(String mealId, Meal meal) async {
+    final mealsRes = await (localDb.select(
+      localDb.mealsTable,
+    )..where((tbl) => tbl.mealId.equals(mealId))).get();
+
+    if (mealsRes.isNotEmpty) {
+      List<Map<String, dynamic>> foodListMap = meal.foods
+          .map((f) => f.toMap())
+          .toList();
+
+      // Update existing meal
+      await (localDb.update(
+        localDb.mealsTable,
+      )..where((tbl) => tbl.id.equals(mealsRes.first.id))).write(
+        MealsTableCompanion(
+          diningCourt: Value(meal.diningHall),
+          name: Value(meal.name),
+          foodItems: Value(jsonEncode(foodListMap)),
+          totalCalories: Value(meal.calories),
+          totalProtein: Value(meal.protein),
+          totalCarbs: Value(meal.carbs),
+          totalFats: Value(meal.fat),
+          lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+          isFavorited: Value(meal.isFavorited),
+          mealTime: Value(meal.mealTime.toString()),
+        ),
+      );
+      print("Meal updated: ${meal.name} at ${meal.diningHall} with");
+    } else {
+      print("No meal found with ID: $mealId");
+    }
+  }
+
+  Future<List<Meal>> getFavoritedMeals() async {
+    final mealsRes = await (localDb.select(
+      localDb.mealsTable,
+    )..where((tbl) => tbl.isFavorited.equals(true))).get();
+
+    List<Meal> meals = [];
+
+    for (var row in mealsRes) {
+      List<dynamic> foodListJson = jsonDecode(row.foodItems);
+      List<Food> foods = foodListJson.map((f) {
+        return Food.fromMap(f);
+      }).toList();
+
+      Meal meal = Meal(
+        name: row.name,
+        calories: row.totalCalories,
+        protein: row.totalProtein,
+        fat: row.totalFats,
+        carbs: row.totalCarbs,
+        diningHall: row.diningCourt,
+        foods: foods,
+        isFavorited: row.isFavorited,
+        id: row.mealId,
+        mealTime: MealTime.fromString(
+          row.mealTime != "null" ? row.mealTime : "breakfast",
+        ),
+      );
+
+      meals.add(meal);
+    }
+
+    print("Retrieved ${meals.length} favorited meals.");
+    return meals;
   }
 
   Future<void> addFood(Food food) async {

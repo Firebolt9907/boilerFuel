@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
@@ -28,54 +29,18 @@ class MealDetailsScreen extends StatefulWidget {
 class _MealDetailsScreenState extends State<MealDetailsScreen>
     with TickerProviderStateMixin {
   bool _isFavorited = false;
-  late AnimationController _animationController;
-  late AnimationController _floatingController;
-  late AnimationController _pulseController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _floatingAnimation;
-  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _floatingController = AnimationController(
-      duration: Duration(milliseconds: 4000),
-      vsync: this,
-    );
-    _pulseController = AnimationController(
-      duration: Duration(milliseconds: 2000),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    _floatingAnimation = Tween<double>(begin: -10.0, end: 10.0).animate(
-      CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut),
-    );
-    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    _animationController.forward();
-    Future.delayed(Duration(milliseconds: 400), () {
-      if (mounted) {
-        _floatingController.repeat(reverse: true);
-        _pulseController.repeat(reverse: true);
-      }
+    setState(() {
+      _isFavorited = widget.meal.isFavorited;
     });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _floatingController.dispose();
-    _pulseController.dispose();
     super.dispose();
   }
 
@@ -188,6 +153,11 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                         setState(() {
                           _isFavorited = !_isFavorited;
                         });
+                        widget.meal.isFavorited = _isFavorited;
+                        print(
+                          "Updating meal favorite status: ${widget.meal.mealTime} to $_isFavorited",
+                        );
+                        LocalDatabase().updateMeal(widget.meal.id, widget.meal);
                       },
                       child: DefaultContainer(
                         padding: EdgeInsets.all(8),
@@ -385,6 +355,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
       carbs: food.carbs,
       fat: food.fat,
       diningHall: widget.diningHall,
+      id: food.id,
     );
 
     customCupertinoSheet.showCupertinoSheet<void>(
