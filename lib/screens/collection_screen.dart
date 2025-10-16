@@ -75,9 +75,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                     ),
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).padding.top - 12,
-                        ),
+                        SizedBox(height: MediaQuery.of(context).padding.top),
                         GestureDetector(
                           onTap: () {
                             HapticFeedback.lightImpact();
@@ -91,6 +89,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                                   color: styling.gray,
                                 ),
                                 onPressed: () {
+                                  HapticFeedback.lightImpact();
                                   Navigator.of(context).pop();
                                 },
                               ),

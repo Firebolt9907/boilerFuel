@@ -2,6 +2,7 @@ import 'package:boiler_fuel/widgets/tabs_content.dart';
 import 'package:boiler_fuel/widgets/tabs_list.dart';
 import 'package:flutter/material.dart';
 import 'package:boiler_fuel/constants.dart';
+import 'package:flutter/services.dart';
 
 /// Custom Tabs Widget - matches Radix UI design
 class CustomTabs extends StatefulWidget {
@@ -32,6 +33,7 @@ class _CustomTabsState extends State<CustomTabs> {
   }
 
   void _handleTabChange(String value) {
+    HapticFeedback.lightImpact();
     setState(() {
       _selectedValue = value;
     });

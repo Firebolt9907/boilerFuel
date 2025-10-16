@@ -79,7 +79,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
               ),
               child: Column(
                 children: [
-                  SizedBox(height: MediaQuery.of(context).padding.top - 12),
+                  SizedBox(height: MediaQuery.of(context).padding.top),
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.lightImpact();
@@ -93,6 +93,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                             color: styling.gray,
                           ),
                           onPressed: () {
+                            HapticFeedback.lightImpact();
                             Navigator.of(context).pop();
                           },
                         ),
@@ -142,6 +143,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                     "Change your user preferences, like name, age, weight, and dietary goals.",
                 icon: Icons.person,
                 onTap: () async {
+                  HapticFeedback.mediumImpact();
                   User? user = await Navigator.push(
                     context,
                     CupertinoPageRoute(
@@ -182,6 +184,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                     "Change your dining hall rankings to prioritize your favorite dining halls.",
                 icon: Icons.dining,
                 onTap: () async {
+                  HapticFeedback.mediumImpact();
                   User? user = await Navigator.push(
                     context,
                     CupertinoPageRoute(
@@ -224,6 +227,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                 subtitle: "Permanently delete your user data",
                 icon: Icons.delete,
                 onTap: () async {
+                  HapticFeedback.mediumImpact();
                   await LocalDatabase().deleteDB(true);
                   Navigator.push(
                     context,

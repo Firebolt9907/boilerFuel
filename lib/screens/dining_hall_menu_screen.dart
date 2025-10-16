@@ -311,7 +311,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             ),
             child: Column(
               children: [
-                SizedBox(height: MediaQuery.of(context).padding.top - 12),
+                 SizedBox(height: MediaQuery.of(context).padding.top),
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
@@ -325,6 +325,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                           color: styling.gray,
                         ),
                         onPressed: () {
+                          HapticFeedback.lightImpact();
                           Navigator.of(context).pop();
                         },
                       ),
@@ -521,75 +522,6 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           for (String station in stationNames)
             TabItem(label: station, value: station),
         ],
-      ),
-    );
-  }
-
-  Widget _buildStationIndicator() {
-    if (_stationFoods.isEmpty) return SizedBox.shrink();
-
-    List<String> stationNames = _stationFoods.keys.toList();
-
-    return Container(
-      height: 60,
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        controller: _stationScrollController,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: stationNames.length,
-        itemBuilder: (context, index) {
-          String stationName = stationNames[index];
-          bool isSelected = _currentStationIndex == index;
-
-          return GestureDetector(
-            onTap: () {
-              HapticFeedback.selectionClick();
-              print("calling setState");
-              setState(() {
-                _currentStationIndex = index;
-                _stationPageController.animateToPage(
-                  index,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-                tappedSection = true;
-                // _stationPageController.jumpToPage(index);
-              });
-            },
-            child: Container(
-              key: ValueKey('station_$index'),
-              margin: EdgeInsets.only(right: 12),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: isSelected
-                    ? Colors.blue.shade400
-                    : Colors.white.withOpacity(0.1),
-                border: Border.all(
-                  color: isSelected
-                      ? Colors.blue.shade300
-                      : Colors.white.withOpacity(0.2),
-                  width: 1,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  stationName,
-                  style: TextStyle(
-                    color: isSelected
-                        ? Colors.white
-                        : Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    fontFamily: '.SF Pro Text',
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }

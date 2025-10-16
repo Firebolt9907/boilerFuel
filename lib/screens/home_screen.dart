@@ -396,6 +396,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //         ),
 
   void onViewSavedMeals() {
+    HapticFeedback.mediumImpact();
     Navigator.push(
       context,
       CupertinoPageRoute(
@@ -554,10 +555,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       ),
                                     ),
                                     const SizedBox(width: 16),
-                                    ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxWidth: 200,
-                                      ),
+                                    Expanded(
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -604,7 +602,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(height: 12),
                         ..._diningHalls.map(
                           (hall) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
+                            padding: const EdgeInsets.only(bottom: 6.0),
                             child: _buildDiningHallCard(context, hall),
                           ),
                         ),
@@ -618,6 +616,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void onViewSuggestedMeals() {
+    HapticFeedback.mediumImpact();
     Navigator.push(
       context,
       CupertinoPageRoute(
@@ -628,6 +627,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void onViewMeal() {
     if (displayMeal == null) return;
+    HapticFeedback.mediumImpact();
     Navigator.push(
       context,
       CupertinoPageRoute(
@@ -822,6 +822,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void onDiningHallSelect(DiningHall diningHall) {
+    HapticFeedback.mediumImpact();
     Navigator.push(
       context,
       CupertinoPageRoute(

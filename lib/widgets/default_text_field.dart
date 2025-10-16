@@ -40,6 +40,7 @@ class _DefaultTextFieldState extends State<DefaultTextField>
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
+        onTap: () => HapticFeedback.selectionClick(),
         controller: widget.controller,
         keyboardType: widget.keyboardType,
         style: TextStyle(color: Colors.black, fontSize: 16),

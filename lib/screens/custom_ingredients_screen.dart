@@ -133,6 +133,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
   }
 
   void _removeIngredient(String ingredient) {
+    HapticFeedback.lightImpact();
     print("Removing ingredient: $ingredient");
     setState(() {
       _customIngredients.remove(ingredient.trim().toLowerCase());
@@ -143,11 +144,12 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
   }
 
   void _addFromSuggestion(String suggestion) {
+    HapticFeedback.lightImpact();
     _addIngredient(suggestion);
   }
 
   void _continue() {
-    HapticFeedback.lightImpact();
+    HapticFeedback.mediumImpact();
     int initialLength = _customIngredients.length;
     print("Initial custom ingredients: $_customIngredients");
     for (int i = 0; i < initialLength; i++) {
@@ -291,7 +293,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                                   border: Border.all(
                                     color: isSelected
                                         ? Colors.black
-                                        : styling.darkGray,
+                                        : Colors.grey.shade400,
                                     width: 2,
                                   ),
                                 ),

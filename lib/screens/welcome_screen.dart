@@ -113,7 +113,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     onTap: () {
-                      HapticFeedback.lightImpact();
+                      HapticFeedback.mediumImpact();
                       Navigator.push(
                         context,
                         CupertinoPageRoute(
@@ -138,8 +138,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
             ),
 
-            Spacer(),
-            SizedBox(height: 24),
+            // Spacer(),
+            // SizedBox(height: 24),
           ],
         ),
       ),

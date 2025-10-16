@@ -50,27 +50,33 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
       backgroundColor: Colors.grey[50],
 
       extendBodyBehindAppBar: false,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Meal Header
-            _buildMealHeader(),
+      body: Column(
+        children: [
+          _buildMealHeader(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Meal Header
 
-            // Nutritional Overview
-            _buildNutritionalOverview(),
+                  // Nutritional Overview
+                  _buildNutritionalOverview(),
 
-            // Detailed Macros
-            // _buildDetailedMacros(),
-            // SizedBox(height: 24),
+                  // Detailed Macros
+                  // _buildDetailedMacros(),
+                  // SizedBox(height: 24),
 
-            // Individual Foods/Ingredients
-            _buildFoodsSection(),
+                  // Individual Foods/Ingredients
+                  _buildFoodsSection(),
 
-            // Quick Actions
-            // _buildQuickActions(),
-          ],
-        ),
+                  // Quick Actions
+                  // _buildQuickActions(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -84,32 +90,36 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: MediaQuery.of(context).padding.top - 12),
-          GestureDetector(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              Navigator.of(context).pop();
-            },
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back_ios_new, color: styling.gray),
-                  onPressed: () {
+           SizedBox(height: MediaQuery.of(context).padding.top),
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
                     Navigator.of(context).pop();
                   },
-                ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: styling.gray,
+                        ),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.of(context).pop();
+                        },
+                      ),
 
-                Text(
-                  'Back',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: styling.gray,
+                      Text(
+                        'Back',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: styling.gray,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.only(left: 24.0, bottom: 18),
             child: Row(

@@ -143,12 +143,8 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
   }
 
   void _continue() {
+    HapticFeedback.mediumImpact();
     widget.onPreferencesSelected(_selectedPreferences);
-    Navigator.pop(context, true); // Return success
-  }
-
-  void _skipPreferences() {
-    widget.onPreferencesSelected([]);
     Navigator.pop(context, true); // Return success
   }
 
@@ -176,55 +172,58 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 12,
-            runSpacing: 12,
-            children: _preferences.map((preference) {
-              return GestureDetector(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  setState(() {
-                    if (_selectedPreferences.contains(preference)) {
-                      _selectedPreferences.remove(preference);
-                    } else {
-                      _selectedPreferences.add(preference);
-                    }
-                  });
-                },
-                child: DefaultContainer(
-                  decoration: _selectedPreferences.contains(preference)
-                      ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.black, width: 2),
-                        )
-                      : null,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12,
+              runSpacing: 12,
+              children: _preferences.map((preference) {
+                return GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    setState(() {
+                      if (_selectedPreferences.contains(preference)) {
+                        _selectedPreferences.remove(preference);
+                      } else {
+                        _selectedPreferences.add(preference);
+                      }
+                    });
+                  },
+                  child: DefaultContainer(
+                    decoration: _selectedPreferences.contains(preference)
+                        ? BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.black, width: 2),
+                          )
+                        : null,
 
-                  child: Column(
-                    children: [
-                      Icon(
-                        _preferenceIcons[preference],
-                        color: _selectedPreferences.contains(preference)
-                            ? Colors.black
-                            : Colors.grey.shade400,
-                        size: 32,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        preference.name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                    child: Column(
+                      children: [
+                        Icon(
+                          _preferenceIcons[preference],
                           color: _selectedPreferences.contains(preference)
                               ? Colors.black
                               : Colors.grey.shade400,
+                          size: 32,
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 8),
+                        Text(
+                          preference.name,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: _selectedPreferences.contains(preference)
+                                ? Colors.black
+                                : Colors.grey.shade400,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
           SizedBox(height: 24),
           Padding(

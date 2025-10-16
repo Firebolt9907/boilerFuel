@@ -160,6 +160,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
   }
 
   void _continue() {
+    HapticFeedback.mediumImpact();
     widget.onAllergiesSelected(_selectedAllergies);
     setState(() {
       _allergens = FoodAllergy.values.toList();
@@ -181,111 +182,119 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          SizedBox(height: 48),
-          // Header
-          Text(
-            'Food Allergies',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              letterSpacing: 0.5,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 48),
+            // Header
+            Text(
+              'Food Allergies',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Select your food allergies by tapping on each of your allergies.',
-            style: TextStyle(
-              fontSize: 16,
-              color: styling.darkGray,
-              height: 1.4,
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Select your food allergies by tapping on each of your allergies.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: styling.darkGray,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: [
-                for (FoodAllergy a in _allergens)
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      setState(() {
-                        if (_selectedAllergies.contains(a)) {
-                          _selectedAllergies.remove(a);
-                        } else {
-                          _selectedAllergies.add(a);
-                        }
-                      });
-                    },
-                    child: DefaultContainer(
-                      decoration: _selectedAllergies.contains(a)
-                          ? BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.black, width: 2),
-                            )
-                          : null,
+            SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  for (FoodAllergy a in _allergens)
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        setState(() {
+                          if (_selectedAllergies.contains(a)) {
+                            _selectedAllergies.remove(a);
+                          } else {
+                            _selectedAllergies.add(a);
+                          }
+                        });
+                      },
+                      child: DefaultContainer(
+                        decoration: _selectedAllergies.contains(a)
+                            ? BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                              )
+                            : null,
 
-                      child: Column(
-                        children: [
-                          Icon(
-                            _allergenIcons[a],
-                            color: _selectedAllergies.contains(a)
-                                ? Colors.black
-                                : Colors.grey.shade400,
-                            size: 32,
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            a.name,
-                            style: TextStyle(
-                              fontSize: 14,
+                        child: Column(
+                          children: [
+                            Icon(
+                              _allergenIcons[a],
                               color: _selectedAllergies.contains(a)
                                   ? Colors.black
                                   : Colors.grey.shade400,
-                              fontWeight: _selectedAllergies.contains(a)
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                              size: 32,
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 8),
+                            Text(
+                              a.name,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: _selectedAllergies.contains(a)
+                                    ? Colors.black
+                                    : Colors.grey.shade400,
+                                fontWeight: _selectedAllergies.contains(a)
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DefaultButton(
-              text: Text(
-                "Save",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                ],
               ),
-              onTap: _continue,
             ),
-          ),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DefaultButton(
+                text: Text(
+                  "Save",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                onTap: _continue,
+              ),
+            ),
 
-          Center(
-            child: TextButton(
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                Navigator.pop(context);
-              },
-              child: Text(
-                'Back',
-                style: TextStyle(color: styling.darkGray, fontSize: 16),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Back',
+                  style: TextStyle(color: styling.darkGray, fontSize: 16),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../widgets/animated_button.dart';
 import 'allergen_swipe_screen.dart';
@@ -92,6 +93,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   }
 
   void _startAllergenFlow() async {
+    HapticFeedback.mediumImpact();
     final result = await Navigator.push(
       context,
       CupertinoPageRoute(
@@ -113,6 +115,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   }
 
   void _startPreferenceFlow() async {
+    HapticFeedback.mediumImpact();
     final result = await Navigator.push(
       context,
       CupertinoPageRoute(
@@ -134,6 +137,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   }
 
   void _startCustomIngredientsFlow() async {
+    HapticFeedback.mediumImpact();
     final result = await Navigator.push(
       context,
       CupertinoPageRoute(
@@ -155,6 +159,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   }
 
   void _completeSetup() async {
+    HapticFeedback.mediumImpact();
     final dietaryRestrictions = DietaryRestrictions(
       allergies: _selectedAllergies,
       preferences: _selectedPreferences,
@@ -352,6 +357,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
               Center(
                 child: TextButton(
                   onPressed: () {
+                    HapticFeedback.mediumImpact();
                     Navigator.pop(context);
                   },
                   child: Text(

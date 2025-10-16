@@ -1,5 +1,6 @@
 import 'package:boiler_fuel/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class DefaultDropdownMenu<T> extends StatefulWidget {
   final T? value;
@@ -46,6 +47,7 @@ class _DefaultDropdownMenuState<T> extends State<DefaultDropdownMenu<T>>
   }
 
   void _toggleDropdown() {
+    HapticFeedback.lightImpact();
     if (_isOpen) {
       _removeOverlay();
     } else {
@@ -117,6 +119,7 @@ class _DefaultDropdownMenuState<T> extends State<DefaultDropdownMenu<T>>
                         final bool selected = item.value == widget.value;
                         return InkWell(
                           onTap: () {
+                            HapticFeedback.lightImpact();
                             widget.onChanged(item.value);
                             _removeOverlay();
                           },

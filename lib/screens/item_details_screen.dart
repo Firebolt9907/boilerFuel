@@ -82,248 +82,253 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
       backgroundColor: Colors.grey[50],
 
       extendBodyBehindAppBar: false,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: MediaQuery.of(context).padding.top,
-        ),
-        physics: BottomSheetScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Meal Header
-            _buildMealHeader(),
-            SizedBox(height: 24),
-            Text(
-              "Dietary Information",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontFamily: '.SF Pro Display',
-                decoration: TextDecoration.none,
+      body: Column(
+        children: [
+          _buildMealHeader(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 24, right: 24),
+              physics: BottomSheetScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 24),
+                  // Meal Header
+                  Text(
+                    "Dietary Information",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: '.SF Pro Display',
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  // Nutritional Overview
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: widget.food.labels
+                        .take(4)
+                        .map(
+                          (label) => Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              color: styling.darkGray.withOpacity(0.1),
+                            ),
+                            child: Text(
+                              label,
+                              style: TextStyle(
+                                color: styling.darkGray,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: '.SF Pro Text',
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+
+                  SizedBox(height: 24),
+                  if (widget.food.calories != -1 &&
+                      widget.food.carbs != -1 &&
+                      widget.food.fat != -1 &&
+                      widget.food.sugar != -1 &&
+                      widget.food.protein != -1) ...[
+                    // Nutrition Information Section
+                    Text(
+                      "Nutrition Information",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: '.SF Pro Display',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Calories",
+                            style: TextStyle(
+                              fontSize: 14,
+
+                              color: Colors.black,
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          Text(
+                            "${widget.food.calories.round()} cal",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black.withOpacity(0.6),
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(color: Colors.grey[300]),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Protein",
+                            style: TextStyle(
+                              fontSize: 14,
+
+                              color: Colors.black,
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          Text(
+                            "${widget.food.protein.round()}g",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black.withOpacity(0.6),
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(color: Colors.grey[300]),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Carbs",
+                            style: TextStyle(
+                              fontSize: 14,
+
+                              color: Colors.black,
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          Text(
+                            "${widget.food.carbs.round()}g",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black.withOpacity(0.6),
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(color: Colors.grey[300]),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Fat",
+                            style: TextStyle(
+                              fontSize: 14,
+
+                              color: Colors.black,
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          Text(
+                            "${widget.food.fat.round()}g",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black.withOpacity(0.6),
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(color: Colors.grey[300]),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Sugar",
+                            style: TextStyle(
+                              fontSize: 14,
+
+                              color: Colors.black,
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          Text(
+                            "${widget.food.sugar.round()}g",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black.withOpacity(0.6),
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(color: Colors.grey[300]),
+                  ],
+                  SizedBox(height: 24),
+                  // Ingredients Section
+                  Text(
+                    "Ingredients",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: '.SF Pro Display',
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  if (widget.food.ingredients.isNotEmpty) ...[
+                    _buildIngredients(widget.food, 0),
+                  ] else ...[
+                    Text(
+                      "No ingredients available.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: styling.darkGray,
+                        fontFamily: '.SF Pro Text',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+
+                  // Quick Actions
+                  // _buildQuickActions(),
+                ],
               ),
             ),
-            SizedBox(height: 12),
-            // Nutritional Overview
-            Wrap(
-              spacing: 6,
-              runSpacing: 4,
-              children: widget.food.labels
-                  .take(4)
-                  .map(
-                    (label) => Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: styling.darkGray.withOpacity(0.1),
-                      ),
-                      child: Text(
-                        label,
-                        style: TextStyle(
-                          color: styling.darkGray,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: '.SF Pro Text',
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-
-            SizedBox(height: 24),
-            if (widget.food.calories != -1 &&
-                widget.food.carbs != -1 &&
-                widget.food.fat != -1 &&
-                widget.food.sugar != -1 &&
-                widget.food.protein != -1) ...[
-              // Nutrition Information Section
-              Text(
-                "Nutrition Information",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontFamily: '.SF Pro Display',
-                  decoration: TextDecoration.none,
-                ),
-              ),
-              SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Calories",
-                      style: TextStyle(
-                        fontSize: 14,
-
-                        color: Colors.black,
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    Text(
-                      "${widget.food.calories.round()} cal",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black.withOpacity(0.6),
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(color: Colors.grey[300]),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Protein",
-                      style: TextStyle(
-                        fontSize: 14,
-
-                        color: Colors.black,
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    Text(
-                      "${widget.food.protein.round()}g",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black.withOpacity(0.6),
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(color: Colors.grey[300]),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Carbs",
-                      style: TextStyle(
-                        fontSize: 14,
-
-                        color: Colors.black,
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    Text(
-                      "${widget.food.carbs.round()}g",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black.withOpacity(0.6),
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(color: Colors.grey[300]),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Fat",
-                      style: TextStyle(
-                        fontSize: 14,
-
-                        color: Colors.black,
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    Text(
-                      "${widget.food.fat.round()}g",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black.withOpacity(0.6),
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(color: Colors.grey[300]),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Sugar",
-                      style: TextStyle(
-                        fontSize: 14,
-
-                        color: Colors.black,
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    Text(
-                      "${widget.food.sugar.round()}g",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black.withOpacity(0.6),
-                        fontFamily: '.SF Pro Text',
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(color: Colors.grey[300]),
-            ],
-            SizedBox(height: 24),
-            // Ingredients Section
-            Text(
-              "Ingredients",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-                fontFamily: '.SF Pro Display',
-                decoration: TextDecoration.none,
-              ),
-            ),
-            SizedBox(height: 12),
-            if (widget.food.ingredients.isNotEmpty) ...[
-              _buildIngredients(widget.food, 0),
-            ] else ...[
-              Text(
-                "No ingredients available.",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: styling.darkGray,
-                  fontFamily: '.SF Pro Text',
-                  decoration: TextDecoration.none,
-                ),
-              ),
-            ],
-
-            // Quick Actions
-            // _buildQuickActions(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -337,6 +342,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          SizedBox(height: MediaQuery.of(context).padding.top),
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: Row(

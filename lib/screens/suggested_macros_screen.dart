@@ -10,6 +10,7 @@ import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:boiler_fuel/widgets/default_text_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../widgets/animated_button.dart';
 import 'allergen_swipe_screen.dart';
@@ -61,6 +62,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
   }
 
   void _completeSetup() async {
+    HapticFeedback.mediumImpact();
     if (widget.user.useDietary) {
       Navigator.push(
         context,
@@ -82,135 +84,139 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: MediaQuery.of(context).padding.top,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Suggested Macros',
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-
-            SizedBox(height: 16),
-            Text(
-              widget.isEditing
-                  ? 'Review and adjust your suggested daily macronutrient intake based on your profile.'
-                  : 'Based on your profile, here are your suggested daily macronutrient intakes. You can adjust them if needed.',
-              style: TextStyle(
-                fontSize: 18,
-                color: styling.darkGray,
-
-                height: 1.4,
-              ),
-            ),
-
-            SizedBox(height: 32),
-            // Macro cards
-            _buildFeatureCard(
-              icon: Icons.local_fire_department,
-              title: 'Calories (cal)',
-              description: 'Total daily calorie intake',
-              controller: caloriesController,
-              color: Colors.orange,
-              onTap: () {
-                // Optionally implement editing functionality
-              },
-            ),
-            SizedBox(height: 16),
-            _buildFeatureCard(
-              icon: Icons.fitness_center,
-              title: 'Protein (g)',
-              description: 'Daily protein intake in grams',
-              controller: proteinController,
-              color: Colors.blue,
-              onTap: () {
-                // Optionally implement editing functionality
-              },
-            ),
-            SizedBox(height: 16),
-            _buildFeatureCard(
-              icon: Icons.grain,
-              title: 'Carbohydrates (g)',
-              description: 'Daily carbohydrate intake in grams',
-              controller: carbsController,
-              color: Colors.green,
-              onTap: () {
-                // Optionally implement editing functionality
-              },
-            ),
-            SizedBox(height: 16),
-            _buildFeatureCard(
-              icon: Icons.opacity,
-              title: 'Fats (g)',
-              description: 'Daily fat intake in grams',
-              controller: fatController,
-              color: Colors.purple,
-              onTap: () {
-                // Optionally implement editing functionality
-              },
-            ),
-            SizedBox(height: 24),
-
-            // Start journey button
-            DefaultButton(
-              text: Text(
-                widget.isEditing ? 'Save Changes' : 'Continue',
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: MediaQuery.of(context).padding.top,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Suggested Macros',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
-              onTap: () {
-                _completeSetup();
-              },
-            ),
-            if (!widget.isEditing) SizedBox(height: 8),
-            if (!widget.isEditing)
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Back',
-                    style: TextStyle(color: styling.darkGray, fontSize: 16),
+
+              SizedBox(height: 16),
+              Text(
+                widget.isEditing
+                    ? 'Review and adjust your suggested daily macronutrient intake based on your profile.'
+                    : 'Based on your profile, here are your suggested daily macronutrient intakes. You can adjust them if needed.',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: styling.darkGray,
+
+                  height: 1.4,
+                ),
+              ),
+
+              SizedBox(height: 32),
+              // Macro cards
+              _buildFeatureCard(
+                icon: Icons.local_fire_department,
+                title: 'Calories (cal)',
+                description: 'Total daily calorie intake',
+                controller: caloriesController,
+                color: Colors.orange,
+                onTap: () {
+                  // Optionally implement editing functionality
+                },
+              ),
+              SizedBox(height: 16),
+              _buildFeatureCard(
+                icon: Icons.fitness_center,
+                title: 'Protein (g)',
+                description: 'Daily protein intake in grams',
+                controller: proteinController,
+                color: Colors.blue,
+                onTap: () {
+                  // Optionally implement editing functionality
+                },
+              ),
+              SizedBox(height: 16),
+              _buildFeatureCard(
+                icon: Icons.grain,
+                title: 'Carbohydrates (g)',
+                description: 'Daily carbohydrate intake in grams',
+                controller: carbsController,
+                color: Colors.green,
+                onTap: () {
+                  // Optionally implement editing functionality
+                },
+              ),
+              SizedBox(height: 16),
+              _buildFeatureCard(
+                icon: Icons.opacity,
+                title: 'Fats (g)',
+                description: 'Daily fat intake in grams',
+                controller: fatController,
+                color: Colors.purple,
+                onTap: () {
+                  // Optionally implement editing functionality
+                },
+              ),
+              SizedBox(height: 24),
+
+              // Start journey button
+              DefaultButton(
+                text: Text(
+                  widget.isEditing ? 'Save Changes' : 'Continue',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                onTap: () {
+                  _completeSetup();
+                },
               ),
+              if (!widget.isEditing) SizedBox(height: 8),
+              if (!widget.isEditing)
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'Back',
+                      style: TextStyle(color: styling.darkGray, fontSize: 16),
+                    ),
+                  ),
+                ),
 
-            // Progress indicator
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: List.generate(
-            //     4, // Updated to match meal plan screen
-            //     (index) => Container(
-            //       margin: EdgeInsets.symmetric(horizontal: 4),
-            //       width: index == 3
-            //           ? 20
-            //           : 8, // Changed to index == 3 for final step
-            //       height: 8,
-            //       decoration: BoxDecoration(
-            //         borderRadius: BorderRadius.circular(4),
-            //         color: index == 3
-            //             ? Colors.purple.shade400
-            //             : Colors.white.withOpacity(0.3),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-          ],
+              // Progress indicator
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: List.generate(
+              //     4, // Updated to match meal plan screen
+              //     (index) => Container(
+              //       margin: EdgeInsets.symmetric(horizontal: 4),
+              //       width: index == 3
+              //           ? 20
+              //           : 8, // Changed to index == 3 for final step
+              //       height: 8,
+              //       decoration: BoxDecoration(
+              //         borderRadius: BorderRadius.circular(4),
+              //         color: index == 3
+              //             ? Colors.purple.shade400
+              //             : Colors.white.withOpacity(0.3),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
     );

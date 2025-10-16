@@ -150,6 +150,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
   }
 
   void _continue() async {
+    HapticFeedback.mediumImpact();
     User user = User(
       uid: widget.user?.uid ?? '',
       name: _nameController.text,
@@ -365,9 +366,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       (goal) => DefaultGoalOption(
                         text: goal,
                         isSelected: _selectedGoal.toString() == goal,
-                        onTap: () => setState(
-                          () => _selectedGoal = Goal.fromString(goal),
-                        ),
+                        onTap: () {
+                          setState(() => _selectedGoal = Goal.fromString(goal));
+                        },
                       ),
                     ),
                   ],

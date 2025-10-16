@@ -140,6 +140,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                         icon: Icons.filter_list_outlined,
                         isSelected: useDietary,
                         onChanged: (bool? value) {
+                          HapticFeedback.lightImpact();
                           setState(() {
                             useDietary = value ?? false;
                           });
@@ -152,6 +153,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                         icon: Icons.dining_outlined,
                         isSelected: useMealPlanning,
                         onChanged: (bool? value) {
+                          HapticFeedback.lightImpact();
                           setState(() {
                             useMealPlanning = value ?? false;
                           });
@@ -185,7 +187,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: <Widget>[
-          SizedBox(height: MediaQuery.of(context).padding.top),
+          SizedBox(height: MediaQuery.of(context).padding.top + 12),
           Text(
             title,
             style: TextStyle(
@@ -208,7 +210,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             DefaultButton(
               isEnabled: useDietary || useMealPlanning,
               onTap: () async {
-                HapticFeedback.lightImpact();
+                HapticFeedback.mediumImpact();
                 Navigator.push(
                   context,
                   CupertinoPageRoute(

@@ -116,7 +116,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
             ),
             child: Column(
               children: [
-                SizedBox(height: MediaQuery.of(context).padding.top - 12),
+                SizedBox(height: MediaQuery.of(context).padding.top),
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
@@ -130,6 +130,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
                           color: styling.gray,
                         ),
                         onPressed: () {
+                          HapticFeedback.lightImpact();
                           Navigator.of(context).pop();
                         },
                       ),
@@ -178,23 +179,29 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
                       ? _buildLoadingView()
                       : Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Meal time selector
-                            _buildMealTimeSelector(),
+                          children: _availableMealTimes.isEmpty
+                              ? [
+                                  // No saved meals view
+                                  _buildEmptyView(),
+                                ]
+                              : [
+                                  // Meal time selector
+                                  _buildMealTimeSelector(),
 
-                            const SizedBox(height: 8),
-                            // Station selector
+                                  const SizedBox(height: 8),
+                                  // Station selector
 
-                            // PageView for stations - give it a bounded max height
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                // Use a fraction of available height as an upper bound
-                                maxHeight:
-                                    MediaQuery.of(context).size.height * 0.7,
-                              ),
-                              child: _buildMealsView(),
-                            ),
-                          ],
+                                  // PageView for stations - give it a bounded max height
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      // Use a fraction of available height as an upper bound
+                                      maxHeight:
+                                          MediaQuery.of(context).size.height *
+                                          0.7,
+                                    ),
+                                    child: _buildMealsView(),
+                                  ),
+                                ],
                         ),
                 ],
               ),
@@ -242,9 +249,9 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
             ),
             SizedBox(height: 16),
             Text(
-              'No menu available',
+              'No saved meals',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.black,
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 fontFamily: '.SF Pro Display',
@@ -253,9 +260,9 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
             ),
             SizedBox(height: 8),
             Text(
-              'Check back later for today\'s menu',
+              'Tap on the bookmark icon on any meal to save it here.',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: styling.darkGray,
                 fontSize: 14,
                 fontFamily: '.SF Pro Text',
                 decoration: TextDecoration.none,
@@ -303,151 +310,146 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_meals
+          ..._meals
               .where((meal) => meal.mealTime == _selectedMealTime)
-              .isEmpty)
-            _buildEmptyView()
-          else
-            ..._meals
-                .where((meal) => meal.mealTime == _selectedMealTime)
-                .map(
-                  (meal) => Card(
-                    elevation: 0,
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: Colors.grey[200]!),
+              .map(
+                (meal) => Card(
+                  elevation: 0,
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.grey[200]!),
+                  ),
+                  child: InkWell(
+                    onTap: () async {
+                      HapticFeedback.mediumImpact();
+                      await Navigator.of(context).push(
+                        CupertinoPageRoute(
+                          builder: (context) => MealDetailsScreen(
+                            meal: meal,
+                            diningHall: meal.diningHall,
+                          ),
+                        ),
+                      );
+                      _fetchSavedMeals();
+                    },
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
                     ),
-                    child: InkWell(
-                      onTap: () async {
-                        HapticFeedback.lightImpact();
-                        await Navigator.of(context).push(
-                          CupertinoPageRoute(
-                            builder: (context) => MealDetailsScreen(
-                              meal: meal,
-                              diningHall: meal.diningHall,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            meal.name,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        );
-                        _fetchSavedMeals();
-                      },
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              meal.name,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${meal.diningHall}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '${meal.diningHall}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                              ),
-                            ),
+                          ),
 
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          styling.darkGray.withOpacity(0.05),
-                                          styling.darkGray.withOpacity(0.1),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    padding: const EdgeInsets.all(12),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Calories',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '${meal.calories.round()}',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        styling.darkGray.withOpacity(0.05),
+                                        styling.darkGray.withOpacity(0.1),
                                       ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
                                     ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Calories',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${meal.calories.round()}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          styling.darkGray.withOpacity(0.05),
-                                          styling.darkGray.withOpacity(0.1),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    padding: const EdgeInsets.all(12),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Protein',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '${meal.protein.round()}g',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        styling.darkGray.withOpacity(0.05),
+                                        styling.darkGray.withOpacity(0.1),
                                       ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
                                     ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Protein',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${meal.protein.round()}g',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: Colors.grey[400],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                              const SizedBox(width: 12),
+                              Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey[400],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                )
-                .toList(),
+                ),
+              )
+              .toList(),
         ],
       ),
     );
