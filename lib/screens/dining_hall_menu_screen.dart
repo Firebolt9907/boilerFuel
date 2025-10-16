@@ -186,9 +186,9 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             int initialIndex = result.availableTimes.indexOf(
               widget.initialMealTime!,
             );
+
             if (initialIndex >= 0 &&
                 initialIndex < result.availableTimes.length) {
-              _selectedMealTime = widget.initialMealTime;
               _updateStationFoods();
               if (_stationPageController.hasClients) {
                 _stationPageController.jumpToPage(initialIndex);
@@ -199,14 +199,13 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
         // Update state with processed data
         setState(() {
+          _selectedMealTime = widget.initialMealTime;
+
           _allMealData = result.mealTimeData;
           _availableMealTimes = result.availableTimes;
           _isLoading = false;
 
           // Set default selections
-          if (_availableMealTimes.isNotEmpty && _selectedMealTime == null) {
-            _selectedMealTime = _availableMealTimes.first;
-          }
         });
 
         // Update station foods after setState
@@ -311,7 +310,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             ),
             child: Column(
               children: [
-                 SizedBox(height: MediaQuery.of(context).padding.top),
+                SizedBox(height: MediaQuery.of(context).padding.top),
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
@@ -512,10 +511,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
         initialValue: _selectedMealTime.toString(),
         onValueChanged: (value) {
           setState(() {
-            _selectedMealTime = MealTime.values.firstWhere(
-              (mt) => mt.toString() == value,
-              orElse: () => _availableMealTimes.first,
-            );
+            _selectedMealTime = MealTime.fromString(value);
           });
         },
         tabs: [

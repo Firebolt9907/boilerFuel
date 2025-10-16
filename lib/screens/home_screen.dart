@@ -439,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Monday, October 14, 2025',
+                            'Welcome back, ${widget.user.name.split(' ').first}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: Colors.grey[600],
                             ),
@@ -821,7 +821,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void onDiningHallSelect(DiningHall diningHall) {
+  void onDiningHallSelect(DiningHall diningHall, MealTime initialMealTime) {
     HapticFeedback.mediumImpact();
     Navigator.push(
       context,
@@ -829,6 +829,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         builder: (context) => DiningHallMenuScreen(
           diningHall: diningHall.name,
           user: widget.user,
+          initialMealTime: initialMealTime,
         ),
       ),
     );
@@ -912,7 +913,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         side: BorderSide(color: Colors.grey[200]!),
       ),
       child: InkWell(
-        onTap: () => onDiningHallSelect(hall),
+        onTap: () => onDiningHallSelect(
+          hall,
+          statusInfo["currentMeal"] == null
+              ? MealTime.fromString(statusInfo["nextMeal"].toLowerCase())
+              : MealTime.fromString(statusInfo["currentMeal"].toLowerCase()),
+        ),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
