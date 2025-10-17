@@ -30,6 +30,7 @@ class UsersTable extends Table {
   TextColumn get dietaryRestrictions => text()();
   TextColumn get mealPlan => text()();
   TextColumn get diningCourtRanking => text()();
+  TextColumn get macros => text()();
 }
 
 class MealsTable extends Table {
@@ -105,10 +106,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 30) {
+      if (resetLocalDB <= 31) {
         print("Deleting old database to add new columns");
         await file.delete();
-        await SharedPrefs.setResetLocalData(31);
+        await SharedPrefs.setResetLocalData(32);
         print("Deleted old database - new schema will be created");
       }
     } catch (e) {
@@ -189,6 +190,7 @@ class LocalDatabase {
         dietaryRestrictions: _stringToDietaryRestrictions(
           usersRes.first.dietaryRestrictions,
         ),
+        macros: MacroResult.fromMap(jsonDecode(usersRes.first.macros)),
         mealPlan: MealPlan.fromString(usersRes.first.mealPlan),
         diningHallRank: usersRes.first.diningCourtRanking.split(","),
       );
@@ -214,6 +216,7 @@ class LocalDatabase {
           age: Value(user.age),
           gender: Value(user.gender.toString()),
           goal: Value(user.goal.toString()),
+          macros: Value(jsonEncode(user.macros.toMap())),
           dietaryRestrictions: Value(
             _dietaryRestrictionsToString(user.dietaryRestrictions),
           ),
@@ -237,6 +240,7 @@ class LocalDatabase {
               age: Value(user.age),
               gender: Value(user.gender.toString()),
               goal: Value(user.goal.toString()),
+              macros: Value(jsonEncode(user.macros.toMap())),
               dietaryRestrictions: Value(
                 _dietaryRestrictionsToString(user.dietaryRestrictions),
               ),

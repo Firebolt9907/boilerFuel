@@ -701,7 +701,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: 11,
           fontWeight: FontWeight.w500,
           fontFamily: '.SF Pro Text',

@@ -200,6 +200,31 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                 },
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SettingsButton(
+                title: "Dietary Restrictions",
+                subtitle:
+                    "Change your dietary restrictions, like allergies and food preferences.",
+                icon: Icons.no_food,
+                onTap: () async {
+                  HapticFeedback.mediumImpact();
+                  User? user = await Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => DietaryRestrictionsScreen(
+                        user: currentUser!,
+                        isEditing: true,
+                      ),
+                    ),
+                  );
+                  if (user != null) {
+                    widget.onUserUpdated(user);
+                  }
+                },
+              ),
+            ),
+
             // Padding(
             //   padding: const EdgeInsets.all(8.0),
             //   child: SettingsButton(

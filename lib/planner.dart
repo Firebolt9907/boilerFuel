@@ -625,17 +625,11 @@ DO NOT include any other text outside of the JSON block.
     required User user,
     DateTime? date,
   }) async {
-    final _userMacros = CalorieMacroCalculator.calculateMacros(
-      age: user.age,
-      weightLbs: user.weight.toDouble(),
-      heightInches: user.height.toDouble(),
-      gender: user.gender,
-      goal: user.goal,
-    );
-    double mealCalories = _userMacros!.calories / 2;
-    double mealProtein = _userMacros!.protein / 2;
-    double mealCarbs = _userMacros!.carbs / 2;
-    double mealFat = _userMacros!.fat / 2;
+   
+    double mealCalories = user.macros.calories / 2;
+    double mealProtein = user.macros.protein / 2;
+    double mealCarbs = user.macros.carbs / 2;
+    double mealFat = user.macros.fat / 2;
 
     // Create a list to hold all the meal generation futures
     List<Future<Map<MealTime, Meal>>> mealGenerationTasks = [];

@@ -42,17 +42,11 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
   void initState() {
     super.initState();
     // Calculate suggested macros based on user info
-    MacroResult result = CalorieMacroCalculator.calculateMacros(
-      age: widget.user.age,
-      weightLbs: widget.user.weight.toDouble(),
-      heightInches: widget.user.height.toDouble(),
-      gender: widget.user.gender,
-      goal: widget.user.goal,
-    );
-    caloriesController.text = result.calories.toStringAsFixed(0);
-    proteinController.text = result.protein.toStringAsFixed(0);
-    carbsController.text = result.carbs.toStringAsFixed(0);
-    fatController.text = result.fat.toStringAsFixed(0);
+
+    caloriesController.text = widget.user.macros.calories.toStringAsFixed(0);
+    proteinController.text = widget.user.macros.protein.toStringAsFixed(0);
+    carbsController.text = widget.user.macros.carbs.toStringAsFixed(0);
+    fatController.text = widget.user.macros.fat.toStringAsFixed(0);
     setState(() {});
   }
 
@@ -63,6 +57,27 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
 
   void _completeSetup() async {
     HapticFeedback.mediumImpact();
+    if (widget.isEditing) {
+      final result = MacroResult(
+        calories:
+            double.tryParse(caloriesController.text) ??
+            widget.user.macros.calories,
+        protein:
+            double.tryParse(proteinController.text) ??
+            widget.user.macros.protein,
+        carbs:
+            double.tryParse(carbsController.text) ?? widget.user.macros.carbs,
+        fat: double.tryParse(fatController.text) ?? widget.user.macros.fat,
+        bmr: widget.user.macros.bmr,
+        tdee: widget.user.macros.tdee,
+      );
+      widget.user.macros = result;
+      await LocalDatabase().saveUser(widget.user);
+      await LocalDatabase().deleteCurrentAndFutureMeals();
+      MealPlanner.generateDayMealPlan(user: widget.user);
+      Navigator.pop(context, widget.user);
+      return;
+    }
     if (widget.user.useDietary) {
       Navigator.push(
         context,
@@ -180,20 +195,20 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                   _completeSetup();
                 },
               ),
-              if (!widget.isEditing) SizedBox(height: 8),
-              if (!widget.isEditing)
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Back',
-                      style: TextStyle(color: styling.darkGray, fontSize: 16),
-                    ),
+              SizedBox(height: 8),
+
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    HapticFeedback.mediumImpact();
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Back',
+                    style: TextStyle(color: styling.darkGray, fontSize: 16),
                   ),
                 ),
+              ),
 
               // Progress indicator
               // Row(

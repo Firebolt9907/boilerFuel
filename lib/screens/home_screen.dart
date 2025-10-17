@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<String> _rankedDiningHalls = [];
   Map<MealTime, Map<String, Meal>> _suggestedMeals = {};
   bool _isLoading = true;
-  MacroResult? _userMacros;
+
   Meal? displayMeal;
   MealTime _selectedMealTime = MealTime.lunch;
 
@@ -260,13 +260,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (_scrollController.hasClients) {
       _scrollController.jumpToPage(0);
     }
-    _userMacros = CalorieMacroCalculator.calculateMacros(
-      age: user.age,
-      weightLbs: user.weight.toDouble(),
-      heightInches: user.height.toDouble(),
-      gender: user.gender,
-      goal: user.goal,
-    );
 
     // Use user's dining hall ranking from their profile
     _rankedDiningHalls = List.from(user.diningHallRank);
@@ -491,7 +484,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           // Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.only(
+                left: 24.0,
+                right: 24.0,
+                top: 12.0,
+                bottom: 12.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: _isLoading

@@ -333,6 +333,7 @@ class User {
   DietaryRestrictions dietaryRestrictions;
   MealPlan mealPlan;
   List<String> diningHallRank;
+  MacroResult macros;
   final int age;
   final Gender gender;
 
@@ -349,6 +350,7 @@ class User {
     required this.diningHallRank,
     required this.age,
     required this.gender,
+    required this.macros,
   });
 
   Map<String, dynamic> toMap() {
@@ -365,6 +367,7 @@ class User {
       'diningHallRank': diningHallRank,
       'age': age,
       'gender': gender.toString(),
+      'macros': macros.toMap(),
     };
   }
 
@@ -383,6 +386,7 @@ class User {
       mealPlan: MealPlan.fromString(map['mealPlan']),
       diningHallRank: List<String>.from(map['diningHallRank']),
       age: map['age'] ?? 19,
+      macros: MacroResult.fromMap(map['macros']),
       gender: Gender.fromString(map['gender']) ?? Gender.male,
     );
   }
@@ -796,6 +800,28 @@ Protein: ${protein.round()}g (${(protein * 4).round()} calories)
 Carbohydrates: ${carbs.round()}g (${(carbs * 4).round()} calories)
 Fat: ${fat.round()}g (${(fat * 9).round()} calories)
 ''';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'calories': calories,
+      'protein': protein,
+      'carbs': carbs,
+      'fat': fat,
+      'bmr': bmr,
+      'tdee': tdee,
+    };
+  }
+
+  factory MacroResult.fromMap(Map<String, dynamic> map) {
+    return MacroResult(
+      calories: (map['calories'] ?? -1) * 1.0,
+      protein: (map['protein'] ?? -1) * 1.0,
+      carbs: (map['carbs'] ?? -1) * 1.0,
+      fat: (map['fat'] ?? -1) * 1.0,
+      bmr: (map['bmr'] ?? -1) * 1.0,
+      tdee: (map['tdee'] ?? -1) * 1.0,
+    );
   }
 }
 

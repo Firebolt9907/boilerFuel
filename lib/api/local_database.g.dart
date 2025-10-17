@@ -146,6 +146,15 @@ class $UsersTableTable extends UsersTable
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       );
+  static const VerificationMeta _macrosMeta = const VerificationMeta('macros');
+  @override
+  late final GeneratedColumn<String> macros = GeneratedColumn<String>(
+    'macros',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -161,6 +170,7 @@ class $UsersTableTable extends UsersTable
     dietaryRestrictions,
     mealPlan,
     diningCourtRanking,
+    macros,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -282,6 +292,14 @@ class $UsersTableTable extends UsersTable
     } else if (isInserting) {
       context.missing(_diningCourtRankingMeta);
     }
+    if (data.containsKey('macros')) {
+      context.handle(
+        _macrosMeta,
+        macros.isAcceptableOrUnknown(data['macros']!, _macrosMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_macrosMeta);
+    }
     return context;
   }
 
@@ -343,6 +361,10 @@ class $UsersTableTable extends UsersTable
         DriftSqlType.string,
         data['${effectivePrefix}dining_court_ranking'],
       )!,
+      macros: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}macros'],
+      )!,
     );
   }
 
@@ -366,6 +388,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
   final String dietaryRestrictions;
   final String mealPlan;
   final String diningCourtRanking;
+  final String macros;
   const UsersTableData({
     required this.id,
     required this.uid,
@@ -380,6 +403,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     required this.dietaryRestrictions,
     required this.mealPlan,
     required this.diningCourtRanking,
+    required this.macros,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -397,6 +421,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     map['dietary_restrictions'] = Variable<String>(dietaryRestrictions);
     map['meal_plan'] = Variable<String>(mealPlan);
     map['dining_court_ranking'] = Variable<String>(diningCourtRanking);
+    map['macros'] = Variable<String>(macros);
     return map;
   }
 
@@ -415,6 +440,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       dietaryRestrictions: Value(dietaryRestrictions),
       mealPlan: Value(mealPlan),
       diningCourtRanking: Value(diningCourtRanking),
+      macros: Value(macros),
     );
   }
 
@@ -441,6 +467,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       diningCourtRanking: serializer.fromJson<String>(
         json['diningCourtRanking'],
       ),
+      macros: serializer.fromJson<String>(json['macros']),
     );
   }
   @override
@@ -460,6 +487,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       'dietaryRestrictions': serializer.toJson<String>(dietaryRestrictions),
       'mealPlan': serializer.toJson<String>(mealPlan),
       'diningCourtRanking': serializer.toJson<String>(diningCourtRanking),
+      'macros': serializer.toJson<String>(macros),
     };
   }
 
@@ -477,6 +505,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     String? dietaryRestrictions,
     String? mealPlan,
     String? diningCourtRanking,
+    String? macros,
   }) => UsersTableData(
     id: id ?? this.id,
     uid: uid ?? this.uid,
@@ -491,6 +520,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     dietaryRestrictions: dietaryRestrictions ?? this.dietaryRestrictions,
     mealPlan: mealPlan ?? this.mealPlan,
     diningCourtRanking: diningCourtRanking ?? this.diningCourtRanking,
+    macros: macros ?? this.macros,
   );
   UsersTableData copyWithCompanion(UsersTableCompanion data) {
     return UsersTableData(
@@ -515,6 +545,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
       diningCourtRanking: data.diningCourtRanking.present
           ? data.diningCourtRanking.value
           : this.diningCourtRanking,
+      macros: data.macros.present ? data.macros.value : this.macros,
     );
   }
 
@@ -533,7 +564,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
           ..write('goal: $goal, ')
           ..write('dietaryRestrictions: $dietaryRestrictions, ')
           ..write('mealPlan: $mealPlan, ')
-          ..write('diningCourtRanking: $diningCourtRanking')
+          ..write('diningCourtRanking: $diningCourtRanking, ')
+          ..write('macros: $macros')
           ..write(')'))
         .toString();
   }
@@ -553,6 +585,7 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
     dietaryRestrictions,
     mealPlan,
     diningCourtRanking,
+    macros,
   );
   @override
   bool operator ==(Object other) =>
@@ -570,7 +603,8 @@ class UsersTableData extends DataClass implements Insertable<UsersTableData> {
           other.goal == this.goal &&
           other.dietaryRestrictions == this.dietaryRestrictions &&
           other.mealPlan == this.mealPlan &&
-          other.diningCourtRanking == this.diningCourtRanking);
+          other.diningCourtRanking == this.diningCourtRanking &&
+          other.macros == this.macros);
 }
 
 class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
@@ -587,6 +621,7 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
   final Value<String> dietaryRestrictions;
   final Value<String> mealPlan;
   final Value<String> diningCourtRanking;
+  final Value<String> macros;
   const UsersTableCompanion({
     this.id = const Value.absent(),
     this.uid = const Value.absent(),
@@ -601,6 +636,7 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     this.dietaryRestrictions = const Value.absent(),
     this.mealPlan = const Value.absent(),
     this.diningCourtRanking = const Value.absent(),
+    this.macros = const Value.absent(),
   });
   UsersTableCompanion.insert({
     this.id = const Value.absent(),
@@ -616,6 +652,7 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     required String dietaryRestrictions,
     required String mealPlan,
     required String diningCourtRanking,
+    required String macros,
   }) : uid = Value(uid),
        name = Value(name),
        useDietary = Value(useDietary),
@@ -627,7 +664,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
        goal = Value(goal),
        dietaryRestrictions = Value(dietaryRestrictions),
        mealPlan = Value(mealPlan),
-       diningCourtRanking = Value(diningCourtRanking);
+       diningCourtRanking = Value(diningCourtRanking),
+       macros = Value(macros);
   static Insertable<UsersTableData> custom({
     Expression<int>? id,
     Expression<String>? uid,
@@ -642,6 +680,7 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     Expression<String>? dietaryRestrictions,
     Expression<String>? mealPlan,
     Expression<String>? diningCourtRanking,
+    Expression<String>? macros,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -659,6 +698,7 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
       if (mealPlan != null) 'meal_plan': mealPlan,
       if (diningCourtRanking != null)
         'dining_court_ranking': diningCourtRanking,
+      if (macros != null) 'macros': macros,
     });
   }
 
@@ -676,6 +716,7 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     Value<String>? dietaryRestrictions,
     Value<String>? mealPlan,
     Value<String>? diningCourtRanking,
+    Value<String>? macros,
   }) {
     return UsersTableCompanion(
       id: id ?? this.id,
@@ -691,6 +732,7 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
       dietaryRestrictions: dietaryRestrictions ?? this.dietaryRestrictions,
       mealPlan: mealPlan ?? this.mealPlan,
       diningCourtRanking: diningCourtRanking ?? this.diningCourtRanking,
+      macros: macros ?? this.macros,
     );
   }
 
@@ -736,6 +778,9 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
     if (diningCourtRanking.present) {
       map['dining_court_ranking'] = Variable<String>(diningCourtRanking.value);
     }
+    if (macros.present) {
+      map['macros'] = Variable<String>(macros.value);
+    }
     return map;
   }
 
@@ -754,7 +799,8 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
           ..write('goal: $goal, ')
           ..write('dietaryRestrictions: $dietaryRestrictions, ')
           ..write('mealPlan: $mealPlan, ')
-          ..write('diningCourtRanking: $diningCourtRanking')
+          ..write('diningCourtRanking: $diningCourtRanking, ')
+          ..write('macros: $macros')
           ..write(')'))
         .toString();
   }
@@ -3071,6 +3117,7 @@ typedef $$UsersTableTableCreateCompanionBuilder =
       required String dietaryRestrictions,
       required String mealPlan,
       required String diningCourtRanking,
+      required String macros,
     });
 typedef $$UsersTableTableUpdateCompanionBuilder =
     UsersTableCompanion Function({
@@ -3087,6 +3134,7 @@ typedef $$UsersTableTableUpdateCompanionBuilder =
       Value<String> dietaryRestrictions,
       Value<String> mealPlan,
       Value<String> diningCourtRanking,
+      Value<String> macros,
     });
 
 class $$UsersTableTableFilterComposer
@@ -3160,6 +3208,11 @@ class $$UsersTableTableFilterComposer
 
   ColumnFilters<String> get diningCourtRanking => $composableBuilder(
     column: $table.diningCourtRanking,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get macros => $composableBuilder(
+    column: $table.macros,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3237,6 +3290,11 @@ class $$UsersTableTableOrderingComposer
     column: $table.diningCourtRanking,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get macros => $composableBuilder(
+    column: $table.macros,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UsersTableTableAnnotationComposer
@@ -3294,6 +3352,9 @@ class $$UsersTableTableAnnotationComposer
     column: $table.diningCourtRanking,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get macros =>
+      $composableBuilder(column: $table.macros, builder: (column) => column);
 }
 
 class $$UsersTableTableTableManager
@@ -3340,6 +3401,7 @@ class $$UsersTableTableTableManager
                 Value<String> dietaryRestrictions = const Value.absent(),
                 Value<String> mealPlan = const Value.absent(),
                 Value<String> diningCourtRanking = const Value.absent(),
+                Value<String> macros = const Value.absent(),
               }) => UsersTableCompanion(
                 id: id,
                 uid: uid,
@@ -3354,6 +3416,7 @@ class $$UsersTableTableTableManager
                 dietaryRestrictions: dietaryRestrictions,
                 mealPlan: mealPlan,
                 diningCourtRanking: diningCourtRanking,
+                macros: macros,
               ),
           createCompanionCallback:
               ({
@@ -3370,6 +3433,7 @@ class $$UsersTableTableTableManager
                 required String dietaryRestrictions,
                 required String mealPlan,
                 required String diningCourtRanking,
+                required String macros,
               }) => UsersTableCompanion.insert(
                 id: id,
                 uid: uid,
@@ -3384,6 +3448,7 @@ class $$UsersTableTableTableManager
                 dietaryRestrictions: dietaryRestrictions,
                 mealPlan: mealPlan,
                 diningCourtRanking: diningCourtRanking,
+                macros: macros,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

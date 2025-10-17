@@ -97,39 +97,6 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       useDietary = widget.useDietary ?? true;
       useMealPlanning = widget.useMealPlanning ?? true;
     }
-
-    MacroResult result = CalorieMacroCalculator.calculateMacros(
-      age: int.parse(
-        _ageController.text.isNotEmpty ? _ageController.text : "0",
-      ),
-      weightLbs: double.parse(
-        _weightController.text.isNotEmpty ? _weightController.text : "0",
-      ),
-      heightInches: double.parse(
-        _heightController.text.isNotEmpty ? _heightController.text : "0",
-      ),
-      gender: _selectedGender ?? Gender.male,
-      goal: _selectedGoal ?? Goal.maintain,
-    );
-
-    print("Initial macro calc: $result");
-  }
-
-  void _updateMacros() {
-    if (_weightController.text.isNotEmpty &&
-        _heightController.text.isNotEmpty &&
-        _selectedGoal != null &&
-        _ageController.text.isNotEmpty &&
-        _selectedGender != null) {
-      MacroResult result = CalorieMacroCalculator.calculateMacros(
-        age: int.parse(_ageController.text),
-        weightLbs: double.parse(_weightController.text),
-        heightInches: double.parse(_heightController.text),
-        gender: _selectedGender ?? Gender.male,
-        goal: _selectedGoal ?? Goal.maintain,
-      );
-      print("Updated macro calc: $result");
-    }
   }
 
   String checkNulls(String input) {
@@ -151,11 +118,28 @@ class _UserInfoScreenState extends State<UserInfoScreen>
 
   void _continue() async {
     HapticFeedback.mediumImpact();
+    MacroResult result = useMealPlanning
+        ? CalorieMacroCalculator.calculateMacros(
+            age: int.parse(_ageController.text),
+            weightLbs: double.parse(_weightController.text),
+            heightInches: double.parse(_heightController.text),
+            gender: _selectedGender ?? Gender.male,
+            goal: _selectedGoal ?? Goal.maintain,
+          )
+        : MacroResult(
+            calories: -1,
+            protein: -1,
+            carbs: -1,
+            fat: -1,
+            bmr: -1,
+            tdee: -1,
+          );
     User user = User(
       uid: widget.user?.uid ?? '',
       name: _nameController.text,
       useDietary: useDietary,
       useMealPlanning: useMealPlanning,
+      macros: result,
 
       weight: int.tryParse(_weightController.text) ?? -1,
       height: int.tryParse(_heightController.text) ?? -1,
@@ -175,11 +159,20 @@ class _UserInfoScreenState extends State<UserInfoScreen>
     if (widget.user != null) {
       LocalDatabase().saveUser(user);
       await LocalDatabase().deleteCurrentAndFutureMeals();
-      if (widget.user!.useMealPlanning) {
-        MealPlanner.generateDayMealPlan(user: user);
+      if (!useMealPlanning) {
+        Navigator.pop(context, user);
+        return;
+      } else {
+        User? newU = await Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) =>
+                SuggestedMacrosScreen(user: user, isEditing: true),
+          ),
+        );
+        Navigator.pop(context, newU);
+        return;
       }
-      Navigator.pop(context, user);
-      return;
     }
     if (!useMealPlanning) {
       Navigator.push(
@@ -391,7 +384,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                                   ),
                                 )
                               : Text(
-                                  'Update Info',
+                                  'Next',
                                   style: TextStyle(
                                     fontSize: 15,
                                     color: Colors.white,

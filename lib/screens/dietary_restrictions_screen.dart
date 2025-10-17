@@ -212,7 +212,14 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     // }
 
     if (widget.user.useMealPlanning) {
+      if (widget.isEditing) {
+        await LocalDatabase().deleteCurrentAndFutureMeals();
+      }
       MealPlanner.generateDayMealPlan(user: widget.user);
+    }
+    if (widget.isEditing) {
+      Navigator.pop(context, widget.user);
+      return;
     }
 
     Navigator.push(
@@ -352,20 +359,20 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                 _completeSetup();
               },
             ),
-            if (!widget.isEditing) SizedBox(height: 8),
-            if (!widget.isEditing)
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    HapticFeedback.mediumImpact();
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Back',
-                    style: TextStyle(color: styling.darkGray, fontSize: 16),
-                  ),
+            SizedBox(height: 8),
+
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Back',
+                  style: TextStyle(color: styling.darkGray, fontSize: 16),
                 ),
               ),
+            ),
 
             // Progress indicator
             // Row(
