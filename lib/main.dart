@@ -77,7 +77,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           latestMealPlanDate.month,
           latestMealPlanDate.day,
         );
+        //Check if latestMealPlanDate is before today
+
         LocalDatabase().listenToAIDayMeals(aiMealStream);
+        if (latestMealPlanDate.isBefore(now)) {
+          MealPlanner.generateDayMealPlan(user: user!, date: now);
+        }
         // if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
         // print("Meal plan is up to date");
         return;

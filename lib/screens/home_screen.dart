@@ -27,7 +27,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _animationController;
   late AnimationController _floatingController;
   late AnimationController _pulseController;
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       _currentUser = widget.user;
     });
-
+    WidgetsBinding.instance.addObserver(this);
     _animationController = AnimationController(
       duration: Duration(milliseconds: 800),
       vsync: this,
@@ -315,8 +316,52 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     .toString(),
           );
           _suggestedMeals = sortedSuggestions;
-          displayMeal =
-              _suggestedMeals[MealTime.getCurrentMealTime()]?.values.first;
+          Meal? firstMeal;
+          for (String hall in _rankedDiningHalls) {
+            Map<String, dynamic> hallStatus = _getDiningHallStatus(
+              _diningHalls.firstWhere((dh) => dh.name == hall),
+            );
+            MealTime? currentMealTime = hallStatus['isOpen']
+                ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
+                : null;
+            Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+                ? _suggestedMeals[currentMealTime]
+                : null;
+            if (mealsForCurrentTime != null &&
+                mealsForCurrentTime.containsKey(hall)) {
+              firstMeal = mealsForCurrentTime[hall];
+              break;
+            }
+          }
+          MealTime? nextMealTime;
+          if (firstMeal == null) {
+            // Find the next meal time with suggestions
+            for (String hall in _rankedDiningHalls) {
+              Map<String, dynamic> hallStatus = _getDiningHallStatus(
+                _diningHalls.firstWhere((dh) => dh.name == hall),
+              );
+
+              MealTime? currentMealTime = hallStatus['isOpen']
+                  ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
+                  : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
+              if (hallStatus['nextDay'] != 'Today') {
+                continue; //skip if next meal is not today
+              }
+
+              if (_suggestedMeals.containsKey(currentMealTime) &&
+                  _suggestedMeals[currentMealTime]!.containsKey(hall)) {
+                nextMealTime = currentMealTime;
+                firstMeal = _suggestedMeals[currentMealTime]![hall];
+                break;
+              }
+            }
+            _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+          } else {
+            _selectedMealTime =
+                displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
+          }
+          displayMeal = firstMeal;
+
           print(displayMeal?.mealTime);
 
           print("Display Meal: ${displayMeal?.name}");
@@ -325,6 +370,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       aiMealStream.stream.listen((meals) {
         if (!mounted) return;
+        if (aiMealStream.isClosed) return;
         Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
         for (MealTime mealTime in meals.keys) {
           Map<String, Meal> originalMeals = meals[mealTime]!;
@@ -356,8 +402,52 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     .toString(),
           );
           _suggestedMeals = sortedSuggestions;
-          displayMeal =
-              _suggestedMeals[MealTime.getCurrentMealTime()]?.values.first;
+
+          Meal? firstMeal;
+          for (String hall in _rankedDiningHalls) {
+            Map<String, dynamic> hallStatus = _getDiningHallStatus(
+              _diningHalls.firstWhere((dh) => dh.name == hall),
+            );
+            MealTime? currentMealTime = hallStatus['isOpen']
+                ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
+                : null;
+            Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+                ? _suggestedMeals[currentMealTime]
+                : null;
+            if (mealsForCurrentTime != null &&
+                mealsForCurrentTime.containsKey(hall)) {
+              firstMeal = mealsForCurrentTime[hall];
+              break;
+            }
+          }
+          MealTime? nextMealTime;
+          if (firstMeal == null) {
+            // Find the next meal time with suggestions
+            for (String hall in _rankedDiningHalls) {
+              Map<String, dynamic> hallStatus = _getDiningHallStatus(
+                _diningHalls.firstWhere((dh) => dh.name == hall),
+              );
+
+              MealTime? currentMealTime = hallStatus['isOpen']
+                  ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
+                  : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
+              if (hallStatus['nextDay'] != 'Today') {
+                continue; //skip if next meal is not today
+              }
+
+              if (_suggestedMeals.containsKey(currentMealTime) &&
+                  _suggestedMeals[currentMealTime]!.containsKey(hall)) {
+                nextMealTime = currentMealTime;
+                firstMeal = _suggestedMeals[currentMealTime]![hall];
+                break;
+              }
+            }
+            _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+          } else {
+            _selectedMealTime =
+                displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
+          }
+          displayMeal = firstMeal;
           print(displayMeal?.mealTime);
 
           print("Display Meal: ${displayMeal?.name}");
@@ -369,6 +459,77 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        // bool isSignedIn = await Auth().isUserLoggedIn();
+        Meal? firstMeal;
+        for (String hall in _rankedDiningHalls) {
+          Map<String, dynamic> hallStatus = _getDiningHallStatus(
+            _diningHalls.firstWhere((dh) => dh.name == hall),
+          );
+          MealTime? currentMealTime = hallStatus['isOpen']
+              ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
+              : null;
+          Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+              ? _suggestedMeals[currentMealTime]
+              : null;
+          if (mealsForCurrentTime != null &&
+              mealsForCurrentTime.containsKey(hall)) {
+            firstMeal = mealsForCurrentTime[hall];
+            break;
+          }
+        }
+        MealTime? nextMealTime;
+        if (firstMeal == null) {
+          // Find the next meal time with suggestions
+          for (String hall in _rankedDiningHalls) {
+            Map<String, dynamic> hallStatus = _getDiningHallStatus(
+              _diningHalls.firstWhere((dh) => dh.name == hall),
+            );
+
+            MealTime? currentMealTime = hallStatus['isOpen']
+                ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
+                : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
+            if (hallStatus['nextDay'] != 'Today') {
+              continue; //skip if next meal is not today
+            }
+
+            if (_suggestedMeals.containsKey(currentMealTime) &&
+                _suggestedMeals[currentMealTime]!.containsKey(hall)) {
+              nextMealTime = currentMealTime;
+              firstMeal = _suggestedMeals[currentMealTime]![hall];
+              break;
+            }
+          }
+          _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+        } else {
+          _selectedMealTime =
+              displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
+        }
+        displayMeal = firstMeal;
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+
+        break;
+      case AppLifecycleState.hidden:
+        print("app in hidden");
+
+        break;
+    }
   }
 
   //OLD BACKGROUND

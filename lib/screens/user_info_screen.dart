@@ -346,7 +346,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'Heatlh Goal',
+                      'Health Goal',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
