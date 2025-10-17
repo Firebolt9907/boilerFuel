@@ -43,8 +43,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       children: [
         Scaffold(
           resizeToAvoidBottomInset: false,
-
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: Stack(
             alignment: Alignment.bottomCenter,
             children: <Widget>[
@@ -185,6 +184,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
+      color: Theme.of(context).primaryColor,
       child: Column(
         children: <Widget>[
           SizedBox(height: MediaQuery.of(context).padding.top + 12),
