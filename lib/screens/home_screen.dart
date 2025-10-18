@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'dart:async';
 
 import 'package:boiler_fuel/api/database.dart';
@@ -539,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen>
   //             begin: Alignment.topLeft,
   //             end: Alignment.bottomRight,
   //             colors: [
-  //               Colors.black,
+  //               DynamicStyling.getBlack(context),
   //               Color(0xFF0D1B2A),
   //               Color(0xFF1B263B),
   //               Color(0xFF415A77),
@@ -571,8 +572,10 @@ class _HomeScreenState extends State<HomeScreen>
           // Header
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Colors.grey[100]!)),
+              color: DynamicStyling.getWhite(context),
+              border: Border(
+                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+              ),
             ),
             child: Column(
               children: [
@@ -630,7 +633,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           child: Icon(
                             Icons.settings_outlined,
-                            color: styling.black,
+                            color: DynamicStyling.getBlack(context),
                             size: 20,
                           ),
                         ),
@@ -656,7 +659,9 @@ class _HomeScreenState extends State<HomeScreen>
                 children: _isLoading
                     ? [
                         Center(
-                          child: CircularProgressIndicator(color: Colors.black),
+                          child: CircularProgressIndicator(
+                            color: DynamicStyling.getBlack(context),
+                          ),
                         ),
                       ]
                     : [
@@ -687,7 +692,7 @@ class _HomeScreenState extends State<HomeScreen>
                         if (widget.user.useMealPlanning)
                           Card(
                             elevation: 0,
-                            color: Colors.white,
+                            color: DynamicStyling.getWhite(context),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                               side: BorderSide(color: Colors.grey[200]!),
@@ -730,7 +735,9 @@ class _HomeScreenState extends State<HomeScreen>
                                             'View and manage your saved meals',
                                             style: TextStyle(
                                               fontSize: 14,
-                                              color: styling.darkGray,
+                                              color: DynamicStyling.getDarkGrey(
+                                                context,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -801,7 +808,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildSuggestedMealCard(BuildContext context) {
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: DynamicStyling.getWhite(context),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.grey[200]!),
@@ -859,8 +866,12 @@ class _HomeScreenState extends State<HomeScreen>
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  styling.darkGray.withOpacity(0.05),
-                                  styling.darkGray.withOpacity(0.1),
+                                  DynamicStyling.getDarkGrey(
+                                    context,
+                                  ).withOpacity(0.05),
+                                  DynamicStyling.getDarkGrey(
+                                    context,
+                                  ).withOpacity(0.1),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -896,8 +907,12 @@ class _HomeScreenState extends State<HomeScreen>
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  styling.darkGray.withOpacity(0.05),
-                                  styling.darkGray.withOpacity(0.1),
+                                  DynamicStyling.getDarkGrey(
+                                    context,
+                                  ).withOpacity(0.05),
+                                  DynamicStyling.getDarkGrey(
+                                    context,
+                                  ).withOpacity(0.1),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -1066,7 +1081,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: DynamicStyling.getWhite(context),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: Colors.grey[200]!),

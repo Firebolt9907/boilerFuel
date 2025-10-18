@@ -1,6 +1,7 @@
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/onboarding_page.dart';
 import 'package:boiler_fuel/screens/user_info_screen.dart';
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/widgets/animated_button.dart';
 import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,12 +56,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   height: 120,
                   width: 120,
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: DynamicStyling.getBlack(context),
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(32),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: DynamicStyling.getBlack(
+                          context,
+                        ).withOpacity(0.2),
                         blurRadius: 10,
                         offset: Offset(0, 5),
                       ),
@@ -69,11 +72,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   child: Center(
                     child: Icon(
                       Icons.local_dining,
-                      color: Colors.white,
+                      color: DynamicStyling.getWhite(context),
                       size: 64,
                     ),
                   ),
                 ),
+                SizedBox(height: 20),
                 Text(
                   'BoilerFuel',
                   style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
@@ -87,19 +91,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withAlpha(100),
+                      color: DynamicStyling.getBlack(context).withAlpha(100),
                       width: 1,
                     ),
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withAlpha(30),
+                    color: DynamicStyling.getBlack(context).withAlpha(30),
                   ),
                   child: Text(
-                    ' Your personal dining companion for smart meal planning and nutrition tracking',
+                    'Your personal dining companion for smart meal planning and nutrition tracking',
                     // style: TextStyle(color: , letterSpacing: 0.5),
-                    style: Theme.of(context).textTheme.displaySmall,
+                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      letterSpacing: 0.5,
+                      fontSize: 16,
+                      color: DynamicStyling.getBlack(context),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -109,7 +113,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 DefaultButton(
                   text: Text(
                     'Get Started',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      fontSize: 16,
+                      color: DynamicStyling.getWhite(context),
+                    ),
+                    // style: TextStyle(fontSize: 16, color: DynamicStyling.getWhite(context)),
                   ),
                   onTap: () {
                     HapticFeedback.mediumImpact();
@@ -126,10 +134,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 // College-themed subtitle
                 Text(
                   'Made for Purdue students, by Purdue students',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withOpacity(0.6),
+                  style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                    letterSpacing: 0.5,
+                    fontSize: 16,
                     fontStyle: FontStyle.italic,
+                    color: DynamicStyling.getDarkGrey(context),
                   ),
                   textAlign: TextAlign.center,
                 ),

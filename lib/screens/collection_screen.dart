@@ -1,4 +1,6 @@
 import 'package:boiler_fuel/main.dart';
+import 'package:boiler_fuel/styling.dart';
+
 import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
@@ -68,9 +70,11 @@ class _CollectionScreenState extends State<CollectionScreen>
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: DynamicStyling.getWhite(context),
                       border: Border(
-                        bottom: BorderSide(color: Colors.grey[100]!),
+                        bottom: BorderSide(
+                          color: DynamicStyling.getGrey(context),
+                        ),
                       ),
                     ),
                     child: Column(
@@ -120,7 +124,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                                     widget.collectionName,
                                     style: TextStyle(
                                       fontSize: 24,
-                                      color: Colors.black,
+                                      color: DynamicStyling.getBlack(context),
                                     ),
                                   ),
                                 ],
@@ -160,14 +164,14 @@ class _CollectionScreenState extends State<CollectionScreen>
           children: [
             Icon(
               Icons.restaurant_menu,
-              color: Colors.white.withOpacity(0.4),
+              color: DynamicStyling.getWhite(context).withOpacity(0.4),
               size: 64,
             ),
             SizedBox(height: 16),
             Text(
               'No items in collection',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: DynamicStyling.getWhite(context).withOpacity(0.6),
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 fontFamily: '.SF Pro Display',
@@ -178,7 +182,7 @@ class _CollectionScreenState extends State<CollectionScreen>
             Text(
               'This collection is currently empty',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: DynamicStyling.getWhite(context).withOpacity(0.4),
                 fontSize: 14,
                 fontFamily: '.SF Pro Text',
                 decoration: TextDecoration.none,
@@ -197,8 +201,11 @@ class _CollectionScreenState extends State<CollectionScreen>
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.white.withOpacity(0.08),
-        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+        color: DynamicStyling.getWhite(context).withOpacity(0.08),
+        border: Border.all(
+          color: DynamicStyling.getWhite(context).withOpacity(0.15),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +231,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: DynamicStyling.getWhite(context),
                         fontFamily: '.SF Pro Text',
                         decoration: TextDecoration.none,
                       ),
@@ -234,7 +241,9 @@ class _CollectionScreenState extends State<CollectionScreen>
                       '${widget.foods.length} items from ${widget.station}',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.7),
+                        color: DynamicStyling.getWhite(
+                          context,
+                        ).withOpacity(0.7),
                         fontFamily: '.SF Pro Text',
                         decoration: TextDecoration.none,
                       ),
@@ -289,7 +298,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: DynamicStyling.getBlack(context),
                                   fontFamily: '.SF Pro Text',
                                   decoration: TextDecoration.none,
                                 ),
@@ -310,7 +319,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                   ),
                   Icon(
                     Icons.chevron_right,
-                    color: Colors.white.withOpacity(0.4),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.4),
                     size: 20,
                   ),
                 ],
@@ -322,7 +331,7 @@ class _CollectionScreenState extends State<CollectionScreen>
                   foodItem.calories.round().toString() + " cal",
                   style: TextStyle(
                     fontSize: 14,
-                    color: styling.darkGray,
+                    color: DynamicStyling.getDarkGrey(context),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -344,12 +353,14 @@ class _CollectionScreenState extends State<CollectionScreen>
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6),
-                            color: styling.darkGray.withOpacity(0.1),
+                            color: DynamicStyling.getDarkGrey(
+                              context,
+                            ).withOpacity(0.1),
                           ),
                           child: Text(
                             label,
                             style: TextStyle(
-                              color: styling.darkGray,
+                              color: DynamicStyling.getDarkGrey(context),
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                               fontFamily: '.SF Pro Text',
@@ -379,7 +390,7 @@ class _CollectionScreenState extends State<CollectionScreen>
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.white,
+          color: DynamicStyling.getWhite(context),
           fontSize: 11,
           fontWeight: FontWeight.w500,
           fontFamily: '.SF Pro Text',

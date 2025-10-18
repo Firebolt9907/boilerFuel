@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -100,11 +101,11 @@ class _DefaultDropdownMenuState<T> extends State<DefaultDropdownMenu<T>>
                 color: Colors.transparent,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surfaceBright,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black26,
+                        color: DynamicStyling.getLightGrey(context), // 26
                         blurRadius: 8,
                         offset: Offset(0, 4),
                       ),
@@ -134,7 +135,9 @@ class _DefaultDropdownMenuState<T> extends State<DefaultDropdownMenu<T>>
                                   style: TextStyle(
                                     color: selected
                                         ? Theme.of(context).primaryColorDark
-                                        : Colors.black87,
+                                        : DynamicStyling.getBlack(
+                                            context,
+                                          ), // 87
                                     fontSize: 16,
                                   ),
                                   child: item.child,
@@ -143,7 +146,7 @@ class _DefaultDropdownMenuState<T> extends State<DefaultDropdownMenu<T>>
                                   Spacer(),
                                   Icon(
                                     Icons.check,
-                                    color: styling.darkGray,
+                                    color: DynamicStyling.getDarkGrey(context),
                                     size: 20,
                                   ),
                                 ],
@@ -179,7 +182,7 @@ class _DefaultDropdownMenuState<T> extends State<DefaultDropdownMenu<T>>
         behavior: HitTestBehavior.translucent,
         child: Container(
           decoration: BoxDecoration(
-            color: Color(0xFFf3f3f5),
+            color: DynamicStyling.getLightGrey(context),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.transparent, width: 2),
           ),
@@ -201,14 +204,17 @@ class _DefaultDropdownMenuState<T> extends State<DefaultDropdownMenu<T>>
                               .data
                               .toString()
                         : (widget.hint ?? ' '),
-                    style: TextStyle(color: Colors.black, fontSize: 16),
+                    style: TextStyle(
+                      color: DynamicStyling.getBlack(context),
+                      fontSize: 16,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
               Icon(
                 _isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                color: Color(0xff717182),
+                color: DynamicStyling.getDarkGrey(context),
               ),
             ],
           ),

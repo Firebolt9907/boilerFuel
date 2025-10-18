@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -95,7 +96,7 @@ class _AnimatedButtonState extends State<AnimatedButton>
                     : LinearGradient(colors: [Colors.grey, Colors.grey]),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
+                  color: DynamicStyling.getWhite(context).withOpacity(0.1),
                   width: 1,
                 ),
                 boxShadow: widget.isEnabled && !_isPressed
@@ -107,14 +108,18 @@ class _AnimatedButtonState extends State<AnimatedButton>
                           spreadRadius: 1,
                         ),
                         BoxShadow(
-                          color: Colors.white.withOpacity(0.1),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.1),
                           blurRadius: 10,
                           offset: Offset(0, 2),
                         ),
                       ]
                     : [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: DynamicStyling.getBlack(
+                            context,
+                          ).withOpacity(0.2),
                           blurRadius: 8,
                           offset: Offset(0, 4),
                         ),
@@ -130,13 +135,15 @@ class _AnimatedButtonState extends State<AnimatedButton>
                       overflow: TextOverflow.visible,
                       softWrap: true,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: DynamicStyling.getWhite(context),
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
                         shadows: [
                           Shadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: DynamicStyling.getBlack(
+                              context,
+                            ).withOpacity(0.3),
                             offset: Offset(1, 1),
                             blurRadius: 2,
                           ),

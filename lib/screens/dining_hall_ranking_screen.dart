@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/main.dart';
@@ -110,7 +111,7 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: DynamicStyling.getWhite(context),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
           left: 24,
@@ -176,7 +177,10 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen> {
               onTap: _handleContinue,
               text: Text(
                 widget.isEditing ? 'Save Changes' : 'Complete Setup',
-                style: TextStyle(fontSize: 16, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: DynamicStyling.getWhite(context),
+                ),
               ),
             ),
             Center(
@@ -187,7 +191,10 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen> {
                 },
                 child: Text(
                   'Back',
-                  style: TextStyle(color: styling.darkGray, fontSize: 16),
+                  style: TextStyle(
+                    color: DynamicStyling.getDarkGrey(context),
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
@@ -238,7 +245,7 @@ class DiningHallCard extends StatelessWidget {
               '$rank',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: Colors.black,
+                color: DynamicStyling.getBlack(context),
               ),
             ),
           ),

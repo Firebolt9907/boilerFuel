@@ -99,7 +99,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: DynamicStyling.getBlack(context),
                       fontFamily: '.SF Pro Display',
                       decoration: TextDecoration.none,
                     ),
@@ -119,12 +119,14 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(6),
-                              color: styling.darkGray.withOpacity(0.1),
+                              color: DynamicStyling.getDarkGrey(
+                                context,
+                              ).withOpacity(0.1),
                             ),
                             child: Text(
                               label,
                               style: TextStyle(
-                                color: styling.darkGray,
+                                color: DynamicStyling.getDarkGrey(context),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                                 fontFamily: '.SF Pro Text',
@@ -148,7 +150,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: DynamicStyling.getBlack(context),
                         fontFamily: '.SF Pro Display',
                         decoration: TextDecoration.none,
                       ),
@@ -164,7 +166,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             style: TextStyle(
                               fontSize: 14,
 
-                              color: Colors.black,
+                              color: DynamicStyling.getBlack(context),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -173,7 +175,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             "${widget.food.calories.round()} cal",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black.withOpacity(0.6),
+                              color: DynamicStyling.getBlack(
+                                context,
+                              ).withOpacity(0.6),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -192,7 +196,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             style: TextStyle(
                               fontSize: 14,
 
-                              color: Colors.black,
+                              color: DynamicStyling.getBlack(context),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -201,7 +205,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             "${widget.food.protein.round()}g",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black.withOpacity(0.6),
+                              color: DynamicStyling.getBlack(
+                                context,
+                              ).withOpacity(0.6),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -220,7 +226,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             style: TextStyle(
                               fontSize: 14,
 
-                              color: Colors.black,
+                              color: DynamicStyling.getBlack(context),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -229,7 +235,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             "${widget.food.carbs.round()}g",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black.withOpacity(0.6),
+                              color: DynamicStyling.getBlack(
+                                context,
+                              ).withOpacity(0.6),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -248,7 +256,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             style: TextStyle(
                               fontSize: 14,
 
-                              color: Colors.black,
+                              color: DynamicStyling.getBlack(context),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -257,7 +265,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             "${widget.food.fat.round()}g",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black.withOpacity(0.6),
+                              color: DynamicStyling.getBlack(
+                                context,
+                              ).withOpacity(0.6),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -276,7 +286,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             style: TextStyle(
                               fontSize: 14,
 
-                              color: Colors.black,
+                              color: DynamicStyling.getBlack(context),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -285,7 +295,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                             "${widget.food.sugar.round()}g",
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.black.withOpacity(0.6),
+                              color: DynamicStyling.getBlack(
+                                context,
+                              ).withOpacity(0.6),
                               fontFamily: '.SF Pro Text',
                               decoration: TextDecoration.none,
                             ),
@@ -302,7 +314,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: DynamicStyling.getBlack(context),
                       fontFamily: '.SF Pro Display',
                       decoration: TextDecoration.none,
                     ),
@@ -315,7 +327,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                       "No ingredients available.",
                       style: TextStyle(
                         fontSize: 14,
-                        color: styling.darkGray,
+                        color: DynamicStyling.getDarkGrey(context),
                         fontFamily: '.SF Pro Text',
                         decoration: TextDecoration.none,
                       ),
@@ -336,8 +348,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
   Widget _buildMealHeader() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey[100]!)),
+        color: DynamicStyling.getWhite(context),
+        border: Border(
+          bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -358,7 +372,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: DynamicStyling.getBlack(context),
                           fontFamily: '.SF Pro Display',
                           decoration: TextDecoration.none,
                         ),
@@ -391,7 +405,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
           food.ingredients,
           style: TextStyle(
             fontSize: 14,
-            color: styling.darkGray,
+            color: DynamicStyling.getDarkGrey(context),
             fontFamily: '.SF Pro Text',
             decoration: TextDecoration.none,
           ),

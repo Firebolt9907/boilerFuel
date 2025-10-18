@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:boiler_fuel/main.dart';
@@ -102,7 +103,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: DynamicStyling.getWhite(context),
         body: SingleChildScrollView(
           padding: EdgeInsets.only(
             left: 24,
@@ -117,7 +118,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: DynamicStyling.getBlack(context),
                 ),
               ),
 
@@ -128,7 +129,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                     : 'Based on your profile, here are your suggested daily macronutrient intakes. You can adjust them if needed.',
                 style: TextStyle(
                   fontSize: 18,
-                  color: styling.darkGray,
+                  color: DynamicStyling.getDarkGrey(context),
 
                   height: 1.4,
                 ),
@@ -186,7 +187,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                 text: Text(
                   widget.isEditing ? 'Save Changes' : 'Continue',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: DynamicStyling.getWhite(context),
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -205,7 +206,10 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                   },
                   child: Text(
                     'Back',
-                    style: TextStyle(color: styling.darkGray, fontSize: 16),
+                    style: TextStyle(
+                      color: DynamicStyling.getDarkGrey(context),
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ),
@@ -225,7 +229,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
               //         borderRadius: BorderRadius.circular(4),
               //         color: index == 3
               //             ? Colors.purple.shade400
-              //             : Colors.white.withOpacity(0.3),
+              //             : DynamicStyling.getWhite(context).withOpacity(0.3),
               //       ),
               //     ),
               //   ),
@@ -253,10 +257,14 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Color(0xffe5e5e7),
+                color: DynamicStyling.getLightGrey(context),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Colors.black, size: 28),
+              child: Icon(
+                icon,
+                color: DynamicStyling.getBlack(context),
+                size: 28,
+              ),
             ),
             SizedBox(width: 20),
             Expanded(
@@ -268,7 +276,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: DynamicStyling.getBlack(context),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -279,7 +287,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                     description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: styling.darkGray,
+                      color: DynamicStyling.getDarkGrey(context),
                       height: 1.3,
                     ),
                   ),

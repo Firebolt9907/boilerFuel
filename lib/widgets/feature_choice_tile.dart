@@ -1,4 +1,5 @@
 import 'package:boiler_fuel/main.dart';
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -34,10 +35,14 @@ class FeatureChoiceTile extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Color(0xffe5e5e7),
+                color: DynamicStyling.getLightGrey(context),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Color(0xff030213), size: 24),
+              child: Icon(
+                icon,
+                color: DynamicStyling.getBlack(context),
+                size: 24,
+              ),
             ),
             SizedBox(width: 16),
             Expanded(
@@ -52,7 +57,10 @@ class FeatureChoiceTile extends StatelessWidget {
 
                   Text(
                     description,
-                    style: TextStyle(fontSize: 14, color: styling.darkGray),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: DynamicStyling.getDarkGrey(context),
+                    ),
                   ),
                 ],
               ),
@@ -60,7 +68,7 @@ class FeatureChoiceTile extends StatelessWidget {
             Checkbox(
               value: isSelected,
               onChanged: onChanged,
-              activeColor: styling.black,
+              activeColor: DynamicStyling.getBlack(context),
             ),
           ],
         ),

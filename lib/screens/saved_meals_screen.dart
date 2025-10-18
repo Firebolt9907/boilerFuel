@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/main.dart';
@@ -111,8 +112,10 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
           // Header
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Colors.grey[100]!)),
+              color: DynamicStyling.getWhite(context),
+              border: Border(
+                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+              ),
             ),
             child: Column(
               children: [
@@ -156,7 +159,10 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
                         children: [
                           Text(
                             "Saved Meals",
-                            style: TextStyle(fontSize: 24, color: Colors.black),
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: DynamicStyling.getBlack(context),
+                            ),
                           ),
                         ],
                       ),
@@ -224,7 +230,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
           Text(
             'Loading menu...',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: DynamicStyling.getWhite(context).withOpacity(0.7),
               fontSize: 16,
               fontFamily: '.SF Pro Text',
               decoration: TextDecoration.none,
@@ -244,14 +250,14 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
           children: [
             Icon(
               Icons.restaurant_menu,
-              color: Colors.white.withOpacity(0.4),
+              color: DynamicStyling.getWhite(context).withOpacity(0.4),
               size: 64,
             ),
             SizedBox(height: 16),
             Text(
               'No saved meals',
               style: TextStyle(
-                color: Colors.black,
+                color: DynamicStyling.getBlack(context),
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 fontFamily: '.SF Pro Display',
@@ -262,7 +268,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
             Text(
               'Tap on the bookmark icon on any meal to save it here.',
               style: TextStyle(
-                color: styling.darkGray,
+                color: DynamicStyling.getDarkGrey(context),
                 fontSize: 14,
                 fontFamily: '.SF Pro Text',
                 decoration: TextDecoration.none,
@@ -315,7 +321,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
               .map(
                 (meal) => Card(
                   elevation: 0,
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                     side: BorderSide(color: Colors.grey[200]!),
@@ -366,8 +372,12 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        styling.darkGray.withOpacity(0.05),
-                                        styling.darkGray.withOpacity(0.1),
+                                        DynamicStyling.getDarkGrey(
+                                          context,
+                                        ).withOpacity(0.05),
+                                        DynamicStyling.getDarkGrey(
+                                          context,
+                                        ).withOpacity(0.1),
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
@@ -404,8 +414,12 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        styling.darkGray.withOpacity(0.05),
-                                        styling.darkGray.withOpacity(0.1),
+                                        DynamicStyling.getDarkGrey(
+                                          context,
+                                        ).withOpacity(0.05),
+                                        DynamicStyling.getDarkGrey(
+                                          context,
+                                        ).withOpacity(0.1),
                                       ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,

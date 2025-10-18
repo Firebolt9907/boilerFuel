@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/main.dart';
@@ -197,7 +198,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: DynamicStyling.getWhite(context),
         body: Stack(
           children: [
             // Main content
@@ -218,7 +219,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: DynamicStyling.getBlack(context),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -230,7 +231,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         : 'Make changes to your personal info',
                     style: TextStyle(
                       fontSize: 16,
-                      color: styling.darkGray,
+                      color: DynamicStyling.getDarkGrey(context),
                       fontWeight: FontWeight.w300,
                     ),
                   ),
@@ -240,7 +241,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: DynamicStyling.getBlack(context),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -259,7 +260,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: DynamicStyling.getBlack(context),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -277,7 +278,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: DynamicStyling.getBlack(context),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -290,14 +291,18 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                           value: Gender.male,
                           child: Text(
                             "Male",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(
+                              color: DynamicStyling.getBlack(context),
+                            ),
                           ),
                         ),
                         DropdownMenuItem(
                           value: Gender.female,
                           child: Text(
                             "Female",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(
+                              color: DynamicStyling.getBlack(context),
+                            ),
                           ),
                         ),
                       ],
@@ -314,7 +319,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: DynamicStyling.getBlack(context),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -332,7 +337,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: DynamicStyling.getBlack(context),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -350,7 +355,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: DynamicStyling.getBlack(context),
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -380,19 +385,22 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                                   'Continue',
                                   style: TextStyle(
                                     fontSize: 15,
-                                    color: Colors.white,
+                                    color: DynamicStyling.getWhite(context),
                                   ),
                                 )
                               : Text(
                                   'Next',
                                   style: TextStyle(
                                     fontSize: 15,
-                                    color: Colors.white,
+                                    color: DynamicStyling.getWhite(context),
                                   ),
                                 )
                         : Text(
                             'Continue',
-                            style: TextStyle(fontSize: 15, color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: DynamicStyling.getWhite(context),
+                            ),
                           ),
                     onTap: _continue,
                     isEnabled:
@@ -420,7 +428,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                   //         borderRadius: BorderRadius.circular(4),
                   //         color: index == 0
                   //             ? Colors.blue.shade400
-                  //             : Colors.white.withOpacity(0.3),
+                  //             : DynamicStyling.getWhite(context).withOpacity(0.3),
                   //       ),
                   //     ),
                   //   ),
@@ -448,7 +456,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                 ),
               ),
             ],
@@ -517,7 +525,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.white.withOpacity(0.7),
+              color: DynamicStyling.getWhite(context).withOpacity(0.7),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -529,7 +537,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                 value,
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -538,7 +546,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                 unit,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.white.withOpacity(0.6),
+                  color: DynamicStyling.getWhite(context).withOpacity(0.6),
                 ),
               ),
             ],

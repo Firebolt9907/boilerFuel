@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -39,7 +40,7 @@ class _AnimatedTextFieldState extends State<AnimatedTextField>
       child: TextField(
         controller: widget.controller,
         keyboardType: widget.keyboardType,
-        style: TextStyle(color: Colors.white, fontSize: 16),
+        style: TextStyle(color: DynamicStyling.getWhite(context), fontSize: 16),
 
         decoration: InputDecoration(
           labelText: widget.label,

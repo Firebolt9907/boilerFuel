@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,11 @@ class DefaultContainer extends StatelessWidget {
           decoration ??
           BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
-            border: Border.all(color: Color(0xffe5e7eb), width: 2),
+            color: DynamicStyling.getWhite(context),
+            border: Border.all(
+              color: DynamicStyling.getLightGrey(context),
+              width: 2,
+            ),
           ),
       child: child,
     );

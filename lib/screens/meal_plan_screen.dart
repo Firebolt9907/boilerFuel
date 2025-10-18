@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/api/shared_preferences.dart';
@@ -208,18 +209,25 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Back button with modern styling  
+                    // Back button with modern styling
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.1),
+                        color: DynamicStyling.getWhite(
+                          context,
+                        ).withOpacity(0.1),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.2),
                           width: 1,
                         ),
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: DynamicStyling.getWhite(context),
+                        ),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
@@ -229,7 +237,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                     ShaderMask(
                       shaderCallback: (bounds) => LinearGradient(
                         colors: [
-                          Colors.white,
+                          DynamicStyling.getWhite(context),
                           Colors.orange.shade300,
                           Colors.yellow.shade200,
                         ],
@@ -243,7 +251,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: DynamicStyling.getWhite(context),
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -256,9 +264,13 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                       ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: Colors.white.withOpacity(0.05),
+                        color: DynamicStyling.getWhite(
+                          context,
+                        ).withOpacity(0.05),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.1),
                           width: 1,
                         ),
                       ),
@@ -268,7 +280,9 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                             : 'Select your current meal plan',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white.withOpacity(0.8),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.8),
                           fontWeight: FontWeight.w300,
                         ),
                       ),
@@ -280,9 +294,13 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Colors.white.withOpacity(0.05),
+                        color: DynamicStyling.getWhite(
+                          context,
+                        ).withOpacity(0.05),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.15),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.15),
                           width: 1,
                         ),
                       ),
@@ -294,7 +312,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: DynamicStyling.getWhite(context),
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -354,7 +372,7 @@ class _MealPlanScreenState extends State<MealPlanScreen>
                     //         borderRadius: BorderRadius.circular(4),
                     //         color: index == 2
                     //             ? Colors.green.shade400
-                    //             : Colors.white.withOpacity(0.3),
+                    //             : DynamicStyling.getWhite(context).withOpacity(0.3),
                     //       ),
                     //     ),
                     //   ),

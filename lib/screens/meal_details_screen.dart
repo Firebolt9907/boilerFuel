@@ -84,42 +84,41 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
   Widget _buildMealHeader() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey[100]!)),
+        color: DynamicStyling.getWhite(context),
+        border: Border(
+          bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-           SizedBox(height: MediaQuery.of(context).padding.top),
-                GestureDetector(
-                  onTap: () {
+          SizedBox(height: MediaQuery.of(context).padding.top),
+          GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              Navigator.of(context).pop();
+            },
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back_ios_new, color: styling.gray),
+                  onPressed: () {
                     HapticFeedback.lightImpact();
                     Navigator.of(context).pop();
                   },
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: styling.gray,
-                        ),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.of(context).pop();
-                        },
-                      ),
+                ),
 
-                      Text(
-                        'Back',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: styling.gray,
-                        ),
-                      ),
-                    ],
+                Text(
+                  'Back',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: styling.gray,
                   ),
                 ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 24.0, bottom: 18),
             child: Row(
@@ -135,7 +134,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: DynamicStyling.getBlack(context),
                           fontFamily: '.SF Pro Display',
                           decoration: TextDecoration.none,
                         ),
@@ -145,7 +144,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                       constraints: BoxConstraints(maxWidth: 250),
                       child: Text(
                         widget.meal.diningHall,
-                        style: TextStyle(fontSize: 14, color: styling.darkGray),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: DynamicStyling.getDarkGrey(context),
+                        ),
                       ),
                     ),
                   ],
@@ -182,7 +184,9 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                           _isFavorited
                               ? Icons.bookmark_added
                               : Icons.bookmark_add_outlined,
-                          color: _isFavorited ? Colors.red : styling.black,
+                          color: _isFavorited
+                              ? Colors.red
+                              : DynamicStyling.getBlack(context),
                           size: 20,
                         ),
                       ),
@@ -209,7 +213,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: DynamicStyling.getBlack(context),
             ),
           ),
           SizedBox(height: 12),
@@ -223,7 +227,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   style: TextStyle(
                     fontSize: 14,
 
-                    color: Colors.black,
+                    color: DynamicStyling.getBlack(context),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -232,7 +236,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   "${widget.meal.calories.round()} cal",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black.withOpacity(0.6),
+                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -251,7 +255,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   style: TextStyle(
                     fontSize: 14,
 
-                    color: Colors.black,
+                    color: DynamicStyling.getBlack(context),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -260,7 +264,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   "${widget.meal.protein.round()}g",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black.withOpacity(0.6),
+                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -279,7 +283,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   style: TextStyle(
                     fontSize: 14,
 
-                    color: Colors.black,
+                    color: DynamicStyling.getBlack(context),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -288,7 +292,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   "${widget.meal.carbs.round()}g",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black.withOpacity(0.6),
+                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -307,7 +311,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   style: TextStyle(
                     fontSize: 14,
 
-                    color: Colors.black,
+                    color: DynamicStyling.getBlack(context),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -316,7 +320,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   "${widget.meal.fat.round()}g",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black.withOpacity(0.6),
+                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -341,7 +345,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: DynamicStyling.getBlack(context),
             ),
           ),
           SizedBox(height: 16),
@@ -404,7 +408,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: DynamicStyling.getBlack(context),
                                   fontFamily: '.SF Pro Text',
                                   decoration: TextDecoration.none,
                                 ),
@@ -420,7 +424,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                                 style: TextStyle(
                                   fontSize: 14,
 
-                                  color: styling.darkGray,
+                                  color: DynamicStyling.getDarkGrey(context),
                                 ),
                               ),
                             ),
@@ -438,7 +442,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                   foodItem.calories.round().toString() + " cal",
                   style: TextStyle(
                     fontSize: 14,
-                    color: styling.darkGray,
+                    color: DynamicStyling.getDarkGrey(context),
                     fontFamily: '.SF Pro Text',
                     decoration: TextDecoration.none,
                   ),
@@ -460,12 +464,14 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                           ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(6),
-                            color: styling.darkGray.withOpacity(0.1),
+                            color: DynamicStyling.getDarkGrey(
+                              context,
+                            ).withOpacity(0.1),
                           ),
                           child: Text(
                             label,
                             style: TextStyle(
-                              color: styling.darkGray,
+                              color: DynamicStyling.getDarkGrey(context),
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                               fontFamily: '.SF Pro Text',
@@ -495,7 +501,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.white,
+          color: DynamicStyling.getWhite(context),
           fontSize: 11,
           fontWeight: FontWeight.w500,
           fontFamily: '.SF Pro Text',
@@ -510,8 +516,11 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white.withOpacity(0.05),
-        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+        color: DynamicStyling.getWhite(context).withOpacity(0.05),
+        border: Border.all(
+          color: DynamicStyling.getWhite(context).withOpacity(0.15),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,7 +530,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: DynamicStyling.getWhite(context),
               fontFamily: '.SF Pro Display',
               decoration: TextDecoration.none,
             ),
@@ -546,7 +555,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                       Text(
                         'Save Meal',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: DynamicStyling.getWhite(context),
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           fontFamily: '.SF Pro Text',
@@ -575,7 +584,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                       Text(
                         'Share',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: DynamicStyling.getWhite(context),
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           fontFamily: '.SF Pro Text',

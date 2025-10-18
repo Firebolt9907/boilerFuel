@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:flutter/material.dart';
@@ -60,14 +61,17 @@ class _SettingsButtonState extends State<SettingsButton>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: Colors.transparent,
-          border: Border.all(color: Color(0xffe5e7eb), width: 2),
+          border: Border.all(
+            color: DynamicStyling.getLightGrey(context),
+            width: 2,
+          ),
         ),
         child: Row(
           children: [
             Container(
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Color(0xffe5e5e7),
+                color: DynamicStyling.getLightGrey(context),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(widget.icon, color: Color(0xff030213), size: 24),
@@ -80,7 +84,7 @@ class _SettingsButtonState extends State<SettingsButton>
                   Text(
                     widget.title,
                     style: TextStyle(
-                      color: Colors.black,
+                      color: DynamicStyling.getBlack(context),
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
@@ -90,7 +94,7 @@ class _SettingsButtonState extends State<SettingsButton>
                   Text(
                     widget.subtitle,
                     style: TextStyle(
-                      color: styling.darkGray,
+                      color: DynamicStyling.getDarkGrey(context),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -100,7 +104,7 @@ class _SettingsButtonState extends State<SettingsButton>
             ),
             Icon(
               Icons.chevron_right,
-              color: Colors.white.withOpacity(0.6),
+              color: DynamicStyling.getWhite(context).withOpacity(0.6),
               size: 24,
             ),
           ],

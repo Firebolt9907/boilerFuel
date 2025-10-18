@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
@@ -268,14 +269,21 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                         Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.1),
+                            color: DynamicStyling.getWhite(
+                              context,
+                            ).withOpacity(0.1),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
+                              color: DynamicStyling.getWhite(
+                                context,
+                              ).withOpacity(0.2),
                               width: 1,
                             ),
                           ),
                           child: IconButton(
-                            icon: Icon(Icons.arrow_back, color: Colors.white),
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: DynamicStyling.getWhite(context),
+                            ),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ),
@@ -285,7 +293,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                         ShaderMask(
                           shaderCallback: (bounds) => LinearGradient(
                             colors: [
-                              Colors.white,
+                              DynamicStyling.getWhite(context),
                               Colors.red.shade300,
                               Colors.orange.shade200,
                             ],
@@ -297,7 +305,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: DynamicStyling.getWhite(context),
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -315,9 +323,13 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),
-                                  color: Colors.white.withOpacity(0.05),
+                                  color: DynamicStyling.getWhite(
+                                    context,
+                                  ).withOpacity(0.05),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: DynamicStyling.getWhite(
+                                      context,
+                                    ).withOpacity(0.1),
                                     width: 1,
                                   ),
                                 ),
@@ -327,7 +339,9 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                                       : 'Swipe right if you have this allergy',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white.withOpacity(0.8),
+                                    color: DynamicStyling.getWhite(
+                                      context,
+                                    ).withOpacity(0.8),
                                     fontWeight: FontWeight.w300,
                                   ),
                                 ),
@@ -496,8 +510,11 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
       margin: EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white.withOpacity(0.05),
-        border: Border.all(color: Colors.white.withOpacity(0.15), width: 1),
+        color: DynamicStyling.getWhite(context).withOpacity(0.05),
+        border: Border.all(
+          color: DynamicStyling.getWhite(context).withOpacity(0.15),
+          width: 1,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -509,7 +526,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: DynamicStyling.getWhite(context),
             ),
             textAlign: TextAlign.center,
           ),
@@ -519,7 +536,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
               'Selected allergies:',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
+                color: DynamicStyling.getWhite(context).withOpacity(0.8),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -551,7 +568,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
                       child: Text(
                         allergy.toString(),
                         style: TextStyle(
-                          color: Colors.white,
+                          color: DynamicStyling.getWhite(context),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -566,7 +583,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
               'No allergies selected',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white.withOpacity(0.6),
+                color: DynamicStyling.getWhite(context).withOpacity(0.6),
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -591,7 +608,7 @@ class _AllergenSwipeScreenState extends State<AllergenSwipeScreen>
             child: Text(
               'Restart Allergies',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: DynamicStyling.getWhite(context).withOpacity(0.6),
                 fontSize: 16,
                 decoration: TextDecoration.underline,
               ),

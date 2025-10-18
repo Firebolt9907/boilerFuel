@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
@@ -276,13 +277,15 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
                         spreadRadius: 2,
                       ),
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: DynamicStyling.getBlack(
+                          context,
+                        ).withOpacity(0.2),
                         blurRadius: 15,
                         offset: Offset(0, 5),
                       ),
                     ],
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
+                      color: DynamicStyling.getWhite(context).withOpacity(0.2),
                       width: 1,
                     ),
                   ),
@@ -299,14 +302,20 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
                               padding: EdgeInsets.all(24),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.white.withOpacity(0.2),
+                                color: DynamicStyling.getWhite(
+                                  context,
+                                ).withOpacity(0.2),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: DynamicStyling.getWhite(
+                                    context,
+                                  ).withOpacity(0.3),
                                   width: 2,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: DynamicStyling.getWhite(
+                                      context,
+                                    ).withOpacity(0.3),
                                     blurRadius: 20,
                                     spreadRadius: 5,
                                   ),
@@ -315,7 +324,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
                               child: Icon(
                                 widget.icon,
                                 size: 64,
-                                color: Colors.white,
+                                color: DynamicStyling.getWhite(context),
                               ),
                             ),
                             SizedBox(height: 32),
@@ -326,11 +335,13 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
                               style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: DynamicStyling.getWhite(context),
                                 letterSpacing: 1,
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black.withOpacity(0.5),
+                                    color: DynamicStyling.getBlack(
+                                      context,
+                                    ).withOpacity(0.5),
                                     offset: Offset(2, 2),
                                     blurRadius: 4,
                                   ),
@@ -345,7 +356,9 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
                               widget.description,
                               style: TextStyle(
                                 fontSize: 18,
-                                color: Colors.white.withOpacity(0.9),
+                                color: DynamicStyling.getWhite(
+                                  context,
+                                ).withOpacity(0.9),
                                 fontWeight: FontWeight.w300,
                                 height: 1.5,
                               ),
@@ -368,7 +381,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
                                 : Icon(
                                     _overlayIcon,
                                     size: 80,
-                                    color: Colors.white,
+                                    color: DynamicStyling.getWhite(context),
                                   ),
                           ),
                         ),

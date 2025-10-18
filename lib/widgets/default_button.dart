@@ -28,7 +28,9 @@ class DefaultButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          backgroundColor: isEnabled ? styling.black : Color(0xff818089),
+          backgroundColor: isEnabled
+              ? Theme.of(context).buttonTheme.colorScheme!.onSurface
+              : Color(0xff818089),
         ),
       ),
     );

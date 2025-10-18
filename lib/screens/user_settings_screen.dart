@@ -71,8 +71,10 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Colors.grey[100]!)),
+              color: DynamicStyling.getWhite(context),
+              border: Border(
+                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+              ),
             ),
             child: Column(
               children: [
@@ -116,7 +118,10 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                         children: [
                           Text(
                             "Settings",
-                            style: TextStyle(fontSize: 24, color: Colors.black),
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: DynamicStyling.getBlack(context),
+                            ),
                           ),
                         ],
                       ),

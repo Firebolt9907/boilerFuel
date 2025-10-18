@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
@@ -305,8 +306,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           // Header
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Colors.grey[100]!)),
+              color: DynamicStyling.getWhite(context),
+              border: Border(
+                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+              ),
             ),
             child: Column(
               children: [
@@ -350,7 +353,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                         children: [
                           Text(
                             widget.diningHall,
-                            style: TextStyle(fontSize: 24, color: Colors.black),
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: DynamicStyling.getBlack(context),
+                            ),
                           ),
                         ],
                       ),
@@ -408,13 +414,15 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              DynamicStyling.getBlack(context),
+            ),
           ),
           SizedBox(height: 16),
           Text(
             'Loading menu...',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: DynamicStyling.getWhite(context).withOpacity(0.7),
               fontSize: 16,
               fontFamily: '.SF Pro Text',
               decoration: TextDecoration.none,
@@ -434,14 +442,14 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           children: [
             Icon(
               Icons.restaurant_menu,
-              color: Colors.white.withOpacity(0.4),
+              color: DynamicStyling.getWhite(context).withOpacity(0.4),
               size: 64,
             ),
             SizedBox(height: 16),
             Text(
               'No menu available',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: DynamicStyling.getWhite(context).withOpacity(0.6),
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 fontFamily: '.SF Pro Display',
@@ -452,7 +460,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             Text(
               'Check back later for today\'s menu',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
+                color: DynamicStyling.getWhite(context).withOpacity(0.4),
                 fontSize: 14,
                 fontFamily: '.SF Pro Text',
                 decoration: TextDecoration.none,
@@ -541,7 +549,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 stationNames[stationIndex],
-                style: TextStyle(fontSize: 20, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 20,
+                  color: DynamicStyling.getBlack(context),
+                ),
                 textAlign: TextAlign.left,
               ),
             ),
@@ -590,7 +601,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: DynamicStyling.getBlack(context),
                                   fontFamily: '.SF Pro Text',
                                   decoration: TextDecoration.none,
                                 ),
@@ -612,7 +623,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                   ),
                   Icon(
                     Icons.chevron_right,
-                    color: Colors.white.withOpacity(0.4),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.4),
                     size: 20,
                   ),
                 ],
@@ -625,7 +636,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                     foodItem.firstFood.calories.round().toString() + " cal",
                     style: TextStyle(
                       fontSize: 14,
-                      color: styling.darkGray,
+                      color: DynamicStyling.getDarkGrey(context),
                       fontFamily: '.SF Pro Text',
                       decoration: TextDecoration.none,
                     ),
@@ -647,12 +658,14 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(6),
-                              color: styling.darkGray.withOpacity(0.1),
+                              color: DynamicStyling.getDarkGrey(
+                                context,
+                              ).withOpacity(0.1),
                             ),
                             child: Text(
                               label,
                               style: TextStyle(
-                                color: styling.darkGray,
+                                color: DynamicStyling.getDarkGrey(context),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 fontFamily: '.SF Pro Text',
@@ -673,7 +686,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                         'Tap to view all items in this collection',
                         style: TextStyle(
                           fontSize: 12,
-                          color: styling.darkGray,
+                          color: DynamicStyling.getDarkGrey(context),
                           fontFamily: '.SF Pro Text',
                           decoration: TextDecoration.none,
                           fontStyle: FontStyle.italic,
@@ -701,7 +714,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.black,
+          color: DynamicStyling.getBlack(context),
           fontSize: 11,
           fontWeight: FontWeight.w500,
           fontFamily: '.SF Pro Text',

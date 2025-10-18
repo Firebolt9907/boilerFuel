@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -44,7 +45,7 @@ class CustomAppBar extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: DynamicStyling.getBlack(context).withOpacity(0.3),
                 blurRadius: 15,
                 spreadRadius: 2,
                 offset: Offset(0, 5),
@@ -59,7 +60,9 @@ class CustomAppBar extends StatelessWidget {
           scrolledUnderElevation: 0,
           surfaceTintColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          iconTheme: const IconThemeData(color: Colors.white),
+          iconTheme: IconThemeData(
+            color: DynamicStyling.getWhite(context),
+          ),
           toolbarHeight: 100,
           title: FittedBox(
             fit: BoxFit.fitWidth,
@@ -70,8 +73,8 @@ class CustomAppBar extends StatelessWidget {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: DynamicStyling.getWhite(context),
                     fontSize: 30,
                     fontFamily: '.SF Pro Display',
                     fontWeight: FontWeight.bold,
@@ -87,9 +90,9 @@ class CustomAppBar extends StatelessWidget {
                   margin: EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.1),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.1),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
+                      color: DynamicStyling.getWhite(context).withOpacity(0.2),
                       width: 1,
                     ),
                   ),
@@ -104,7 +107,7 @@ class CustomAppBar extends StatelessWidget {
                         HapticFeedback.lightImpact();
                         onBackButtonPressed!(context);
                       },
-                      color: Colors.white,
+                      color: DynamicStyling.getWhite(context),
                     ),
                   ),
                 )

@@ -1,4 +1,6 @@
 import 'package:boiler_fuel/constants.dart';
+import 'package:boiler_fuel/styling.dart';
+
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
@@ -171,7 +173,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: DynamicStyling.getWhite(context),
       body: Stack(
         children: [
           // Floating decorative elements
@@ -192,13 +194,16 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: DynamicStyling.getBlack(context),
                   ),
                 ),
                 SizedBox(height: 8),
                 Text(
                   'Add specific ingredients you want to avoid',
-                  style: TextStyle(fontSize: 16, color: styling.darkGray),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: DynamicStyling.getDarkGrey(context),
+                  ),
                 ),
                 SizedBox(height: 40),
 
@@ -212,7 +217,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: DynamicStyling.getBlack(context),
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -231,17 +236,22 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                           Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.black,
+                              color: DynamicStyling.getBlack(context),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: DynamicStyling.getBlack(
+                                    context,
+                                  ).withOpacity(0.2),
                                   blurRadius: 15,
                                   offset: Offset(0, 5),
                                 ),
                               ],
                             ),
                             child: IconButton(
-                              icon: Icon(Icons.add, color: Colors.white),
+                              icon: Icon(
+                                Icons.add,
+                                color: DynamicStyling.getWhite(context),
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _suggestionChips.add(
@@ -269,12 +279,13 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: DynamicStyling.getBlack(context),
                         ),
                       ),
                       SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
+                        // TODO: Implement AnimatedSize for the checkmarks and AnimatedGrid instead of Wrap
                         child: Wrap(
                           spacing: 8,
                           runSpacing: 8,
@@ -289,11 +300,11 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                               child: DefaultContainer(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: Colors.white,
+                                  color: DynamicStyling.getWhite(context),
                                   border: Border.all(
                                     color: isSelected
-                                        ? Colors.black
-                                        : Colors.grey.shade400,
+                                        ? DynamicStyling.getBlack(context)
+                                        : DynamicStyling.getGrey(context),
                                     width: 2,
                                   ),
                                 ),
@@ -304,7 +315,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                                       Icon(
                                         Icons.check,
                                         size: 16,
-                                        color: Colors.black,
+                                        color: DynamicStyling.getBlack(context),
                                       ),
                                       SizedBox(width: 4),
                                     ],
@@ -312,8 +323,10 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                                       suggestion,
                                       style: TextStyle(
                                         color: isSelected
-                                            ? Colors.black
-                                            : styling.darkGray,
+                                            ? DynamicStyling.getBlack(context)
+                                            : DynamicStyling.getDarkGrey(
+                                                context,
+                                              ),
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -335,7 +348,10 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                 DefaultButton(
                   text: Text(
                     "Save",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(
+                      color: DynamicStyling.getWhite(context),
+                      fontSize: 16,
+                    ),
                   ),
                   onTap: _continue,
                 ),
@@ -347,7 +363,10 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                     },
                     child: Text(
                       'Back',
-                      style: TextStyle(color: styling.darkGray, fontSize: 16),
+                      style: TextStyle(
+                        color: DynamicStyling.getDarkGrey(context),
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),

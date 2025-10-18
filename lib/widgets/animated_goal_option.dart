@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -78,13 +79,15 @@ class _AnimatedGoalOptionState extends State<AnimatedGoalOption>
                       : Icons.radio_button_off,
                   color: widget.isSelected
                       ? Colors.blue.shade300
-                      : Colors.white70,
+                      : DynamicStyling.getGrey(context),
                 ),
                 SizedBox(width: 12),
                 Text(
                   widget.text,
                   style: TextStyle(
-                    color: widget.isSelected ? Colors.white : Colors.white70,
+                    color: widget.isSelected
+                        ? DynamicStyling.getWhite(context)
+                        : DynamicStyling.getGrey(context),
                     fontSize: 16,
                     fontWeight: widget.isSelected
                         ? FontWeight.w600

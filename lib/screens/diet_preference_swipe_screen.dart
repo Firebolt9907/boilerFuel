@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
@@ -153,7 +154,7 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
     final isCompleted = _currentIndex >= _preferences.length;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: DynamicStyling.getWhite(context),
       body: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
@@ -162,13 +163,16 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: DynamicStyling.getBlack(context),
             ),
           ),
           SizedBox(height: 8),
           Text(
             'Select your diets by tapping on each of your diets.',
-            style: TextStyle(fontSize: 16, color: styling.darkGray),
+            style: TextStyle(
+              fontSize: 16,
+              color: DynamicStyling.getDarkGrey(context),
+            ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 24),
@@ -194,7 +198,10 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
                     decoration: _selectedPreferences.contains(preference)
                         ? BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.black, width: 2),
+                            border: Border.all(
+                              color: DynamicStyling.getBlack(context),
+                              width: 2,
+                            ),
                           )
                         : null,
 
@@ -203,8 +210,8 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
                         Icon(
                           _preferenceIcons[preference],
                           color: _selectedPreferences.contains(preference)
-                              ? Colors.black
-                              : Colors.grey.shade400,
+                              ? DynamicStyling.getBlack(context)
+                              : DynamicStyling.getGrey(context),
                           size: 32,
                         ),
                         SizedBox(height: 8),
@@ -214,8 +221,8 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: _selectedPreferences.contains(preference)
-                                ? Colors.black
-                                : Colors.grey.shade400,
+                                ? DynamicStyling.getBlack(context)
+                                : DynamicStyling.getGrey(context),
                           ),
                         ),
                       ],
@@ -231,7 +238,10 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
             child: DefaultButton(
               text: Text(
                 "Save",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(
+                  color: DynamicStyling.getWhite(context),
+                  fontSize: 16,
+                ),
               ),
               onTap: _continue,
             ),
@@ -245,7 +255,10 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
               },
               child: Text(
                 'Back',
-                style: TextStyle(color: styling.darkGray, fontSize: 16),
+                style: TextStyle(
+                  color: DynamicStyling.getDarkGrey(context),
+                  fontSize: 16,
+                ),
               ),
             ),
           ),

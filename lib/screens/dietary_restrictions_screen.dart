@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:boiler_fuel/main.dart';
@@ -280,7 +281,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: DynamicStyling.getWhite(context),
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
           left: 24,
@@ -295,7 +296,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
               style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: DynamicStyling.getBlack(context),
               ),
             ),
 
@@ -306,7 +307,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                   : 'Let\'s personalize your dining experience based on your dietary preferences and restrictions!',
               style: TextStyle(
                 fontSize: 18,
-                color: styling.darkGray,
+                color: DynamicStyling.getDarkGrey(context),
 
                 height: 1.4,
               ),
@@ -350,7 +351,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
               text: Text(
                 widget.isEditing ? 'Save Changes' : 'Continue',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -369,7 +370,10 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                 },
                 child: Text(
                   'Back',
-                  style: TextStyle(color: styling.darkGray, fontSize: 16),
+                  style: TextStyle(
+                    color: DynamicStyling.getDarkGrey(context),
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
@@ -389,7 +393,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
             //         borderRadius: BorderRadius.circular(4),
             //         color: index == 3
             //             ? Colors.purple.shade400
-            //             : Colors.white.withOpacity(0.3),
+            //             : DynamicStyling.getWhite(context).withOpacity(0.3),
             //       ),
             //     ),
             //   ),
@@ -415,10 +419,14 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Color(0xffe5e5e7),
+                color: DynamicStyling.getLightGrey(context),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: Colors.black, size: 28),
+              child: Icon(
+                icon,
+                color: DynamicStyling.getBlack(context),
+                size: 28,
+              ),
             ),
             SizedBox(width: 20),
             Expanded(
@@ -430,7 +438,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: DynamicStyling.getBlack(context),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -439,14 +447,18 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
                     description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: styling.darkGray,
+                      color: DynamicStyling.getDarkGrey(context),
                       height: 1.3,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, color: Colors.black, size: 18),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: DynamicStyling.getBlack(context),
+              size: 18,
+            ),
           ],
         ),
       ),

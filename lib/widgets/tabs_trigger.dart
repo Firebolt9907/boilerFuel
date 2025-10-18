@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -30,12 +31,12 @@ class _TabsTriggerState extends State<TabsTrigger> {
     Color borderColor;
 
     if (widget.isSelected) {
-      backgroundColor = Colors.white;
-      textColor = Colors.black;
-      borderColor = Colors.white;
+      backgroundColor = DynamicStyling.getWhite(context);
+      textColor = DynamicStyling.getBlack(context);
+      borderColor = DynamicStyling.getWhite(context);
     } else {
       backgroundColor = Color(0xffeeeeee);
-      textColor = Colors.black;
+      textColor = DynamicStyling.getBlack(context);
       borderColor = Color(0xffeeeeee);
     }
 

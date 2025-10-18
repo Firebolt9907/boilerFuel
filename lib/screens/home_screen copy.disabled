@@ -380,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //             begin: Alignment.topLeft,
   //             end: Alignment.bottomRight,
   //             colors: [
-  //               Colors.black,
+  //               DynamicStyling.getBlack(context),
   //               Color(0xFF0D1B2A),
   //               Color(0xFF1B263B),
   //               Color(0xFF415A77),
@@ -396,7 +396,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       body: _currentUser == null
           ? Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  DynamicStyling.getBlack(context),
+                ),
               ),
             )
           : SingleChildScrollView(
@@ -432,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildHeader() {
     return Container(
-      color: Colors.white,
+      color: DynamicStyling.getWhite(context),
       width: double.infinity,
       height: MediaQuery.of(context).padding.top + 80,
       child: Column(
@@ -445,10 +447,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               children: [
                 Text(
                   'BoilerFuel',
-                  style: TextStyle(fontSize: 16, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: DynamicStyling.getBlack(context),
+                  ),
                 ),
 
-                // Icon(Icons.home, color: Colors.white, size: 28),
+                // Icon(Icons.home, color: DynamicStyling.getWhite(context), size: 28),
                 IconButton(
                   onPressed: () {
                     // Open settings screen
@@ -469,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   },
                   icon: Icon(
                     Icons.settings,
-                    color: Colors.white.withOpacity(0.8),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.8),
                     size: 28,
                   ),
                 ),
@@ -481,7 +486,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             'Welcome back, ${_currentUser!.name}!',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
+              color: DynamicStyling.getWhite(context).withOpacity(0.8),
               fontWeight: FontWeight.w300,
             ),
           ),
@@ -504,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Text(
               'Loading your personalized meal plan...',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: DynamicStyling.getWhite(context).withOpacity(0.7),
                 fontSize: 16,
               ),
             ),
@@ -528,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                 ),
               ),
             ],
@@ -538,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Text(
               'No dining hall preferences set',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: DynamicStyling.getWhite(context).withOpacity(0.6),
                 fontSize: 14,
               ),
             )
@@ -566,11 +571,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.white.withOpacity(0.05),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.05),
                     border: Border.all(
                       color: status['isOpen']
                           ? Colors.green.withOpacity(0.3)
-                          : Colors.white.withOpacity(0.1),
+                          : DynamicStyling.getWhite(context).withOpacity(0.1),
                       width: 1,
                     ),
                   ),
@@ -605,7 +610,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             child: Text(
                               diningHall.name,
                               style: TextStyle(
-                                color: Colors.white,
+                                color: DynamicStyling.getWhite(context),
                                 fontSize: 18,
                                 fontWeight: index == 0
                                     ? FontWeight.w600
@@ -615,7 +620,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                           Icon(
                             Icons.arrow_forward_ios,
-                            color: Colors.white.withOpacity(0.4),
+                            color: DynamicStyling.getWhite(
+                              context,
+                            ).withOpacity(0.4),
                             size: 16,
                           ),
                         ],
@@ -662,7 +669,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Text(
                         status['subStatus'],
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.85),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.85),
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.2,
@@ -703,7 +712,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: DynamicStyling.getWhite(context),
                       ),
                     ),
                   ],
@@ -716,9 +725,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.white.withOpacity(0.05),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.05),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.1),
+                      color: DynamicStyling.getWhite(context).withOpacity(0.1),
                       width: 1,
                     ),
                   ),
@@ -734,7 +743,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Text(
                         'Generating personalized meals...',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.8),
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           fontFamily: '.SF Pro Display',
@@ -745,7 +756,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Text(
                         'BoilerFuel is creating custom meal plans from today\'s dining hall menus',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.5),
                           fontSize: 13,
                           fontFamily: '.SF Pro Text',
                         ),
@@ -761,18 +774,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.white.withOpacity(0.1),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.1),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
+                      color: DynamicStyling.getWhite(context).withOpacity(0.2),
                       width: 1,
                     ),
                   ),
                   child: DropdownButton<MealTime>(
                     value: _selectedMealTime,
                     dropdownColor: Color(0xFF1B263B),
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(
+                      color: DynamicStyling.getWhite(context),
+                      fontSize: 14,
+                    ),
                     underline: Container(),
-                    icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+                    icon: Icon(
+                      Icons.arrow_drop_down,
+                      color: DynamicStyling.getWhite(context),
+                    ),
                     onChanged: (MealTime? newValue) {
                       if (newValue != null) {
                         setState(() {
@@ -795,7 +814,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             child: Text(
                               value.toString().substring(0, 1).toUpperCase() +
                                   value.toString().substring(1),
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: DynamicStyling.getWhite(context),
+                              ),
                             ),
                           );
                         })
@@ -811,20 +832,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.white.withOpacity(0.05),
+                      color: DynamicStyling.getWhite(context).withOpacity(0.05),
                     ),
                     child: Column(
                       children: [
                         Icon(
                           Icons.restaurant_menu,
-                          color: Colors.white.withOpacity(0.4),
+                          color: DynamicStyling.getWhite(
+                            context,
+                          ).withOpacity(0.4),
                           size: 48,
                         ),
                         SizedBox(height: 12),
                         Text(
                           'No meals available',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: DynamicStyling.getWhite(
+                              context,
+                            ).withOpacity(0.6),
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
@@ -833,7 +858,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         Text(
                           'Check back later for personalized meal suggestions',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.4),
+                            color: DynamicStyling.getWhite(
+                              context,
+                            ).withOpacity(0.4),
                             fontSize: 12,
                           ),
                           textAlign: TextAlign.center,
@@ -886,9 +913,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              color: Colors.white.withOpacity(0.08),
+                              color: DynamicStyling.getWhite(
+                                context,
+                              ).withOpacity(0.08),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.15),
+                                color: DynamicStyling.getWhite(
+                                  context,
+                                ).withOpacity(0.15),
                                 width: 1,
                               ),
                             ),
@@ -903,7 +934,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                          color: DynamicStyling.getWhite(
+                                            context,
+                                          ),
                                         ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
@@ -911,7 +944,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     ),
                                     Icon(
                                       CupertinoIcons.chevron_right,
-                                      color: Colors.white.withOpacity(0.5),
+                                      color: DynamicStyling.getWhite(
+                                        context,
+                                      ).withOpacity(0.5),
                                       size: 16,
                                     ),
                                   ],
@@ -920,7 +955,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   "At $diningHall",
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.white.withOpacity(0.6),
+                                    color: DynamicStyling.getWhite(
+                                      context,
+                                    ).withOpacity(0.6),
                                   ),
                                 ),
                                 SizedBox(height: 12),
@@ -982,7 +1019,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   borderRadius: BorderRadius.circular(4),
                                   color: isActive
                                       ? Colors.green.shade400
-                                      : Colors.white.withOpacity(0.3),
+                                      : DynamicStyling.getWhite(
+                                          context,
+                                        ).withOpacity(0.3),
                                   boxShadow: isActive
                                       ? [
                                           BoxShadow(
@@ -1042,7 +1081,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Text(
         text,
         style: TextStyle(
-          color: Colors.white,
+          color: DynamicStyling.getWhite(context),
           fontSize: 11,
           fontWeight: FontWeight.w500,
         ),
@@ -1064,7 +1103,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                 ),
               ),
             ],
@@ -1133,7 +1172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.white.withOpacity(0.7),
+              color: DynamicStyling.getWhite(context).withOpacity(0.7),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -1145,7 +1184,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 value,
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -1154,7 +1193,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 unit,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.white.withOpacity(0.6),
+                  color: DynamicStyling.getWhite(context).withOpacity(0.6),
                 ),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/user_info_screen.dart';
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:boiler_fuel/widgets/feature_choice_tile.dart';
 import 'package:boiler_fuel/widgets/feature_tile.dart';
@@ -43,7 +44,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       children: [
         Scaffold(
           resizeToAvoidBottomInset: false,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          backgroundColor: DynamicStyling.getWhite(context),
           body: Stack(
             alignment: Alignment.bottomCenter,
             children: <Widget>[
@@ -184,7 +185,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      color: Theme.of(context).primaryColor,
+      color: DynamicStyling.getWhite(context),
       child: Column(
         children: <Widget>[
           SizedBox(height: MediaQuery.of(context).padding.top + 12),
@@ -192,7 +193,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             title,
             style: TextStyle(
               fontSize: 24,
-              color: Colors.black,
+              color: DynamicStyling.getBlack(context),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -201,7 +202,10 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
           Text(
             subtitle,
 
-            style: TextStyle(fontSize: 20, color: styling.darkGray),
+            style: TextStyle(
+              fontSize: 20,
+              color: DynamicStyling.getDarkGrey(context),
+            ),
           ),
           if (body != null) ...body,
           if (lastPage) Spacer(),
@@ -224,7 +228,10 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
               text: Text(
                 'Get Started',
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: TextStyle(
+                  color: DynamicStyling.getWhite(context),
+                  fontSize: 15,
+                ),
               ),
             ),
           if (lastPage) SizedBox(height: 60),
@@ -240,7 +247,9 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       width: isActive ? 30 : 8,
       margin: const EdgeInsets.only(right: 5),
       decoration: BoxDecoration(
-        color: isActive ? Color(0xff030213) : Color(0xffd1d5dc),
+        color: isActive
+            ? DynamicStyling.getBlack(context)
+            : DynamicStyling.getGrey(context),
         borderRadius: BorderRadius.circular(5),
       ),
     );

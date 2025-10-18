@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 
 class TitaniumContainer extends StatelessWidget {
@@ -19,11 +20,11 @@ class TitaniumContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         color: warning
             ? Colors.red.withAlpha(40)
-            : Colors.white.withOpacity(0.05),
+            : DynamicStyling.getWhite(context).withOpacity(0.05),
         border: Border.all(
           color: warning
               ? Colors.red.withAlpha(120)
-              : Colors.white.withOpacity(0.15),
+              : DynamicStyling.getWhite(context).withOpacity(0.15),
           width: 1,
         ),
       ),

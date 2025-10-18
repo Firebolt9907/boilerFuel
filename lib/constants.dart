@@ -438,6 +438,8 @@ enum MealTime {
         return MealTime.brunch;
       case 'lunch':
         return MealTime.lunch;
+      case 'late lunch':
+        return MealTime.lunch;
       case 'dinner':
         return MealTime.dinner;
       default:

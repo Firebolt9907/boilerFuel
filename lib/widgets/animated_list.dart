@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -118,7 +119,7 @@ class _AnimatedListState extends State<AnimatedList>
                             child: Text(
                               rank.toString(),
                               style: TextStyle(
-                                color: Colors.black,
+                                color: DynamicStyling.getBlack(context),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -130,7 +131,7 @@ class _AnimatedListState extends State<AnimatedList>
                       Text(
                         item,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: DynamicStyling.getWhite(context),
                           fontSize: 16,
                           fontWeight: isSelected
                               ? FontWeight.w600

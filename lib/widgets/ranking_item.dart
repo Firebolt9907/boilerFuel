@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -30,7 +31,7 @@ class RankingItem extends StatelessWidget {
               child: Text(
                 rank.toString(),
                 style: TextStyle(
-                  color: Colors.black,
+                  color: DynamicStyling.getBlack(context),
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -42,7 +43,7 @@ class RankingItem extends StatelessWidget {
             child: Text(
               name,
               style: TextStyle(
-                color: Colors.white,
+                color: DynamicStyling.getWhite(context),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -50,7 +51,11 @@ class RankingItem extends StatelessWidget {
           ),
           GestureDetector(
             onTap: onRemove,
-            child: Icon(Icons.close, color: Colors.white70, size: 16),
+            child: Icon(
+              Icons.close,
+              color: DynamicStyling.getGrey(context),
+              size: 16,
+            ),
           ),
         ],
       ),

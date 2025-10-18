@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
@@ -74,7 +75,10 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
                 )
               : LinearGradient(colors: [Colors.grey, Colors.grey]),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+          border: Border.all(
+            color: DynamicStyling.getWhite(context).withOpacity(0.1),
+            width: 1,
+          ),
           boxShadow: widget.isEnabled && !_isToggled
               ? [
                   BoxShadow(
@@ -84,14 +88,14 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
                     spreadRadius: 1,
                   ),
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.1),
+                    color: DynamicStyling.getWhite(context).withOpacity(0.1),
                     blurRadius: 10,
                     offset: Offset(0, 2),
                   ),
                 ]
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: DynamicStyling.getBlack(context).withOpacity(0.2),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -107,13 +111,13 @@ class _AnimatedSwitchState extends State<AnimatedSwitch>
                 overflow: TextOverflow.visible,
                 softWrap: true,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: DynamicStyling.getWhite(context),
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: DynamicStyling.getBlack(context).withOpacity(0.3),
                       offset: Offset(1, 1),
                       blurRadius: 2,
                     ),

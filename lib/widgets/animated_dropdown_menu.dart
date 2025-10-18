@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedDropdownMenu<T> extends StatefulWidget {
@@ -47,7 +48,7 @@ class _AnimatedDropdownMenuState<T> extends State<AnimatedDropdownMenu<T>>
         items: widget.items,
         onChanged: widget.onChanged,
 
-        style: TextStyle(color: Colors.white, fontSize: 16),
+        style: TextStyle(color: DynamicStyling.getWhite(context), fontSize: 16),
         dropdownColor: Color(0xFF170d27),
         iconEnabledColor: Colors.blue.shade300,
         decoration: InputDecoration(
@@ -56,7 +57,10 @@ class _AnimatedDropdownMenuState<T> extends State<AnimatedDropdownMenu<T>>
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(16),
           hintText: widget.hint,
-          hintStyle: TextStyle(color: Colors.white, fontSize: 16),
+          hintStyle: TextStyle(
+            color: DynamicStyling.getWhite(context),
+            fontSize: 16,
+          ),
         ),
         validator: (value) {
           // Auto-unfocus when validation occurs (typically after selection)

@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,12 +51,15 @@ class _DefaultGoalOptionState extends State<DefaultGoalOption>
           widget.onTap();
         },
         onTapCancel: () => _controller.reverse(),
+        // TODO: Fix the animations that broke (maybe hardcode colors while checking for dark mode??)
         child: AnimatedContainer(
           duration: Duration(milliseconds: 200),
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: widget.isSelected ? Color(0xfff3f3f5) : Colors.white,
+            color: widget.isSelected
+                ? Theme.of(context).colorScheme.onSurface.withAlpha(20)
+                : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Colors.transparent, width: 2),
           ),
@@ -65,13 +69,13 @@ class _DefaultGoalOptionState extends State<DefaultGoalOption>
                 widget.isSelected
                     ? Icons.radio_button_checked
                     : Icons.radio_button_off,
-                color: Colors.black,
+                color: DynamicStyling.getBlack(context),
               ),
               SizedBox(width: 12),
               Text(
                 widget.text,
                 style: TextStyle(
-                  color: Colors.black,
+                  color: DynamicStyling.getBlack(context),
                   fontSize: 16,
                   fontWeight: widget.isSelected
                       ? FontWeight.w600
