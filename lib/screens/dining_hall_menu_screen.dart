@@ -194,13 +194,22 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
               if (_stationPageController.hasClients) {
                 _stationPageController.jumpToPage(initialIndex);
               }
+            } else {
+              _updateStationFoods();
+              setState(() {
+                _selectedMealTime = result.availableTimes.first;
+              });
             }
           }
         });
 
         // Update state with processed data
         setState(() {
-          _selectedMealTime = widget.initialMealTime;
+          _selectedMealTime =
+              widget.initialMealTime != null &&
+                  result.availableTimes.contains(widget.initialMealTime)
+              ? widget.initialMealTime
+              : result.availableTimes.first;
 
           _allMealData = result.mealTimeData;
           _availableMealTimes = result.availableTimes;
