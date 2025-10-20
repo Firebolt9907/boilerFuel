@@ -92,16 +92,60 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
   DiningHall? diningHallInfo;
 
+  // Scroll animation variables
+  late ScrollController _scrollController;
+  double _scrollCollapseThreshold = 50.0; // Pixels scrolled to fully collapse
+  double _currentScrollProgress =
+      0.0; // 0.0 = fully expanded, 1.0 = fully collapsed
+  double _lastScrollPosition = 0.0;
+
   @override
   void initState() {
     super.initState();
+
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
 
     _loadDiningHallMenu();
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    double scrollPixels = _scrollController.position.pixels;
+    bool scrollingDown = scrollPixels > _lastScrollPosition;
+
+    if (scrollingDown) {
+      // If scrolling down, calculate progress based on scroll distance
+      double scrollDistance = scrollPixels - _lastScrollPosition;
+      double newProgress =
+          (_currentScrollProgress + (scrollDistance / _scrollCollapseThreshold))
+              .clamp(0.0, 1.0);
+
+      if (newProgress != _currentScrollProgress) {
+        setState(() {
+          _currentScrollProgress = newProgress;
+        });
+      }
+    } else {
+      // If user scrolls up, animate the schedule back in proportionally
+      double scrollDistance = _lastScrollPosition - scrollPixels;
+      double newProgress =
+          (_currentScrollProgress - (scrollDistance / _scrollCollapseThreshold))
+              .clamp(0.0, 1.0);
+
+      if (newProgress != _currentScrollProgress) {
+        setState(() {
+          _currentScrollProgress = newProgress;
+        });
+      }
+    }
+
+    _lastScrollPosition = scrollPixels;
   }
 
   int menuCallCount = 0;
@@ -367,9 +411,30 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Meal time selector
-                              _buildScheduleDiningHall(),
-                              const SizedBox(height: 8),
+                              // Animated schedule with vertical shrink based on scroll
+                              AnimatedBuilder(
+                                animation: _scrollController,
+                                builder: (context, child) {
+                                  final heightFactor =
+                                      1.0 - _currentScrollProgress;
+                                  return ClipRect(
+                                    child: Align(
+                                      alignment: Alignment.topCenter,
+                                      heightFactor: heightFactor,
+                                      child: Opacity(
+                                        opacity: heightFactor,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            _buildScheduleDiningHall(),
+                                            SizedBox(height: 8 * heightFactor),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                               _buildMealTimeSelector(),
 
                               const SizedBox(height: 8),
@@ -562,6 +627,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     }
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(0),
       itemCount: flatItems.length,
       itemBuilder: (context, index) {
