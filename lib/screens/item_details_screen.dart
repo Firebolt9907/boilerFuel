@@ -79,7 +79,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       extendBodyBehindAppBar: false,
       body: Column(

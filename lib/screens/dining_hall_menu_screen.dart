@@ -310,7 +310,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           // Header
@@ -334,7 +334,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                       IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios_new,
-                          color: styling.gray,
+                          color: DynamicStyling.getGrey(context),
                         ),
                         onPressed: () {
                           HapticFeedback.lightImpact();
@@ -347,7 +347,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: styling.gray,
+                          color: DynamicStyling.getGrey(context),
                         ),
                       ),
                     ],
@@ -377,15 +377,24 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                       DefaultContainer(
                         onTap: () {
                           HapticFeedback.mediumImpact();
-                          Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                              builder: (context) => DiningHallSearchScreen(
-                                user: widget.user,
-                                diningHall: widget.diningHall,
-                              ),
-                            ),
+                          customCupertinoSheet.showCupertinoSheet<void>(
+                            context: context,
+                            useNestedNavigation: true,
+                            pageBuilder: (BuildContext context) =>
+                                DiningHallSearchScreen(
+                                  diningHall: widget.diningHall,
+                                  user: widget.user,
+                                ),
                           );
+                          // Navigator.push(
+                          //   context,
+                          //   CupertinoPageRoute(
+                          //     builder: (context) => DiningHallSearchScreen(
+                          //       user: widget.user,
+                          //       diningHall: widget.diningHall,
+                          //     ),
+                          //   ),
+                          // );
                         },
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
@@ -516,11 +525,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     return Container(
       height: 44,
 
-      decoration: BoxDecoration(
-        color: Color(0xffececf0),
-        borderRadius: BorderRadius.circular(20),
-      ),
-
+      // decoration: BoxDecoration(
+      //   color: DynamicStyling.getLightGrey(context),
+      //   borderRadius: BorderRadius.circular(20),
+      // ),
       child: CustomTabs(
         initialValue: _selectedMealTime.toString(),
         onValueChanged: (value) {
@@ -548,7 +556,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       height: 44,
 
       decoration: BoxDecoration(
-        color: Color(0xffececf0),
+        color: DynamicStyling.getLightGrey(context),
         borderRadius: BorderRadius.circular(20),
       ),
 

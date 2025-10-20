@@ -74,7 +74,11 @@ class _SettingsButtonState extends State<SettingsButton>
                 color: DynamicStyling.getLightGrey(context),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(widget.icon, color: Color(0xff030213), size: 24),
+              child: Icon(
+                widget.icon,
+                color: DynamicStyling.getBlack(context),
+                size: 24,
+              ),
             ),
             SizedBox(width: 16),
             Expanded(

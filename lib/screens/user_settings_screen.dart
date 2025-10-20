@@ -64,7 +64,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       extendBodyBehindAppBar: false,
       body: Column(
@@ -138,6 +138,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header
+                  const SizedBox(height: 16),
 
                   // Quick Actions
                   // _buildQuickActions(),
@@ -260,13 +261,178 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                       icon: Icons.delete,
                       onTap: () async {
                         HapticFeedback.mediumImpact();
-                        await LocalDatabase().deleteDB(true);
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => WelcomeScreen(),
-                          ),
+                        // Show sleek confirmation dialog
+                        bool? confirm = await showDialog<bool>(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (BuildContext context) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              backgroundColor: DynamicStyling.getWhite(context),
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Icon
+                                    Container(
+                                      width: 64,
+                                      height: 64,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.red.withOpacity(0.1),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.warning_rounded,
+                                          color: Colors.red,
+                                          size: 32,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    // Title
+                                    Text(
+                                      'Delete User Data?',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        color: DynamicStyling.getBlack(context),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 12),
+
+                                    // Description
+                                    Text(
+                                      'This action cannot be undone. All your profile data, preferences, and saved meals will be permanently deleted.',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: DynamicStyling.getDarkGrey(
+                                          context,
+                                        ),
+                                        height: 1.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 28),
+
+                                    // Buttons
+                                    Row(
+                                      children: [
+                                        // Cancel Button
+                                        Expanded(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: DynamicStyling.getGrey(
+                                                  context,
+                                                ),
+                                                width: 1,
+                                              ),
+                                            ),
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  HapticFeedback.lightImpact();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop(false);
+                                                },
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 12.0,
+                                                      ),
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color:
+                                                          DynamicStyling.getBlack(
+                                                            context,
+                                                          ),
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+
+                                        // Delete Button
+                                        Expanded(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              color: Colors.red,
+                                            ),
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () {
+                                                  HapticFeedback.mediumImpact();
+                                                  Navigator.of(
+                                                    context,
+                                                  ).pop(true);
+                                                },
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 12.0,
+                                                      ),
+                                                  child: Text(
+                                                    'Delete',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.white,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         );
+
+                        // Handle deletion if confirmed
+                        if (confirm == true) {
+                          await LocalDatabase().deleteDB(true);
+                          if (mounted) {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (context) => WelcomeScreen(),
+                              ),
+                            );
+                          }
+                        }
                       },
                     ),
                   ),

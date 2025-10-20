@@ -59,7 +59,7 @@ class _CollectionScreenState extends State<CollectionScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       body: SingleChildScrollView(
         physics: customCupertinoSheet.BottomSheetScrollPhysics(),

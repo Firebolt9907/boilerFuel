@@ -33,11 +33,15 @@ class _TabsTriggerState extends State<TabsTrigger> {
     if (widget.isSelected) {
       backgroundColor = DynamicStyling.getWhite(context);
       textColor = DynamicStyling.getBlack(context);
-      borderColor = DynamicStyling.getWhite(context);
+      borderColor = Colors.transparent;
     } else {
-      backgroundColor = Color(0xffeeeeee);
-      textColor = DynamicStyling.getBlack(context);
-      borderColor = Color(0xffeeeeee);
+      backgroundColor = DynamicStyling.getIsDarkMode(context)
+          ? Colors.white
+          : Color(0xffececf0);
+      textColor = DynamicStyling.getIsDarkMode(context)
+          ? DynamicStyling.getWhite(context)
+          : DynamicStyling.getBlack(context);
+      borderColor = Colors.transparent;
     }
 
     return Expanded(

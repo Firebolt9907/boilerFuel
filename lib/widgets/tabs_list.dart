@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/widgets/tabs_trigger.dart';
 import 'package:flutter/material.dart';
 import 'package:boiler_fuel/constants.dart';
@@ -20,7 +21,9 @@ class TabsList extends StatelessWidget {
     return Container(
       height: 36,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: DynamicStyling.getIsDarkMode(context)
+            ? Colors.white
+            : Color(0xffececf0),
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(3),

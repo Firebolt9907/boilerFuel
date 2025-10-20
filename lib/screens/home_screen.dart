@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:boiler_fuel/screens/dining_hall_search_screen.dart';
 import 'package:boiler_fuel/styling.dart';
 import 'dart:async';
@@ -358,6 +359,10 @@ class _HomeScreenState extends State<HomeScreen>
               }
             }
             _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+            if (firstMeal == null) {
+              print("No meal found, defaulting to first meal of the time");
+              firstMeal = _suggestedMeals[_selectedMealTime]!.values.first;
+            }
           } else {
             _selectedMealTime =
                 displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
@@ -367,6 +372,7 @@ class _HomeScreenState extends State<HomeScreen>
           print(displayMeal?.mealTime);
 
           print("Display Meal: ${displayMeal?.name}");
+          setState(() {});
         });
       }
 
@@ -445,10 +451,16 @@ class _HomeScreenState extends State<HomeScreen>
               }
             }
             _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+            if (firstMeal == null) {
+              print("No meal found, defaulting to first meal of the time");
+              firstMeal = _suggestedMeals[_selectedMealTime]!.values.first;
+              return;
+            }
           } else {
             _selectedMealTime =
                 displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
           }
+
           displayMeal = firstMeal;
           print(displayMeal?.mealTime);
 
@@ -599,7 +611,7 @@ class _HomeScreenState extends State<HomeScreen>
                           Text(
                             'Welcome back, ${widget.user.name.split(' ').first}',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.grey[600],
+                              color: DynamicStyling.getGrey(context),
                             ),
                           ),
                         ],
@@ -627,7 +639,7 @@ class _HomeScreenState extends State<HomeScreen>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.grey[200]!,
+                            color: DynamicStyling.getLightGrey(context),
                             width: 1,
                           ),
                         ),
@@ -671,7 +683,7 @@ class _HomeScreenState extends State<HomeScreen>
                             children: [
                               Icon(
                                 Icons.auto_awesome,
-                                color: theme.primaryColor,
+                                color: DynamicStyling.getBlack(context),
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
@@ -702,6 +714,7 @@ class _HomeScreenState extends State<HomeScreen>
                               borderRadius: BorderRadius.all(
                                 Radius.circular(12),
                               ),
+                              splashColor: DynamicStyling.getLightGrey(context),
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Row(
@@ -709,7 +722,12 @@ class _HomeScreenState extends State<HomeScreen>
                                     Container(
                                       padding: EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: Color(0xfffef2f2),
+                                        color:
+                                            DynamicStyling.getIsDarkMode(
+                                              context,
+                                            )
+                                            ? DynamicStyling.getWhite(context)
+                                            : Color(0xfffef2f2),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
@@ -746,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     Spacer(),
                                     Icon(
                                       Icons.chevron_right,
-                                      color: Colors.grey[600],
+                                      color: DynamicStyling.getGrey(context),
                                       size: 24,
                                     ),
                                   ],
@@ -771,22 +789,32 @@ class _HomeScreenState extends State<HomeScreen>
                             DefaultContainer(
                               onTap: () {
                                 HapticFeedback.mediumImpact();
-                                Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                    builder: (context) =>
-                                        DiningHallSearchScreen(
-                                          diningHall: null,
-                                          user: widget.user,
-                                        ),
-                                  ),
+                                customCupertinoSheet.showCupertinoSheet<void>(
+                                  context: context,
+                                  useNestedNavigation: true,
+                                  pageBuilder: (BuildContext context) =>
+                                      DiningHallSearchScreen(
+                                        diningHall: null,
+                                        user: widget.user,
+                                      ),
                                 );
+                                // Navigator.push(
+                                //   context,
+                                //   CupertinoPageRoute(
+                                //     builder: (context) =>
+                                //         DiningHallSearchScreen(
+                                //           diningHall: null,
+                                //           user: widget.user,
+                                //         ),
+                                //   ),
+                                // );
                               },
 
                               padding: EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 6,
                               ),
+                              splashColor: DynamicStyling.getLightGrey(context),
                               child: Row(
                                 children: [
                                   Icon(
@@ -884,6 +912,7 @@ class _HomeScreenState extends State<HomeScreen>
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
+              splashColor: DynamicStyling.getLightGrey(context),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -930,7 +959,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   'Calories',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color: DynamicStyling.getGrey(context),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -971,7 +1000,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   'Protein',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color: DynamicStyling.getGrey(context),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -1005,6 +1034,7 @@ class _HomeScreenState extends State<HomeScreen>
               bottomLeft: Radius.circular(12),
               bottomRight: Radius.circular(12),
             ),
+            splashColor: DynamicStyling.getLightGrey(context),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -1018,13 +1048,13 @@ class _HomeScreenState extends State<HomeScreen>
                           'View all suggested meals',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: DynamicStyling.getGrey(context),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         Icon(
                           Icons.chevron_right,
-                          color: Colors.grey[600],
+                          color: DynamicStyling.getGrey(context),
                           size: 20,
                         ),
                       ],
@@ -1137,6 +1167,7 @@ class _HomeScreenState extends State<HomeScreen>
               ? MealTime.fromString(statusInfo["nextMeal"].toLowerCase())
               : MealTime.fromString(statusInfo["currentMeal"].toLowerCase()),
         ),
+        splashColor: DynamicStyling.getLightGrey(context),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -1187,7 +1218,7 @@ class _HomeScreenState extends State<HomeScreen>
                         // Icon(
                         //   Icons.local_dining,
                         //   size: 14,
-                        //   color: Colors.grey[600],
+                        //   color: DynamicStyling.getGrey(context),
                         // ),
                         // const SizedBox(width: 4),
                         // Text(
@@ -1200,7 +1231,7 @@ class _HomeScreenState extends State<HomeScreen>
                         Icon(
                           Icons.access_time,
                           size: 14,
-                          color: Colors.grey[600],
+                          color: DynamicStyling.getGrey(context),
                         ),
                         const SizedBox(width: 4),
                         ConstrainedBox(
@@ -1215,7 +1246,11 @@ class _HomeScreenState extends State<HomeScreen>
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.grey[600], size: 20),
+              Icon(
+                Icons.chevron_right,
+                color: DynamicStyling.getGrey(context),
+                size: 20,
+              ),
             ],
           ),
         ),

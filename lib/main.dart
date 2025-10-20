@@ -176,6 +176,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           brightness: MediaQuery.of(context).platformBrightness,
         ),
         useMaterial3: true,
+        // scaffoldBackgroundColor: Colors.grey[50],
         useSystemColors: true,
       ),
       home: user == null ? WelcomeScreen() : HomeScreen(user: user!),

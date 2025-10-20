@@ -216,7 +216,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           // Header
@@ -230,40 +230,41 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
             child: Column(
               children: [
                 SizedBox(height: MediaQuery.of(context).padding.top),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.of(context).pop();
-                  },
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: styling.gray,
-                        ),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.of(context).pop();
-                        },
-                      ),
+                // GestureDetector(
+                //   onTap: () {
+                //     HapticFeedback.lightImpact();
+                //     Navigator.of(context).pop();
+                //   },
+                //   child: Row(
+                //     children: [
+                //       IconButton(
+                //         icon: Icon(
+                //           Icons.arrow_back_ios_new,
+                //           color: styling.gray,
+                //         ),
+                //         onPressed: () {
+                //           HapticFeedback.lightImpact();
+                //           Navigator.of(context).pop();
+                //         },
+                //       ),
 
-                      Text(
-                        'Back',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: styling.gray,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                //       Text(
+                //         'Back',
+                //         style: TextStyle(
+                //           fontSize: 14,
+                //           fontWeight: FontWeight.bold,
+                //           color: styling.gray,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.only(
                     left: 24.0,
                     bottom: 18,
                     right: 24,
+                    top: 24,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

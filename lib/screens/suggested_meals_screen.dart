@@ -217,7 +217,7 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           // Header
@@ -399,7 +399,6 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
         color: Color(0xffececf0),
         borderRadius: BorderRadius.circular(20),
       ),
-
       child: CustomTabs(
         initialValue: _selectedMealTime.toString(),
         onValueChanged: (value) {

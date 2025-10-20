@@ -43,4 +43,8 @@ class DynamicStyling {
   static getPrimary(BuildContext context) {
     return Theme.of(context).colorScheme.primary;
   }
+
+  static getIsDarkMode(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark;
+  }
 }
