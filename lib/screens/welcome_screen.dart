@@ -70,16 +70,22 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ],
                   ),
                   child: Center(
-                    child: Icon(
-                      Icons.local_dining,
-                      color: DynamicStyling.getWhite(context),
-                      size: 64,
-                    ),
+                    child: DynamicStyling.getIsDarkMode(context)
+                        ? Image.asset(
+                            'assets/plate_dark.png',
+                            width: 100,
+                            height: 100,
+                          )
+                        : Image.asset(
+                            'assets/plate_light.png',
+                            width: 100,
+                            height: 100,
+                          ),
                   ),
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'BoilerFuel',
+                  'UPlate',
                   style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
                 ),
 

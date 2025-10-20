@@ -74,7 +74,7 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
     with TickerProviderStateMixin {
   bool _isLoading = true;
   List<MealTime> _availableMealTimes = [];
-  MealTime _selectedMealTime = MealTime.breakfast;
+  MealTime? _selectedMealTime;
   Map<MealTime, List<Meal>> _meals = {};
 
   // Spacing between station items
@@ -139,14 +139,17 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
         _meals = flattenedMeals;
 
         _isLoading = false;
-        _selectedMealTime = MealTime.getCurrentMealTime();
-        if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
-          _selectedMealTime = _availableMealTimes.first;
+        if (_selectedMealTime == null) {
+          _selectedMealTime = MealTime.getCurrentMealTime();
+          if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
+            _selectedMealTime = _availableMealTimes.first;
+          }
         }
       });
     }
 
     aiMealStream.stream.listen((meals) {
+      if (!mounted) return;
       Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
       for (MealTime mealTime in meals.keys) {
         Map<String, Meal> originalMeals = meals[mealTime]!;
@@ -193,9 +196,11 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
         _availableMealTimes = sortedSuggestions.keys.toList();
         _availableMealTimes.sort((a, b) => a.index.compareTo(b.index));
         _isLoading = false;
-        _selectedMealTime = MealTime.getCurrentMealTime();
-        if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
-          _selectedMealTime = _availableMealTimes.first;
+        if (_selectedMealTime == null) {
+          _selectedMealTime = MealTime.getCurrentMealTime();
+          if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
+            _selectedMealTime = _availableMealTimes.first;
+          }
         }
       });
     });
@@ -294,28 +299,22 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
                   const SizedBox(height: 8),
                   _isLoading
                       ? _buildLoadingView()
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: _availableMealTimes.isEmpty
-                              ? [_buildEmptyView()]
-                              : [
-                                  // Meal time selector
-                                  _buildMealTimeSelector(),
+                      : Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: _availableMealTimes.isEmpty
+                                ? [_buildEmptyView()]
+                                : [
+                                    // Meal time selector
+                                    _buildMealTimeSelector(),
 
-                                  const SizedBox(height: 8),
-                                  // Station selector
+                                    const SizedBox(height: 8),
+                                    // Station selector
 
-                                  // PageView for stations - give it a bounded max height
-                                  ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      // Use a fraction of available height as an upper bound
-                                      maxHeight:
-                                          MediaQuery.of(context).size.height *
-                                          0.7,
-                                    ),
-                                    child: _buildMealsView(),
-                                  ),
-                                ],
+                                    // PageView for stations - give it a bounded max height
+                                    Expanded(child: _buildMealsView()),
+                                  ],
+                          ),
                         ),
                 ],
               ),
@@ -395,10 +394,10 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
     return Container(
       height: 44,
 
-      decoration: BoxDecoration(
-        color: Color(0xffececf0),
-        borderRadius: BorderRadius.circular(20),
-      ),
+      // decoration: BoxDecoration(
+      //   color: Color(0xffececf0),
+      //   borderRadius: BorderRadius.circular(20),
+      // ),
       child: CustomTabs(
         initialValue: _selectedMealTime.toString(),
         onValueChanged: (value) {
@@ -419,173 +418,157 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
   }
 
   Widget _buildMealsView() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ..._meals[_selectedMealTime]!
-              .map(
-                (meal) => Card(
-                  elevation: 0,
-                  color: DynamicStyling.getWhite(context),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[200]!),
-                  ),
-                  child: Stack(
+    return ListView.builder(
+      itemCount: _meals[_selectedMealTime]!.length,
+      padding: EdgeInsets.all(0),
+      itemBuilder: (context, index) {
+        final meal = _meals[_selectedMealTime]![index];
+        return Card(
+          elevation: 0,
+          color: DynamicStyling.getWhite(context),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Colors.grey[200]!),
+          ),
+          child: Stack(
+            children: [
+              InkWell(
+                onTap: () async {
+                  HapticFeedback.mediumImpact();
+                  await Navigator.of(context).push(
+                    CupertinoPageRoute(
+                      builder: (context) => MealDetailsScreen(
+                        meal: meal,
+                        diningHall: meal.diningHall,
+                      ),
+                    ),
+                  );
+                  _fetchMenuData();
+                },
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      InkWell(
-                        onTap: () async {
-                          HapticFeedback.mediumImpact();
-                          await Navigator.of(context).push(
-                            CupertinoPageRoute(
-                              builder: (context) => MealDetailsScreen(
-                                meal: meal,
-                                diningHall: meal.diningHall,
-                              ),
-                            ),
-                          );
-                          _fetchMenuData();
-                        },
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
+                      Text(
+                        meal.name,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                meal.name,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '${meal.diningHall}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${meal.diningHall}',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
 
-                              const SizedBox(height: 16),
-                              Row(
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    DynamicStyling.getDarkGrey(
+                                      context,
+                                    ).withOpacity(0.05),
+                                    DynamicStyling.getDarkGrey(
+                                      context,
+                                    ).withOpacity(0.1),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            DynamicStyling.getDarkGrey(
-                                              context,
-                                            ).withOpacity(0.05),
-                                            DynamicStyling.getDarkGrey(
-                                              context,
-                                            ).withOpacity(0.1),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        ),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      padding: const EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Calories',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '${meal.calories.round()}',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                  Text(
+                                    'Calories',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            DynamicStyling.getDarkGrey(
-                                              context,
-                                            ).withOpacity(0.05),
-                                            DynamicStyling.getDarkGrey(
-                                              context,
-                                            ).withOpacity(0.1),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        ),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      padding: const EdgeInsets.all(12),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Protein',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            '${meal.protein.round()}g',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${meal.calories.round()}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: Colors.grey[400],
                                   ),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    DynamicStyling.getDarkGrey(
+                                      context,
+                                    ).withOpacity(0.05),
+                                    DynamicStyling.getDarkGrey(
+                                      context,
+                                    ).withOpacity(0.1),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Protein',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${meal.protein.round()}g',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Icon(Icons.chevron_right, color: Colors.grey[400]),
+                        ],
                       ),
-                      if (meal.isFavorited)
-                        Positioned(
-                          top: -4,
-                          right: 12,
-                          child: Icon(
-                            Icons.bookmark,
-                            color: Colors.red,
-                            size: 32,
-                          ),
-                        ),
                     ],
                   ),
                 ),
-              )
-              .toList(),
-        ],
-      ),
+              ),
+              if (meal.isFavorited)
+                Positioned(
+                  top: -4,
+                  right: 12,
+                  child: Icon(Icons.bookmark, color: Colors.red, size: 32),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 

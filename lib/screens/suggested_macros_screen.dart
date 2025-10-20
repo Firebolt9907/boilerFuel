@@ -79,6 +79,8 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
       Navigator.pop(context, widget.user);
       return;
     }
+    LocalDatabase().listenToAIDayMeals(aiMealStream);
+
     if (widget.user.useDietary) {
       Navigator.push(
         context,

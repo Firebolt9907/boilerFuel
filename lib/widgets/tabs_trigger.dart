@@ -35,12 +35,8 @@ class _TabsTriggerState extends State<TabsTrigger> {
       textColor = DynamicStyling.getBlack(context);
       borderColor = Colors.transparent;
     } else {
-      backgroundColor = DynamicStyling.getIsDarkMode(context)
-          ? Colors.white
-          : Color(0xffececf0);
-      textColor = DynamicStyling.getIsDarkMode(context)
-          ? DynamicStyling.getWhite(context)
-          : DynamicStyling.getBlack(context);
+      backgroundColor = Colors.transparent;
+      textColor = DynamicStyling.getBlack(context);
       borderColor = Colors.transparent;
     }
 
@@ -54,7 +50,7 @@ class _TabsTriggerState extends State<TabsTrigger> {
         child: GestureDetector(
           onTap: widget.onTap,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+            duration: const Duration(milliseconds: 0),
             height: 30,
             decoration: BoxDecoration(
               color: backgroundColor,

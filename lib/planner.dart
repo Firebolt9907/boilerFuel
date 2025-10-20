@@ -321,13 +321,17 @@ DO NOT include any other text outside of the JSON block.
     String availableMealTimes = availableFoods.keys
         .map((e) => e.toString())
         .join(", ");
+    String availableMealTimesFormatted = availableFoods.keys
+        .map((e) => e.toJSONString())
+        .join(" | ");
+
     String mealTimeIngredients = "";
     for (MealTime mealTime in availableFoods.keys) {
       mealTimeIngredients = availableFoods[mealTime]!
           .map((f) => f.toMiniString())
           .join(", ");
       mealTimeIngredients +=
-          """Given this information for the food available for $mealTime, ignore the dips and sauces, treat -1 as 0:
+          """
    $mealTimeIngredients
 \n
   """;
@@ -338,9 +342,10 @@ DO NOT include any other text outside of the JSON block.
     }
 
     String geminiPrompt =
-        """Given this information for the food available for $availableMealTimes:
+        """This is the food available at the meal time $availableMealTimes:
   $mealTimeIngredients
-Create ${availableFoods.keys.length} meal with the nutrition goals for the day as follows :
+
+Create ${availableFoods.keys.length} meals with the nutrition goals for the day as follows :
 Calories: ${targetCalories}kcal
 Protein: ${targetProtein}g
 Carbs: ${targetCarbs}g
@@ -348,7 +353,7 @@ Fat: ${targetFat}g
 The NAME of each meal should be related to the ingredients used in the meal!
 Return as a JSON as formatted as 
 {
-  "breakfast" |"lunch" | "brunch" | "dinner": {
+  ${availableMealTimesFormatted}: {
    mealName: string,
    totalCals: number,
    totalProtein: number,
@@ -358,7 +363,7 @@ Return as a JSON as formatted as
  }
  ...
 }
-DO NOT include any other text outside of the JSON block.
+DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS VALID! AND THAT THE MEALS ONLY CONTAIN FOODS FROM THE CORRECT MEALTIME!
 """;
 
     // Call Gemini API with the prompt and parse response
@@ -370,7 +375,7 @@ DO NOT include any other text outside of the JSON block.
       //     ))!.output ??
       //     "{}";
       String response = await WebAPI().getGeminiResponse(
-        "gemini-2.0-flash-lite",
+        "gemini-2.5-flash",
         geminiPrompt,
       );
       print("Gemini response: $response");
@@ -403,18 +408,24 @@ DO NOT include any other text outside of the JSON block.
                     fat: (f['fats'] ?? 0).toDouble(),
                     carbs: (f['carbs'] ?? 0).toDouble(),
                     sugar: (f['sugar'] ?? 0).toDouble(),
-                    ingredients: "",
+                    ingredients: "UNKNOWN",
                     labels: [],
                   );
                 },
               );
             }).toList();
+            //check if food contains ingredients "UNKNOWN", skip adding meal
+            if (foods.any((f) => f.ingredients == "UNKNOWN")) {
+              print("Skipping meal for $mealTime due to unknown food items");
+              continue;
+            }
             final mealId =
                 DateTime.now().millisecondsSinceEpoch.toString() +
                 "_" +
                 diningHall +
                 "_" +
                 mealTime.toString();
+
             meals[mealTime] = Meal(
               name: mealData['mealName'] ?? 'Generated Meal',
               calories: (mealData['totalCals'] ?? 0).toDouble(),
@@ -625,7 +636,6 @@ DO NOT include any other text outside of the JSON block.
     required User user,
     DateTime? date,
   }) async {
-   
     double mealCalories = user.macros.calories / 2;
     double mealProtein = user.macros.protein / 2;
     double mealCarbs = user.macros.carbs / 2;

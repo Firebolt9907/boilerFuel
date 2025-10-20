@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/dietary_restrictions_screen.dart';
@@ -423,7 +425,12 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
 
                         // Handle deletion if confirmed
                         if (confirm == true) {
+                          aiMealStream.close();
                           await LocalDatabase().deleteDB(true);
+                          aiMealStream =
+                              StreamController<
+                                Map<MealTime, Map<String, Meal>>
+                              >.broadcast();
                           if (mounted) {
                             Navigator.push(
                               context,

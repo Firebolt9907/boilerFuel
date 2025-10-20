@@ -138,7 +138,6 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       List<MealTime> mealTimesToProcess = MealTime.values
           .where(
             (mealTime) =>
-                mealTime != MealTime.lateLunch &&
                 !(mealTime == MealTime.brunch &&
                     widget.diningHall != "Hillenbrand"),
           )

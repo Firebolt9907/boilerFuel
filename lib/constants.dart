@@ -409,9 +409,25 @@ enum MealTime {
       case MealTime.lunch:
         return 'lunch';
       case MealTime.lateLunch:
-        return 'lunch'; // Treat late lunch as lunch
+        return 'lateLunch'; // Treat late lunch as lunch
       case MealTime.dinner:
         return 'dinner';
+    }
+  }
+
+  @override
+  String toJSONString() {
+    switch (this) {
+      case MealTime.breakfast:
+        return '"breakfast"';
+      case MealTime.brunch:
+        return '"brunch"';
+      case MealTime.lunch:
+        return '"lunch"';
+      case MealTime.lateLunch:
+        return '"lateLunch"'; // Treat late lunch as lunch
+      case MealTime.dinner:
+        return '"dinner"';
     }
   }
 

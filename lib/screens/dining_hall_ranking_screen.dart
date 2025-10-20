@@ -75,8 +75,6 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen> {
     if (widget.isEditing) {
       Navigator.pop(context, widget.user);
     } else {
-      LocalDatabase().listenToAIDayMeals(aiMealStream);
-
       Navigator.pushAndRemoveUntil(
         context,
         CupertinoPageRoute(builder: (context) => HomeScreen(user: widget.user)),
@@ -262,11 +260,6 @@ class DiningHallCard extends StatelessWidget {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                hall.location,
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
           ),

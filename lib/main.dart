@@ -22,7 +22,7 @@ import 'package:flutter_gemini/flutter_gemini.dart';
 final Styling styling = Styling();
 AppDb localDb = AppDb();
 
-final StreamController<Map<MealTime, Map<String, Meal>>> aiMealStream =
+StreamController<Map<MealTime, Map<String, Meal>>> aiMealStream =
     StreamController<Map<MealTime, Map<String, Meal>>>.broadcast();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -127,6 +127,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               latestMealPlanDate.month,
               latestMealPlanDate.day,
             );
+            if (latestMealPlanDate.isBefore(now)) {
+              MealPlanner.generateDayMealPlan(user: user!, date: now);
+            }
+            // if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
+            // print("Meal plan is up to date");
+            return;
             if (latestMealPlanDate.isAfter(now.add(Duration(days: 2)))) {
               print("Meal plan is up to date");
               return;

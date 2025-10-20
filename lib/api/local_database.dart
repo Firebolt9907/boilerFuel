@@ -148,6 +148,7 @@ class LocalDatabase {
           localDb.diningHallFoodsTable,
         )..where((tbl) => tbl.id.equals(dhf.id))).go();
       }
+
       if (fully) {
         final diningHalls = await (localDb.select(
           localDb.diningHallsTable,
@@ -376,8 +377,10 @@ class LocalDatabase {
               ..where((tbl) => tbl.isAIMeal))
             .watch();
 
+    print("Listening to AI Day Meals for date: $dateStr");
     query.listen((mealsRes) {
       if (controller.isClosed) {
+        print("Controller is closed, stopping listener.");
         return;
       }
       Map<MealTime, Map<String, Meal>> meals = {};

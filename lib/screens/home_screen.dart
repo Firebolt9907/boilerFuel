@@ -361,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen>
             _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
             if (firstMeal == null) {
               print("No meal found, defaulting to first meal of the time");
-              firstMeal = _suggestedMeals[_selectedMealTime]!.values.first;
+              firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
             }
           } else {
             _selectedMealTime =
@@ -453,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen>
             _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
             if (firstMeal == null) {
               print("No meal found, defaulting to first meal of the time");
-              firstMeal = _suggestedMeals[_selectedMealTime]!.values.first;
+              firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
               return;
             }
           } else {
@@ -480,52 +480,66 @@ class _HomeScreenState extends State<HomeScreen>
     switch (state) {
       case AppLifecycleState.resumed:
         print("app in resumed");
-        // bool isSignedIn = await Auth().isUserLoggedIn();
-        Meal? firstMeal;
-        for (String hall in _rankedDiningHalls) {
-          Map<String, dynamic> hallStatus = _getDiningHallStatus(
-            _diningHalls.firstWhere((dh) => dh.name == hall),
-          );
-          MealTime? currentMealTime = hallStatus['isOpen']
-              ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-              : null;
-          Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
-              ? _suggestedMeals[currentMealTime]
-              : null;
-          if (mealsForCurrentTime != null &&
-              mealsForCurrentTime.containsKey(hall)) {
-            firstMeal = mealsForCurrentTime[hall];
-            break;
-          }
-        }
-        MealTime? nextMealTime;
-        if (firstMeal == null) {
-          // Find the next meal time with suggestions
+
+        setState(() {
+          print("Sorted Suggestions:");
+
+          Meal? firstMeal;
           for (String hall in _rankedDiningHalls) {
             Map<String, dynamic> hallStatus = _getDiningHallStatus(
               _diningHalls.firstWhere((dh) => dh.name == hall),
             );
-
             MealTime? currentMealTime = hallStatus['isOpen']
                 ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-                : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
-            if (hallStatus['nextDay'] != 'Today') {
-              continue; //skip if next meal is not today
-            }
-
-            if (_suggestedMeals.containsKey(currentMealTime) &&
-                _suggestedMeals[currentMealTime]!.containsKey(hall)) {
-              nextMealTime = currentMealTime;
-              firstMeal = _suggestedMeals[currentMealTime]![hall];
+                : null;
+            Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+                ? _suggestedMeals[currentMealTime]
+                : null;
+            if (mealsForCurrentTime != null &&
+                mealsForCurrentTime.containsKey(hall)) {
+              firstMeal = mealsForCurrentTime[hall];
               break;
             }
           }
-          _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
-        } else {
-          _selectedMealTime =
-              displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
-        }
-        displayMeal = firstMeal;
+          MealTime? nextMealTime;
+          if (firstMeal == null) {
+            // Find the next meal time with suggestions
+            for (String hall in _rankedDiningHalls) {
+              Map<String, dynamic> hallStatus = _getDiningHallStatus(
+                _diningHalls.firstWhere((dh) => dh.name == hall),
+              );
+
+              MealTime? currentMealTime = hallStatus['isOpen']
+                  ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
+                  : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
+              if (hallStatus['nextDay'] != 'Today') {
+                continue; //skip if next meal is not today
+              }
+
+              if (_suggestedMeals.containsKey(currentMealTime) &&
+                  _suggestedMeals[currentMealTime]!.containsKey(hall)) {
+                nextMealTime = currentMealTime;
+                firstMeal = _suggestedMeals[currentMealTime]![hall];
+                break;
+              }
+            }
+            _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+            if (firstMeal == null) {
+              print("No meal found, defaulting to first meal of the time");
+              firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
+            }
+          } else {
+            _selectedMealTime =
+                displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
+          }
+          displayMeal = firstMeal;
+
+          print(displayMeal?.mealTime);
+
+          print("Display Meal: ${displayMeal?.name}");
+          setState(() {});
+        });
+
         break;
       case AppLifecycleState.inactive:
         print("app in inactive");
@@ -602,7 +616,7 @@ class _HomeScreenState extends State<HomeScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'BoilerFuel',
+                            'UPlate',
                             style: theme.textTheme.headlineSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -898,7 +912,7 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'BoilerFuel is working to find the best meal for you based on your preferences and dining hall hours. This may take a moment.',
+                    'UPlate is working to find the best meal for you based on your preferences and dining hall hours. This may take a moment.',
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),

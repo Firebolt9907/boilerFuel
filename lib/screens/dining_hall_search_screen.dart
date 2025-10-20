@@ -414,10 +414,10 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
     return Container(
       height: 44,
 
-      decoration: BoxDecoration(
-        color: Color(0xffececf0),
-        borderRadius: BorderRadius.circular(20),
-      ),
+      // decoration: BoxDecoration(
+      //   color: Color(0xffececf0),
+      //   borderRadius: BorderRadius.circular(20),
+      // ),
 
       child: CustomTabs(
         initialValue: _selectedMealTime.toString(),

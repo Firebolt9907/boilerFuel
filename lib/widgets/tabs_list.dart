@@ -21,9 +21,7 @@ class TabsList extends StatelessWidget {
     return Container(
       height: 36,
       decoration: BoxDecoration(
-        color: DynamicStyling.getIsDarkMode(context)
-            ? Colors.white
-            : Color(0xffececf0),
+        color: DynamicStyling.getLightGrey(context),
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(3),
