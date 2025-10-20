@@ -117,6 +117,19 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
   void _onScroll() {
     double scrollPixels = _scrollController.position.pixels;
+
+    // Don't process animation if we're at the very top (scrollPixels <= 0)
+    // This prevents bounce-back animations
+    if (scrollPixels <= 0) {
+      if (_currentScrollProgress != 0.0) {
+        setState(() {
+          _currentScrollProgress = 0.0;
+        });
+      }
+      _lastScrollPosition = 0.0;
+      return;
+    }
+
     bool scrollingDown = scrollPixels > _lastScrollPosition;
 
     if (scrollingDown) {
@@ -629,6 +642,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     return ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(0),
+
       itemCount: flatItems.length,
       itemBuilder: (context, index) {
         final item = flatItems[index];
