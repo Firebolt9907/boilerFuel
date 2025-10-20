@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/screens/dining_hall_search_screen.dart';
 import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/main.dart';
@@ -353,7 +354,11 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 24.0, bottom: 18),
+                  padding: const EdgeInsets.only(
+                    left: 24.0,
+                    bottom: 18,
+                    right: 24,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -369,6 +374,34 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                           ),
                         ],
                       ),
+                      DefaultContainer(
+                        onTap: () {
+                          HapticFeedback.mediumImpact();
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => DiningHallSearchScreen(
+                                user: widget.user,
+                                diningHall: widget.diningHall,
+                              ),
+                            ),
+                          );
+                        },
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.grey[200]!,
+                            width: 1,
+                          ),
+                        ),
+
+                        child: Icon(
+                          Icons.search,
+                          color: DynamicStyling.getBlack(context),
+                          size: 20,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -379,7 +412,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           // Content
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -388,25 +421,20 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                       ? _buildLoadingView()
                       : _availableMealTimes.isEmpty
                       ? _buildEmptyView()
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Meal time selector
-                            _buildMealTimeSelector(),
+                      : Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Meal time selector
+                              _buildMealTimeSelector(),
 
-                            const SizedBox(height: 8),
-                            // Station selector
+                              const SizedBox(height: 8),
+                              // Station selector
 
-                            // PageView for stations - give it a bounded max height
-                            ConstrainedBox(
-                              constraints: BoxConstraints(
-                                // Use a fraction of available height as an upper bound
-                                maxHeight:
-                                    MediaQuery.of(context).size.height * 0.7,
-                              ),
-                              child: _buildStationPageView(),
-                            ),
-                          ],
+                              // PageView for stations - give it a bounded max height
+                              Expanded(child: _buildStationPageView()),
+                            ],
+                          ),
                         ),
                 ],
               ),
@@ -544,39 +572,39 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
     List<String> stationNames = _stationFoods.keys.toList();
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (
-            int stationIndex = 0;
-            stationIndex < stationNames.length;
-            stationIndex++
-          ) ...[
-            const SizedBox(width: double.infinity),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                stationNames[stationIndex],
-                style: TextStyle(
-                  fontSize: 20,
-                  color: DynamicStyling.getBlack(context),
-                ),
-                textAlign: TextAlign.left,
+    // Build a flat list of all items (stations and foods)
+    List<dynamic> flatItems = [];
+    for (String stationName in stationNames) {
+      flatItems.add(stationName); // Station header
+      for (FoodItem food in _stationFoods[stationName]!) {
+        flatItems.add(food); // Food item
+      }
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(0),
+      itemCount: flatItems.length,
+      itemBuilder: (context, index) {
+        final item = flatItems[index];
+
+        // If item is a String, it's a station header
+        if (item is String) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              item,
+              style: TextStyle(
+                fontSize: 20,
+                color: DynamicStyling.getBlack(context),
               ),
+              textAlign: TextAlign.left,
             ),
-            for (
-              int foodIndex = 0;
-              foodIndex < _stationFoods[stationNames[stationIndex]]!.length;
-              foodIndex++
-            )
-              _buildFoodItem(
-                _stationFoods[stationNames[stationIndex]]![foodIndex],
-                foodIndex,
-              ),
-          ],
-        ],
-      ),
+          );
+        }
+
+        // Otherwise it's a FoodItem
+        return _buildFoodItem(item as FoodItem, index);
+      },
     );
   }
 

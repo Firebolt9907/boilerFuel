@@ -43,6 +43,7 @@ dependencies:
   drift: ^2.28.2
   drift_flutter: ^0.2.7
   path_provider: ^2.1.5
+  string_similarity: ^2.1.1
   http: ^1.5.0
   bottom_sheet_scroll_physics: ^1.0.0
 

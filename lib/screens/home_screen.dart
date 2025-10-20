@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/screens/dining_hall_search_screen.dart';
 import 'package:boiler_fuel/styling.dart';
 import 'dart:async';
 
@@ -604,7 +605,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ],
                       ),
                       // if (widget.user.useMealPlanning)
-                      GestureDetector(
+                      DefaultContainer(
                         onTap: () {
                           HapticFeedback.mediumImpact();
                           Navigator.push(
@@ -622,20 +623,19 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                           );
                         },
-                        child: DefaultContainer(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.grey[200]!,
-                              width: 1,
-                            ),
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.grey[200]!,
+                            width: 1,
                           ),
-                          child: Icon(
-                            Icons.settings_outlined,
-                            color: DynamicStyling.getBlack(context),
-                            size: 20,
-                          ),
+                        ),
+
+                        child: Icon(
+                          Icons.settings_outlined,
+                          color: DynamicStyling.getBlack(context),
+                          size: 20,
                         ),
                       ),
                     ],
@@ -759,11 +759,55 @@ class _HomeScreenState extends State<HomeScreen>
                           const SizedBox(height: 24),
 
                         // Dining Halls Section
-                        Text(
-                          'Dining Halls',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Dining Halls',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            DefaultContainer(
+                              onTap: () {
+                                HapticFeedback.mediumImpact();
+                                Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                    builder: (context) =>
+                                        DiningHallSearchScreen(
+                                          diningHall: null,
+                                          user: widget.user,
+                                        ),
+                                  ),
+                                );
+                              },
+
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.search,
+                                    color: DynamicStyling.getDarkGrey(context),
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Search for Foods',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: DynamicStyling.getDarkGrey(
+                                        context,
+                                      ),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         ..._diningHalls.map(
