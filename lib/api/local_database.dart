@@ -717,6 +717,26 @@ class LocalDatabase {
     return diningHalls;
   }
 
+  Future<DiningHall?> getDiningHallByName(String name) async {
+    final dhRes = await (localDb.select(
+      localDb.diningHallsTable,
+    )..where((tbl) => tbl.name.equals(name))).get();
+
+    if (dhRes.isNotEmpty) {
+      var row = dhRes.first;
+      Map<String, dynamic> scheduleMap = jsonDecode(row.schedule);
+      Schedule schedule = Schedule.fromMap(scheduleMap);
+      return DiningHall(
+        id: row.diningHallId,
+        name: row.name,
+        schedule: schedule,
+      );
+    } else {
+      print("No dining hall found with name: $name");
+      return null;
+    }
+  }
+
   Future<void> addDiningHall(DiningHall diningHall) async {
     final dhRes = await (localDb.select(
       localDb.diningHallsTable,

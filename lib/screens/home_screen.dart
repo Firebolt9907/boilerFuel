@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  Map<String, dynamic> _getDiningHallStatus(DiningHall diningHall) {
+  DiningHallStatus _getDiningHallStatus(DiningHall diningHall) {
     DateTime now = DateTime.now();
     String weekday = [
       'Monday',
@@ -146,57 +146,44 @@ class _HomeScreenState extends State<HomeScreen>
     if (currentMeal != null) {
       // Currently open - find when it closes
       TimePeriod? currentPeriod;
-      String mealName = '';
 
       switch (currentMeal) {
         case MealTime.breakfast:
           currentPeriod = diningHall.schedule.breakfast?[weekday];
-          mealName = 'Breakfast';
+
           break;
         case MealTime.brunch:
           currentPeriod = diningHall.schedule.brunch?[weekday];
-          mealName = 'Brunch';
+
           break;
         case MealTime.lunch:
           currentPeriod = diningHall.schedule.lunch?[weekday];
-          mealName = 'Lunch';
+
           break;
         case MealTime.lateLunch:
           currentPeriod = diningHall.schedule.lateLunch?[weekday];
-          mealName = 'Late Lunch';
+
           break;
         case MealTime.dinner:
           currentPeriod = diningHall.schedule.dinner?[weekday];
-          mealName = 'Dinner';
+
           break;
       }
 
-      String closeTime = currentPeriod != null
-          ? _formatTime(currentPeriod.end)
-          : '';
-
-      return {
-        'isOpen': true,
-        'currentMeal': mealName,
-        'closeTime': closeTime,
-        'status': 'Open for $mealName',
-        'subStatus': 'Closes at $closeTime',
-      };
+      return DiningHallStatus(
+        isOpen: true,
+        currentMealTime: currentMeal,
+        closingTime: currentPeriod!.end,
+      );
     } else {
       // Currently closed - find next opening
       Map<String, dynamic> nextOpening = _getNextOpening(diningHall, now);
-
-      return {
-        'isOpen': false,
-        'currentMeal': null,
-        'nextMeal': nextOpening['meal'],
-        'nextTime': nextOpening['time'],
-        'nextDay': nextOpening['day'],
-        'status': 'Currently Closed',
-        'subStatus': nextOpening['day'] == 'Today'
-            ? 'Opens at ${nextOpening['time']} for ${nextOpening['meal']}'
-            : 'Opens ${nextOpening['day']} at ${nextOpening['time']} for ${nextOpening['meal']}',
-      };
+      return DiningHallStatus(
+        isOpen: false,
+        nextMealTime: nextOpening['meal'],
+        nextOpeningDay: nextOpening['day'],
+        nextOpeningTime: nextOpening['time'],
+      );
     }
   }
 
@@ -208,31 +195,31 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (diningHall.schedule.breakfast?[weekday] != null) {
       meals.add({
-        'name': 'Breakfast',
+        'name': MealTime.breakfast,
         'period': diningHall.schedule.breakfast![weekday]!,
       });
     }
     if (diningHall.schedule.brunch?[weekday] != null) {
       meals.add({
-        'name': 'Brunch',
+        'name': MealTime.brunch,
         'period': diningHall.schedule.brunch![weekday]!,
       });
     }
     if (diningHall.schedule.lunch?[weekday] != null) {
       meals.add({
-        'name': 'Lunch',
+        'name': MealTime.lunch,
         'period': diningHall.schedule.lunch![weekday]!,
       });
     }
     if (diningHall.schedule.lateLunch?[weekday] != null) {
       meals.add({
-        'name': 'Late Lunch',
+        'name': MealTime.lateLunch,
         'period': diningHall.schedule.lateLunch![weekday]!,
       });
     }
     if (diningHall.schedule.dinner?[weekday] != null) {
       meals.add({
-        'name': 'Dinner',
+        'name': MealTime.dinner,
         'period': diningHall.schedule.dinner![weekday]!,
       });
     }
@@ -249,14 +236,67 @@ class _HomeScreenState extends State<HomeScreen>
     return meals;
   }
 
-  String _formatTime(TimeOfDay time) {
-    int hour = time.hour;
-    String period = hour >= 12 ? 'PM' : 'AM';
-    if (hour > 12) hour -= 12;
-    if (hour == 0) hour = 12;
-
-    String minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute $period';
+  void getDisplayMeal(
+    Map<MealTime, Map<String, Meal>> suggestedMeals,
+    List<DiningHall> rankedDiningHalls,
+  ) {
+    Meal? firstMeal;
+    MealTime? firstMealTime;
+    for (DiningHall hall in rankedDiningHalls) {
+      DiningHallStatus hallStatus = _getDiningHallStatus(
+        _diningHalls.firstWhere((dh) => dh.name == hall.name),
+      );
+      MealTime? currentMealTime = hallStatus.currentMealTime;
+      print("Current Meal Time: $currentMealTime");
+      print("DINING HALL: ${hall.name}");
+      print("IS OPEN: ${hallStatus.isOpen}");
+      Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+          ? suggestedMeals[currentMealTime]
+          : null;
+      if (mealsForCurrentTime != null &&
+          mealsForCurrentTime.containsKey(hall.name)) {
+        firstMeal = mealsForCurrentTime[hall.name];
+        firstMealTime = currentMealTime;
+        break;
+      }
+    }
+    if (firstMeal != null && firstMealTime != null) {
+      setState(() {
+        displayMeal = firstMeal;
+        _selectedMealTime = firstMealTime!;
+        print("displayMeal set to: ${displayMeal?.name}");
+        print("displayMeal mealTime: ${displayMeal?.mealTime}");
+      });
+    } else {
+      for (DiningHall hall in rankedDiningHalls) {
+        DiningHallStatus hallStatus = _getDiningHallStatus(
+          _diningHalls.firstWhere((dh) => dh.name == hall.name),
+        );
+        MealTime? nextMealTime = hallStatus.nextMealTime;
+        print("Next Meal Time: $nextMealTime");
+        print("DINING HALL: ${hall.name}");
+        print("IS OPEN: ${hallStatus.isOpen}");
+        Map<String, Meal>? mealsForNextTime = nextMealTime != null
+            ? suggestedMeals[nextMealTime]
+            : null;
+        if (mealsForNextTime != null &&
+            mealsForNextTime.containsKey(hall.name)) {
+          firstMeal = mealsForNextTime[hall.name];
+          firstMealTime = nextMealTime;
+          break;
+        }
+      }
+      if (firstMeal != null && firstMealTime != null) {
+        setState(() {
+          displayMeal = firstMeal;
+          _selectedMealTime = firstMealTime!;
+          print("displayMeal set to: ${displayMeal?.name}");
+          print("displayMeal mealTime: ${displayMeal?.mealTime}");
+        });
+      } else {
+        print("No meal found for displayMeal");
+      }
+    }
   }
 
   Future<void> _loadHomeData(User user) async {
@@ -319,60 +359,59 @@ class _HomeScreenState extends State<HomeScreen>
                     .toString(),
           );
           _suggestedMeals = sortedSuggestions;
-          Meal? firstMeal;
-          for (String hall in _rankedDiningHalls) {
-            Map<String, dynamic> hallStatus = _getDiningHallStatus(
-              _diningHalls.firstWhere((dh) => dh.name == hall),
-            );
-            MealTime? currentMealTime = hallStatus['isOpen']
-                ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-                : null;
-            Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
-                ? _suggestedMeals[currentMealTime]
-                : null;
-            if (mealsForCurrentTime != null &&
-                mealsForCurrentTime.containsKey(hall)) {
-              firstMeal = mealsForCurrentTime[hall];
-              break;
-            }
-          }
-          MealTime? nextMealTime;
-          if (firstMeal == null) {
-            // Find the next meal time with suggestions
-            for (String hall in _rankedDiningHalls) {
-              Map<String, dynamic> hallStatus = _getDiningHallStatus(
-                _diningHalls.firstWhere((dh) => dh.name == hall),
-              );
+          getDisplayMeal(sortedSuggestions, diningHalls);
+          // Meal? firstMeal;
+          // for (String hall in _rankedDiningHalls) {
+          //   DiningHallStatus hallStatus = _getDiningHallStatus(
+          //     _diningHalls.firstWhere((dh) => dh.name == hall),
+          //   );
+          //   MealTime? currentMealTime = hallStatus.currentMealTime;
+          //   Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+          //       ? _suggestedMeals[currentMealTime]
+          //       : null;
+          //   if (mealsForCurrentTime != null &&
+          //       mealsForCurrentTime.containsKey(hall)) {
+          //     firstMeal = mealsForCurrentTime[hall];
+          //     break;
+          //   }
+          // }
+          // MealTime? nextMealTime;
+          // if (firstMeal == null) {
+          //   // Find the next meal time with suggestions
+          //   for (String hall in _rankedDiningHalls) {
+          //     DiningHallStatus hallStatus = _getDiningHallStatus(
+          //       _diningHalls.firstWhere((dh) => dh.name == hall),
+          //     );
 
-              MealTime? currentMealTime = hallStatus['isOpen']
-                  ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-                  : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
-              if (hallStatus['nextDay'] != 'Today') {
-                continue; //skip if next meal is not today
-              }
+          //     MealTime? currentMealTime = hallStatus.isOpen
+          //         ? hallStatus.currentMealTime
+          //         : hallStatus.nextMealTime;
+          //     if (hallStatus.nextOpeningDay != 'Today') {
+          //       continue; //skip if next meal is not today
+          //     }
 
-              if (_suggestedMeals.containsKey(currentMealTime) &&
-                  _suggestedMeals[currentMealTime]!.containsKey(hall)) {
-                nextMealTime = currentMealTime;
-                firstMeal = _suggestedMeals[currentMealTime]![hall];
-                break;
-              }
-            }
-            _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
-            if (firstMeal == null) {
-              print("No meal found, defaulting to first meal of the time");
-              firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
-            }
-          } else {
-            _selectedMealTime =
-                displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
-          }
-          displayMeal = firstMeal;
+          //     if (_suggestedMeals.containsKey(currentMealTime) &&
+          //         _suggestedMeals[currentMealTime]!.containsKey(hall)) {
+          //       nextMealTime = currentMealTime;
+          //       firstMeal = _suggestedMeals[currentMealTime]![hall];
+          //       break;
+          //     }
+          //   }
+          //   _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+          //   if (firstMeal == null) {
+          //     print("No meal found, defaulting to first meal of the time");
+          //     firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
+          //   }
+          // } else {
+          //   _selectedMealTime =
+          //       displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
+          // }
+          // displayMeal = firstMeal;
 
-          print(displayMeal?.mealTime);
+          // print(displayMeal?.mealTime);
 
-          print("Display Meal: ${displayMeal?.name}");
-          setState(() {});
+          // print("Display Meal: ${displayMeal?.name}");
+          // setState(() {});
         });
       }
 
@@ -411,60 +450,59 @@ class _HomeScreenState extends State<HomeScreen>
           );
           _suggestedMeals = sortedSuggestions;
 
-          Meal? firstMeal;
-          for (String hall in _rankedDiningHalls) {
-            Map<String, dynamic> hallStatus = _getDiningHallStatus(
-              _diningHalls.firstWhere((dh) => dh.name == hall),
-            );
-            MealTime? currentMealTime = hallStatus['isOpen']
-                ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-                : null;
-            Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
-                ? _suggestedMeals[currentMealTime]
-                : null;
-            if (mealsForCurrentTime != null &&
-                mealsForCurrentTime.containsKey(hall)) {
-              firstMeal = mealsForCurrentTime[hall];
-              break;
-            }
-          }
-          MealTime? nextMealTime;
-          if (firstMeal == null) {
-            // Find the next meal time with suggestions
-            for (String hall in _rankedDiningHalls) {
-              Map<String, dynamic> hallStatus = _getDiningHallStatus(
-                _diningHalls.firstWhere((dh) => dh.name == hall),
-              );
+          // Meal? firstMeal;
+          // for (String hall in _rankedDiningHalls) {
+          //   DiningHallStatus hallStatus = _getDiningHallStatus(
+          //     _diningHalls.firstWhere((dh) => dh.name == hall),
+          //   );
+          //   MealTime? currentMealTime = hallStatus.currentMealTime;
+          //   Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+          //       ? _suggestedMeals[currentMealTime]
+          //       : null;
+          //   if (mealsForCurrentTime != null &&
+          //       mealsForCurrentTime.containsKey(hall)) {
+          //     firstMeal = mealsForCurrentTime[hall];
+          //     break;
+          //   }
+          // }
+          // MealTime? nextMealTime;
+          // if (firstMeal == null) {
+          //   // Find the next meal time with suggestions
+          //   for (String hall in _rankedDiningHalls) {
+          //     DiningHallStatus hallStatus = _getDiningHallStatus(
+          //       _diningHalls.firstWhere((dh) => dh.name == hall),
+          //     );
 
-              MealTime? currentMealTime = hallStatus['isOpen']
-                  ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-                  : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
-              if (hallStatus['nextDay'] != 'Today') {
-                continue; //skip if next meal is not today
-              }
+          //     MealTime? currentMealTime = hallStatus.isOpen
+          //         ? hallStatus.currentMealTime
+          //         : hallStatus.nextMealTime;
+          //     if (hallStatus.nextOpeningDay != 'Today') {
+          //       continue; //skip if next meal is not today
+          //     }
 
-              if (_suggestedMeals.containsKey(currentMealTime) &&
-                  _suggestedMeals[currentMealTime]!.containsKey(hall)) {
-                nextMealTime = currentMealTime;
-                firstMeal = _suggestedMeals[currentMealTime]![hall];
-                break;
-              }
-            }
-            _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
-            if (firstMeal == null) {
-              print("No meal found, defaulting to first meal of the time");
-              firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
-              return;
-            }
-          } else {
-            _selectedMealTime =
-                displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
-          }
+          //     if (_suggestedMeals.containsKey(currentMealTime) &&
+          //         _suggestedMeals[currentMealTime]!.containsKey(hall)) {
+          //       nextMealTime = currentMealTime;
+          //       firstMeal = _suggestedMeals[currentMealTime]![hall];
+          //       break;
+          //     }
+          //   }
+          //   _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
+          //   if (firstMeal == null) {
+          //     print("No meal found, defaulting to first meal of the time");
+          //     firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
+          //     return;
+          //   }
+          // } else {
+          //   _selectedMealTime =
+          //       displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
+          // }
 
-          displayMeal = firstMeal;
-          print(displayMeal?.mealTime);
+          // displayMeal = firstMeal;
+          // print(displayMeal?.mealTime);
 
-          print("Display Meal: ${displayMeal?.name}");
+          // print("Display Meal: ${displayMeal?.name}");
+          getDisplayMeal(sortedSuggestions, diningHalls);
         });
       });
 
@@ -481,64 +519,7 @@ class _HomeScreenState extends State<HomeScreen>
       case AppLifecycleState.resumed:
         print("app in resumed");
 
-        setState(() {
-          print("Sorted Suggestions:");
-
-          Meal? firstMeal;
-          for (String hall in _rankedDiningHalls) {
-            Map<String, dynamic> hallStatus = _getDiningHallStatus(
-              _diningHalls.firstWhere((dh) => dh.name == hall),
-            );
-            MealTime? currentMealTime = hallStatus['isOpen']
-                ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-                : null;
-            Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
-                ? _suggestedMeals[currentMealTime]
-                : null;
-            if (mealsForCurrentTime != null &&
-                mealsForCurrentTime.containsKey(hall)) {
-              firstMeal = mealsForCurrentTime[hall];
-              break;
-            }
-          }
-          MealTime? nextMealTime;
-          if (firstMeal == null) {
-            // Find the next meal time with suggestions
-            for (String hall in _rankedDiningHalls) {
-              Map<String, dynamic> hallStatus = _getDiningHallStatus(
-                _diningHalls.firstWhere((dh) => dh.name == hall),
-              );
-
-              MealTime? currentMealTime = hallStatus['isOpen']
-                  ? MealTime.fromString(hallStatus['currentMeal'].toLowerCase())
-                  : MealTime.fromString(hallStatus['nextMeal'].toLowerCase());
-              if (hallStatus['nextDay'] != 'Today') {
-                continue; //skip if next meal is not today
-              }
-
-              if (_suggestedMeals.containsKey(currentMealTime) &&
-                  _suggestedMeals[currentMealTime]!.containsKey(hall)) {
-                nextMealTime = currentMealTime;
-                firstMeal = _suggestedMeals[currentMealTime]![hall];
-                break;
-              }
-            }
-            _selectedMealTime = nextMealTime ?? MealTime.getCurrentMealTime();
-            if (firstMeal == null) {
-              print("No meal found, defaulting to first meal of the time");
-              firstMeal = _suggestedMeals[_selectedMealTime]?.values.first;
-            }
-          } else {
-            _selectedMealTime =
-                displayMeal?.mealTime ?? MealTime.getCurrentMealTime();
-          }
-          displayMeal = firstMeal;
-
-          print(displayMeal?.mealTime);
-
-          print("Display Meal: ${displayMeal?.name}");
-          setState(() {});
-        });
+        getDisplayMeal(_suggestedMeals, _diningHalls);
 
         break;
       case AppLifecycleState.inactive:
@@ -702,7 +683,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Suggested Meal for ${mealTime.toDisplayString()}',
+                                'Suggested Meal for ${_selectedMealTime.toDisplayString()}',
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -1125,11 +1106,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
 
       if (openTime.isAfter(now)) {
-        return {
-          'meal': meal['name'],
-          'time': _formatTime(period.start),
-          'day': 'Today',
-        };
+        return {'meal': meal['name'], 'time': period.start, 'day': 'Today'};
       }
     }
 
@@ -1155,7 +1132,7 @@ class _HomeScreenState extends State<HomeScreen>
         var firstMeal = nextDayMeals.first;
         return {
           'meal': firstMeal['name'],
-          'time': _formatTime(firstMeal['period'].start),
+          'time': firstMeal['period'].start,
           'day': i == 1 ? 'Tomorrow' : nextWeekday,
         };
       }
@@ -1177,9 +1154,9 @@ class _HomeScreenState extends State<HomeScreen>
       child: InkWell(
         onTap: () => onDiningHallSelect(
           hall,
-          statusInfo["currentMeal"] == null
-              ? MealTime.fromString(statusInfo["nextMeal"].toLowerCase())
-              : MealTime.fromString(statusInfo["currentMeal"].toLowerCase()),
+          statusInfo.isOpen
+              ? statusInfo.currentMealTime!
+              : statusInfo.nextMealTime!,
         ),
         splashColor: DynamicStyling.getLightGrey(context),
         borderRadius: BorderRadius.circular(12),
@@ -1207,7 +1184,7 @@ class _HomeScreenState extends State<HomeScreen>
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: statusInfo['isOpen']
+                            color: statusInfo.isOpen
                                 ? Colors.green[600]
                                 : Colors.red[600],
                             shape: BoxShape.circle,
@@ -1215,10 +1192,10 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          statusInfo['status'],
+                          statusInfo.getStatus(),
                           style: TextStyle(
                             fontSize: 12,
-                            color: statusInfo['isOpen']
+                            color: statusInfo.isOpen
                                 ? Colors.green[600]
                                 : Colors.red[600],
                             fontWeight: FontWeight.w600,
@@ -1251,7 +1228,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: 200),
                           child: Text(
-                            statusInfo['subStatus'],
+                            statusInfo.getSubStatus(context),
                             style: TextStyle(color: Colors.grey[600]),
                           ),
                         ),

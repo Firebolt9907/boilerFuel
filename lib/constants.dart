@@ -458,6 +458,8 @@ enum MealTime {
         return MealTime.lateLunch;
       case 'dinner':
         return MealTime.dinner;
+      case 'late lunch':
+        return MealTime.lateLunch;
       default:
         throw ArgumentError('Invalid meal time: $value');
     }
@@ -640,6 +642,38 @@ Dinner: ${dinner ?? 'Closed'}
     );
   }
 
+  bool isMealTimeAvailable(MealTime mealTime, {DateTime? date}) {
+    DateTime now = date ?? DateTime.now();
+    String weekday = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ][now.weekday - 1];
+    TimePeriod? period;
+    switch (mealTime) {
+      case MealTime.breakfast:
+        period = breakfast != null ? breakfast![weekday] : null;
+        break;
+      case MealTime.brunch:
+        period = brunch != null ? brunch![weekday] : null;
+        break;
+      case MealTime.lunch:
+        period = lunch != null ? lunch![weekday] : null;
+        break;
+      case MealTime.lateLunch:
+        period = lateLunch != null ? lateLunch![weekday] : null;
+        break;
+      case MealTime.dinner:
+        period = dinner != null ? dinner![weekday] : null;
+        break;
+    }
+    return period != null;
+  }
+
   MealTime? getCurrentMealTime() {
     DateTime now = DateTime.now();
     String weekday = [
@@ -673,6 +707,58 @@ Dinner: ${dinner ?? 'Closed'}
       return MealTime.dinner;
     }
     return null;
+  }
+
+  String getMealTimeHours(MealTime mealTime, BuildContext context) {
+    DateTime now = DateTime.now();
+    String weekday = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ][now.weekday - 1];
+    TimePeriod? period;
+    switch (mealTime) {
+      case MealTime.breakfast:
+        period = breakfast != null ? breakfast![weekday] : null;
+        break;
+      case MealTime.brunch:
+        period = brunch != null ? brunch![weekday] : null;
+        break;
+      case MealTime.lunch:
+        period = lunch != null ? lunch![weekday] : null;
+        break;
+      case MealTime.lateLunch:
+        period = lateLunch != null ? lateLunch![weekday] : null;
+        break;
+      case MealTime.dinner:
+        period = dinner != null ? dinner![weekday] : null;
+        break;
+    }
+    if (period != null) {
+      final is24Hour = MediaQuery.of(context).alwaysUse24HourFormat;
+
+      String formatTime(TimeOfDay time) {
+        if (is24Hour) {
+          return '${time.hour.toString().padLeft(1, '0')}:'
+              '${time.minute.toString().padLeft(2, '0')}';
+        } else {
+          final hour = time.hourOfPeriod;
+          final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+          return '${hour.toString().padLeft(1, '0')}:'
+              '${time.minute.toString().padLeft(2, '0')} $period';
+        }
+      }
+
+      String startTime = formatTime(period.start);
+      String endTime = formatTime(period.end);
+      return '$startTime - $endTime';
+    } else {
+      return 'Closed';
+    }
   }
 }
 
@@ -746,6 +832,60 @@ class DiningHallMeals {
         ),
       ),
     );
+  }
+}
+
+class DiningHallStatus {
+  bool isOpen;
+  MealTime? currentMealTime;
+  MealTime? nextMealTime;
+  TimeOfDay? closingTime;
+  TimeOfDay? nextOpeningTime;
+  String? nextOpeningDay;
+  DiningHallStatus({
+    required this.isOpen,
+    this.currentMealTime,
+    this.nextMealTime,
+    this.closingTime,
+    this.nextOpeningTime,
+    this.nextOpeningDay,
+  });
+
+  String getStatus() {
+    if (isOpen) {
+      return 'Open for ' + currentMealTime!.toDisplayString();
+    } else {
+      return 'Currently Closed';
+    }
+  }
+
+  String getSubStatus(BuildContext context) {
+    String formatTimeOfDay(TimeOfDay time, BuildContext context) {
+      final is24Hour = MediaQuery.of(context).alwaysUse24HourFormat;
+      if (is24Hour) {
+        return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+      } else {
+        final hour = time.hourOfPeriod;
+        final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+        return '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} $period';
+      }
+    }
+
+    if (isOpen) {
+      return 'Closes at ' + formatTimeOfDay(closingTime!, context);
+    } else {
+      if (nextOpeningDay == "Today") {
+        return 'Opens at ' +
+            formatTimeOfDay(nextOpeningTime!, context) +
+            ' for ' +
+            nextMealTime!.toDisplayString();
+      } else {
+        return 'Opens ' +
+            nextOpeningDay! +
+            ' at ' +
+            formatTimeOfDay(nextOpeningTime!, context);
+      }
+    }
   }
 }
 

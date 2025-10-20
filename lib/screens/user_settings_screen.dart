@@ -4,18 +4,17 @@ import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/dietary_restrictions_screen.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
-import 'package:boiler_fuel/screens/meal_plan_screen.dart';
+
 import 'package:boiler_fuel/screens/user_info_screen.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
-import 'package:boiler_fuel/widgets/custom_app_bar.dart';
+
 import 'package:boiler_fuel/widgets/settings_button.dart';
-import 'package:boiler_fuel/widgets/titanium_container.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../styling.dart';
-import 'dart:math' as math;
 
 class UserSettingsScreen extends StatefulWidget {
   final User user;
@@ -33,9 +32,8 @@ class UserSettingsScreen extends StatefulWidget {
 
 class _UserSettingsScreenState extends State<UserSettingsScreen>
     with TickerProviderStateMixin {
-  late AnimationController _animationController;
   User? currentUser;
-  late Animation<double> _fadeAnimation;
+  bool isLoadingDelete = false;
 
   @override
   void initState() {
@@ -43,23 +41,10 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
     setState(() {
       currentUser = widget.user;
     });
-
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-
     super.dispose();
   }
 

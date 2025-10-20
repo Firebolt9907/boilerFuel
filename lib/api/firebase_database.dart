@@ -561,4 +561,18 @@ class FBDatabase {
     }).toList();
     return diningHalls;
   }
+
+  Future<DiningHall?> getDiningHallByName(String diningHallID) async {
+    // try {
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await diningHallsCollection.doc(diningHallID).get()
+            as DocumentSnapshot<Map<String, dynamic>>;
+    if (snapshot.exists) {
+      return DiningHall.fromMap(snapshot.data() ?? {});
+    }
+    // } catch (error) {
+    //   print('Error fetching data (getDiningHallByName): $error');
+    // }
+    return null;
+  }
 }

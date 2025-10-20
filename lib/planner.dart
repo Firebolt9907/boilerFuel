@@ -549,7 +549,13 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
     // }
     Map<MealTime, List<Food>> availableFoods = {};
     for (MealTime mt in MealTime.values) {
-      if (mt == MealTime.lateLunch) continue;
+      // if (mt == MealTime.lateLunch) continue;
+      DiningHall hallInfo = (await Database().getDiningHallByName(diningHall))!;
+      Schedule schedule = hallInfo.schedule;
+      if (!schedule.isMealTimeAvailable(mt, date: date)) {
+        print("$diningHall is not open for $mt on $date");
+        continue;
+      }
       List<Food> food =
           await Database().getDiningCourtMeal(diningHall, date, mt) ?? [];
       print("Fetched ${food.length} food items for $diningHall at $mt");

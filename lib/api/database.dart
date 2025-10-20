@@ -79,4 +79,22 @@ class Database {
     }
     return localDiningHalls;
   }
+
+  Future<DiningHall?> getDiningHallByName(String diningHallID) async {
+    DiningHall? localDiningHall = await LocalDatabase().getDiningHallByName(
+      diningHallID,
+    );
+    if (localDiningHall == null) {
+      print(
+        "Dining hall $diningHallID not found locally, fetching from Firebase",
+      );
+      DiningHall? fbDiningHall =
+          await FBDatabase().getDiningHallByName(diningHallID);
+      if (fbDiningHall != null) {
+        await LocalDatabase().addDiningHall(fbDiningHall);
+      }
+      return fbDiningHall;
+    }
+    return localDiningHall;
+  }
 }
