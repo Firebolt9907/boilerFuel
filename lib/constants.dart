@@ -475,7 +475,7 @@ enum MealTime {
     final hour = DateTime.now().hour;
     if (hour < 11) return MealTime.breakfast;
     if (hour < 16) return MealTime.lunch;
-    return MealTime.dinner;
+    return MealTime.dinner; 
   }
 }
 
