@@ -70,7 +70,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     ],
                   ),
                   child: Center(
-                    child: DynamicStyling.getIsDarkMode(context)
+                    child: DynamicStyling.isDarkMode(context)
                         ? Image.asset(
                             'assets/plate_dark.png',
                             width: 100,

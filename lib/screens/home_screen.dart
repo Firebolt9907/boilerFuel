@@ -578,79 +578,7 @@ class _HomeScreenState extends State<HomeScreen>
       body: Column(
         children: [
           // Header
-          Container(
-            decoration: BoxDecoration(
-              color: DynamicStyling.getWhite(context),
-              border: Border(
-                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
-              ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: MediaQuery.of(context).padding.top - 12),
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'UPlate',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Welcome back, ${widget.user.name.split(' ').first}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: DynamicStyling.getGrey(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                      // if (widget.user.useMealPlanning)
-                      DefaultContainer(
-                        onTap: () {
-                          HapticFeedback.mediumImpact();
-                          Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                              builder: (context) => UserSettingsScreen(
-                                user: widget.user,
-                                onUserUpdated: (updatedUser) {
-                                  setState(() {
-                                    _currentUser = updatedUser;
-                                  });
-                                  _loadHomeData(updatedUser);
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: DynamicStyling.getLightGrey(context),
-                            width: 1,
-                          ),
-                        ),
-
-                        child: Icon(
-                          Icons.settings_outlined,
-                          color: DynamicStyling.getBlack(context),
-                          size: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildHeader(context),
 
           // Content
           Expanded(
@@ -702,7 +630,10 @@ class _HomeScreenState extends State<HomeScreen>
                             color: DynamicStyling.getWhite(context),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(color: Colors.grey[200]!),
+                              side: BorderSide(
+                                width: 2,
+                                color: DynamicStyling.getLightGrey(context),
+                              ),
                             ),
                             child: InkWell(
                               onTap: onViewSavedMeals,
@@ -717,12 +648,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     Container(
                                       padding: EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color:
-                                            DynamicStyling.getIsDarkMode(
-                                              context,
-                                            )
-                                            ? DynamicStyling.getWhite(context)
-                                            : Color(0xfffef2f2),
+                                        color: Color.fromARGB(20, 255, 0, 0),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
@@ -872,13 +798,91 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: DynamicStyling.getWhite(context),
+        border: Border(
+          bottom: BorderSide(
+            color: DynamicStyling.getLightGrey(context),
+            width: 2,
+          ),
+        ),
+      ),
+      child: Column(
+        children: [
+          SizedBox(height: MediaQuery.of(context).padding.top - 12),
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'UPlate',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Welcome back, ${widget.user.name.split(' ').first}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: DynamicStyling.getGrey(context),
+                      ),
+                    ),
+                  ],
+                ),
+                // if (widget.user.useMealPlanning)
+                DefaultContainer(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => UserSettingsScreen(
+                          user: widget.user,
+                          onUserUpdated: (updatedUser) {
+                            setState(() {
+                              _currentUser = updatedUser;
+                            });
+                            _loadHomeData(updatedUser);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  padding: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: DynamicStyling.getLightGrey(context),
+                      width: 1,
+                    ),
+                  ),
+
+                  child: Icon(
+                    Icons.settings_outlined,
+                    color: DynamicStyling.getBlack(context),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSuggestedMealCard(BuildContext context) {
     return Card(
       elevation: 0,
       color: DynamicStyling.getWhite(context),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(width: 2, color: DynamicStyling.getLightGrey(context)),
       ),
       child: Column(
         children: [
@@ -1022,7 +1026,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
-          Divider(height: 1, color: Colors.grey[200]),
+          Divider(height: 2, color: DynamicStyling.getLightGrey(context)),
           InkWell(
             onTap: onViewSuggestedMeals,
             borderRadius: BorderRadius.only(
@@ -1149,7 +1153,7 @@ class _HomeScreenState extends State<HomeScreen>
       color: DynamicStyling.getWhite(context),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: DynamicStyling.getLightGrey(context), width: 2),
       ),
       child: InkWell(
         onTap: () => onDiningHallSelect(

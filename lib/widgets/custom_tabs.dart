@@ -1,5 +1,7 @@
+import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/widgets/tabs_content.dart';
 import 'package:boiler_fuel/widgets/tabs_list.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,7 @@ class CustomTabs extends StatefulWidget {
   final String? initialValue;
   final ValueChanged<String>? onValueChanged;
   final EdgeInsets? padding;
+  final bool? legacy;
 
   const CustomTabs({
     Key? key,
@@ -17,6 +20,7 @@ class CustomTabs extends StatefulWidget {
     this.initialValue,
     this.onValueChanged,
     this.padding,
+    this.legacy,
   }) : super(key: key);
 
   @override
@@ -42,6 +46,32 @@ class _CustomTabsState extends State<CustomTabs> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.legacy != true) {
+      return CupertinoSlidingSegmentedControl<String>(
+        backgroundColor: DynamicStyling.getLightGrey(context),
+        thumbColor: DynamicStyling.getWhite(context),
+        groupValue: _selectedValue,
+        onValueChanged: (String? value) {
+          if (value != null) {
+            _handleTabChange(value);
+          }
+        },
+        children: Map<String, Widget>.fromEntries(
+          widget.tabs.map(
+            (tab) => MapEntry(
+              tab.label,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  tab.value,
+                  style: TextStyle(color: DynamicStyling.getBlack(context)),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return TabsList(
       selectedValue: _selectedValue,
       tabs: widget.tabs,

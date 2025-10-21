@@ -403,15 +403,15 @@ enum MealTime {
   String toString() {
     switch (this) {
       case MealTime.breakfast:
-        return 'breakfast';
+        return 'Breakfast';
       case MealTime.brunch:
-        return 'brunch';
+        return 'Brunch';
       case MealTime.lunch:
-        return 'lunch';
+        return 'Lunch';
       case MealTime.lateLunch:
-        return 'lateLunch'; // Treat late lunch as lunch
+        return 'Late Lunch';
       case MealTime.dinner:
-        return 'dinner';
+        return 'Dinner';
     }
   }
 
@@ -448,18 +448,24 @@ enum MealTime {
 
   static MealTime fromString(String value) {
     switch (value) {
-      case 'breakfast':
+      case "breakfast":
+      case 'Breakfast':
         return MealTime.breakfast;
-      case 'brunch':
+      case "brunch":
+      case 'Brunch':
         return MealTime.brunch;
-      case 'lunch':
+      case "lunch":
+      case 'Lunch':
         return MealTime.lunch;
-      case 'lateLunch':
+      case "latelunch":
+      case "lateLunch":
+      case "late lunch":
+      case "Late lunch":
+      case 'Late Lunch':
         return MealTime.lateLunch;
-      case 'dinner':
+      case "dinner":
+      case 'Dinner':
         return MealTime.dinner;
-      case 'late lunch':
-        return MealTime.lateLunch;
       default:
         throw ArgumentError('Invalid meal time: $value');
     }

@@ -319,7 +319,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
           color: DynamicStyling.getWhite(context),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey[200]!),
+            side: BorderSide(color: DynamicStyling.getLightGrey(context), width: 2),
           ),
           child: InkWell(
             onTap: () async {

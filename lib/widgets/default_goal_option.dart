@@ -51,18 +51,23 @@ class _DefaultGoalOptionState extends State<DefaultGoalOption>
           widget.onTap();
         },
         onTapCancel: () => _controller.reverse(),
-        // TODO: Fix the animations that broke (maybe hardcode colors while checking for dark mode??)
         child: AnimatedContainer(
           duration: Duration(milliseconds: 200),
           width: double.infinity,
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: widget.isSelected
-                ? Theme.of(context).colorScheme.onSurface.withAlpha(20)
-                : Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.transparent, width: 2),
+            color: DynamicStyling.getLightGrey(
+              context,
+            ).withAlpha(widget.isSelected ? 20 : 0),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: widget.isSelected
+                  ? Colors.transparent
+                  : DynamicStyling.getLightGrey(context),
+              width: 2,
+            ),
           ),
+
           child: Row(
             children: [
               Icon(

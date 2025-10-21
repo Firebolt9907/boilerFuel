@@ -398,22 +398,58 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
       //   color: Color(0xffececf0),
       //   borderRadius: BorderRadius.circular(20),
       // ),
-      child: CustomTabs(
-        initialValue: _selectedMealTime.toString(),
-        onValueChanged: (value) {
-          print("Meal time changed to $value");
-          setState(() {
-            _selectedMealTime = MealTime.fromString(value);
-          });
-        },
-        tabs: [
-          for (MealTime mealTime in _availableMealTimes)
-            TabItem(
-              label: mealTime.toDisplayString(),
-              value: mealTime.toString(),
+      child: _availableMealTimes.length >= 2
+          ? CupertinoSlidingSegmentedControl<MealTime>(
+              backgroundColor: DynamicStyling.getGrey(context),
+              thumbColor: DynamicStyling.getLightGrey(context),
+              groupValue: _selectedMealTime,
+              onValueChanged: (MealTime? value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedMealTime = value;
+                  });
+                }
+              },
+              children: Map<MealTime, Widget>.fromEntries(
+                _availableMealTimes.map(
+                  (mealTime) => MapEntry(
+                    mealTime,
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        mealTime.toString(),
+                        style: TextStyle(
+                          color: DynamicStyling.getBlack(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                _selectedMealTime.toString(),
+                style: TextStyle(color: DynamicStyling.getBlack(context)),
+              ),
             ),
-        ],
-      ),
+      // child: CustomTabs(
+      //   initialValue: _selectedMealTime.toString(),
+      //   onValueChanged: (value) {
+      //     print("Meal time changed to $value");
+      //     setState(() {
+      //       _selectedMealTime = MealTime.fromString(value);
+      //     });
+      //   },
+      //   tabs: [
+      //     for (MealTime mealTime in _availableMealTimes)
+      //       TabItem(
+      //         label: mealTime.toDisplayString(),
+      //         value: mealTime.toString(),
+      //       ),
+      //   ],
+      // ),
     );
   }
 
@@ -428,7 +464,10 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
           color: DynamicStyling.getWhite(context),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey[200]!),
+            side: BorderSide(
+              color: DynamicStyling.getLightGrey(context),
+              width: 2,
+            ),
           ),
           child: Stack(
             children: [
