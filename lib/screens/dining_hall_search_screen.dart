@@ -6,6 +6,7 @@ import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_tabs.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:boiler_fuel/widgets/default_text_field.dart';
+import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:string_similarity/string_similarity.dart';
 import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
@@ -220,81 +221,85 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
       body: Column(
         children: [
           // Header
-          Container(
-            decoration: BoxDecoration(
-              color: DynamicStyling.getWhite(context),
-              border: Border(
-                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
-              ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: MediaQuery.of(context).padding.top),
-                // GestureDetector(
-                //   onTap: () {
-                //     HapticFeedback.lightImpact();
-                //     Navigator.of(context).pop();
-                //   },
-                //   child: Row(
-                //     children: [
-                //       IconButton(
-                //         icon: Icon(
-                //           Icons.arrow_back_ios_new,
-                //           color: styling.gray,
-                //         ),
-                //         onPressed: () {
-                //           HapticFeedback.lightImpact();
-                //           Navigator.of(context).pop();
-                //         },
-                //       ),
-
-                //       Text(
-                //         'Back',
-                //         style: TextStyle(
-                //           fontSize: 14,
-                //           fontWeight: FontWeight.bold,
-                //           color: styling.gray,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 24.0,
-                    bottom: 18,
-                    right: 24,
-                    top: 24,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width - 120,
-                            ),
-                            child: Text(
-                              "Search for Foods" +
+          Header(context: context, title: "Search for Foods" +
                                   (widget.diningHall != null
                                       ? " at ${widget.diningHall}"
-                                      : ""),
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: DynamicStyling.getBlack(context),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+                                      : "")),
+          // Container(
+          //   decoration: BoxDecoration(
+          //     color: DynamicStyling.getWhite(context),
+          //     border: Border(
+          //       bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+          //     ),
+          //   ),
+          //   child: Column(
+          //     children: [
+          //       SizedBox(height: MediaQuery.of(context).padding.top),
+          //       // GestureDetector(
+          //       //   onTap: () {
+          //       //     HapticFeedback.lightImpact();
+          //       //     Navigator.of(context).pop();
+          //       //   },
+          //       //   child: Row(
+          //       //     children: [
+          //       //       IconButton(
+          //       //         icon: Icon(
+          //       //           Icons.arrow_back_ios_new,
+          //       //           color: styling.gray,
+          //       //         ),
+          //       //         onPressed: () {
+          //       //           HapticFeedback.lightImpact();
+          //       //           Navigator.of(context).pop();
+          //       //         },
+          //       //       ),
+
+          //       //       Text(
+          //       //         'Back',
+          //       //         style: TextStyle(
+          //       //           fontSize: 14,
+          //       //           fontWeight: FontWeight.bold,
+          //       //           color: styling.gray,
+          //       //         ),
+          //       //       ),
+          //       //     ],
+          //       //   ),
+          //       // ),
+          //       Padding(
+          //         padding: const EdgeInsets.only(
+          //           left: 24.0,
+          //           bottom: 18,
+          //           right: 24,
+          //           top: 24,
+          //         ),
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //           children: [
+          //             Column(
+          //               crossAxisAlignment: CrossAxisAlignment.start,
+          //               children: [
+          //                 ConstrainedBox(
+          //                   constraints: BoxConstraints(
+          //                     maxWidth: MediaQuery.of(context).size.width - 120,
+          //                   ),
+          //                   child: Text(
+          //                     "Search for Foods" +
+          //                         (widget.diningHall != null
+          //                             ? " at ${widget.diningHall}"
+          //                             : ""),
+          //                     style: TextStyle(
+          //                       fontSize: 24,
+          //                       color: DynamicStyling.getBlack(context),
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           // Content
           Expanded(
@@ -418,7 +423,6 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
       //   color: Color(0xffececf0),
       //   borderRadius: BorderRadius.circular(20),
       // ),
-
       child: CustomTabs(
         initialValue: _selectedMealTime.toString(),
         onValueChanged: (value) {

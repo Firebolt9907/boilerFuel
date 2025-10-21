@@ -176,7 +176,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Colors.grey[200]!,
+                            color: DynamicStyling.getLightGrey(context),
                             width: 1,
                           ),
                         ),

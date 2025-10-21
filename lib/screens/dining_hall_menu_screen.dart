@@ -6,6 +6,7 @@ import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/custom_tabs.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
+import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
 import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:flutter/foundation.dart';
@@ -304,107 +305,13 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       body: Column(
         children: [
           // Header
-          Container(
-            decoration: BoxDecoration(
-              color: DynamicStyling.getWhite(context),
-              border: Border(
-                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
-              ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: MediaQuery.of(context).padding.top),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.of(context).pop();
-                  },
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: DynamicStyling.getGrey(context),
-                        ),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.of(context).pop();
-                        },
-                      ),
-
-                      Text(
-                        'Back',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: DynamicStyling.getGrey(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 24.0,
-                    bottom: 18,
-                    right: 24,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.diningHall,
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: DynamicStyling.getBlack(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                      DefaultContainer(
-                        onTap: () {
-                          HapticFeedback.mediumImpact();
-                          customCupertinoSheet.showCupertinoSheet<void>(
-                            context: context,
-                            useNestedNavigation: true,
-                            pageBuilder: (BuildContext context) =>
-                                DiningHallSearchScreen(
-                                  diningHall: widget.diningHall,
-                                  user: widget.user,
-                                ),
-                          );
-                          // Navigator.push(
-                          //   context,
-                          //   CupertinoPageRoute(
-                          //     builder: (context) => DiningHallSearchScreen(
-                          //       user: widget.user,
-                          //       diningHall: widget.diningHall,
-                          //     ),
-                          //   ),
-                          // );
-                        },
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.grey[200]!,
-                            width: 1,
-                          ),
-                        ),
-
-                        child: Icon(
-                          Icons.search,
-                          color: DynamicStyling.getBlack(context),
-                          size: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+          Header(
+            context: context,
+            title: widget.diningHall,
+            trailingIcon: Icons.search,
+            trailingPage: DiningHallSearchScreen(
+              diningHall: widget.diningHall,
+              user: widget.user,
             ),
           ),
 
@@ -579,23 +486,49 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       //   color: DynamicStyling.getLightGrey(context),
       //   borderRadius: BorderRadius.circular(20),
       // ),
-      child: CustomTabs(
-        initialValue: _selectedMealTime.toString(),
-        onValueChanged: (value) {
-          print("Meal time changed to $value");
-          setState(() {
-            _selectedMealTime = MealTime.fromString(value);
-            _updateStationFoods();
-          });
+      child: CupertinoSlidingSegmentedControl<MealTime>(
+        backgroundColor: DynamicStyling.getLightGrey(context),
+        thumbColor: DynamicStyling.getWhite(context),
+        groupValue: _selectedMealTime,
+        onValueChanged: (MealTime? value) {
+          if (value != null) {
+            setState(() {
+              _selectedMealTime = value;
+            });
+          }
         },
-        tabs: [
-          for (MealTime mealTime in _availableMealTimes)
-            TabItem(
-              label: mealTime.toDisplayString(),
-              value: mealTime.toString(),
+        children: Map<MealTime, Widget>.fromEntries(
+          _availableMealTimes.map(
+            (mealTime) => MapEntry(
+              mealTime,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  mealTime.toString(),
+                  style: TextStyle(color: DynamicStyling.getBlack(context)),
+                ),
+              ),
             ),
-        ],
+          ),
+        ),
       ),
+      // child: CustomTabs(
+      //   initialValue: _selectedMealTime.toString(),
+      //   onValueChanged: (value) {
+      //     print("Meal time changed to $value");
+      //     setState(() {
+      //       _selectedMealTime = MealTime.fromString(value);
+      //       _updateStationFoods();
+      //     });
+      //   },
+      //   tabs: [
+      //     for (MealTime mealTime in _availableMealTimes)
+      //       TabItem(
+      //         label: mealTime.toDisplayString(),
+      //         value: mealTime.toString(),
+      //       ),
+      //   ],
+      // ),
     );
   }
 

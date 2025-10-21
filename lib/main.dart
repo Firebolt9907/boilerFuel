@@ -12,6 +12,7 @@ import 'package:boiler_fuel/screens/home_screen.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
 
 import 'package:boiler_fuel/styling.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -174,18 +175,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.white,
-          brightness: MediaQuery.of(context).platformBrightness,
-        ),
-        useMaterial3: true,
-        // scaffoldBackgroundColor: Colors.grey[50],
-        useSystemColors: true,
-      ),
-      home: user == null ? WelcomeScreen() : HomeScreen(user: user!),
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme:
+                (MediaQuery.of(context).platformBrightness == Brightness.light
+                    ? lightDynamic
+                    : darkDynamic) ??
+                ColorScheme.fromSeed(
+                  seedColor: Colors.blue,
+                  brightness: MediaQuery.of(context).platformBrightness,
+                ),
+            useMaterial3: true,
+            // useSystemColors: true,
+          ),
+          home: user == null ? WelcomeScreen() : HomeScreen(user: user!),
+        );
+      },
     );
   }
 }

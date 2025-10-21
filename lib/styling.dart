@@ -20,31 +20,31 @@ class Styling {
 /// a Color type
 ///
 class DynamicStyling {
-  static getBlack(BuildContext context) {
+  static Color getBlack(BuildContext context) {
     return Theme.of(context).colorScheme.onSurface;
   }
 
-  static getWhite(BuildContext context) {
+  static Color getWhite(BuildContext context) {
     return Theme.of(context).colorScheme.surface;
   }
 
-  static getDarkGrey(BuildContext context) {
+  static Color getDarkGrey(BuildContext context) {
     return Theme.of(context).colorScheme.onSurface.withAlpha(170);
   }
 
-  static getGrey(BuildContext context) {
+  static Color getGrey(BuildContext context) {
     return Theme.of(context).colorScheme.onSurface.withAlpha(100);
   }
 
-  static getLightGrey(BuildContext context) {
+  static Color getLightGrey(BuildContext context) {
     return Theme.of(context).colorScheme.onSurface.withAlpha(20);
   }
 
-  static getPrimary(BuildContext context) {
+  static Color getPrimary(BuildContext context) {
     return Theme.of(context).colorScheme.primary;
   }
 
-  static getIsDarkMode(BuildContext context) {
+  static bool isDarkMode(BuildContext context) {
     return Theme.of(context).brightness == Brightness.dark;
   }
 }

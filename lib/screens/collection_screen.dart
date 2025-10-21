@@ -203,8 +203,8 @@ class _CollectionScreenState extends State<CollectionScreen>
         borderRadius: BorderRadius.circular(12),
         color: DynamicStyling.getWhite(context).withOpacity(0.08),
         border: Border.all(
-          color: DynamicStyling.getWhite(context).withOpacity(0.15),
-          width: 1,
+          color: DynamicStyling.getLightGrey(context),
+          width: 2,
         ),
       ),
       child: Column(
