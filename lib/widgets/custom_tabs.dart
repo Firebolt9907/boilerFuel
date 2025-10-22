@@ -13,6 +13,7 @@ class CustomTabs extends StatefulWidget {
   final ValueChanged<String>? onValueChanged;
   final EdgeInsets? padding;
   final bool? legacy;
+  final bool? expand;
 
   const CustomTabs({
     Key? key,
@@ -21,6 +22,7 @@ class CustomTabs extends StatefulWidget {
     this.onValueChanged,
     this.padding,
     this.legacy,
+    this.expand = false,
   }) : super(key: key);
 
   @override
@@ -46,7 +48,45 @@ class _CustomTabsState extends State<CustomTabs> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.legacy != true) {
+    if (widget.legacy != true && widget.expand == true) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final tabCount = widget.tabs.length;
+          final segmentWidth = (constraints.maxWidth / tabCount)
+              .floorToDouble();
+
+          return CupertinoSlidingSegmentedControl<String>(
+            backgroundColor: DynamicStyling.getLightGrey(context),
+            thumbColor: DynamicStyling.getWhite(context),
+            groupValue: _selectedValue,
+            onValueChanged: (String? value) {
+              if (value != null) {
+                _handleTabChange(value);
+              }
+            },
+            children: Map<String, Widget>.fromEntries(
+              widget.tabs.map(
+                (tab) => MapEntry(
+                  tab.label,
+                  SizedBox(
+                    width: segmentWidth,
+                    child: Center(
+                      child: Text(
+                        tab.value,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: DynamicStyling.getBlack(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } else if (widget.legacy != true) {
       return CupertinoSlidingSegmentedControl<String>(
         backgroundColor: DynamicStyling.getLightGrey(context),
         thumbColor: DynamicStyling.getWhite(context),

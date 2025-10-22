@@ -482,6 +482,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     return Container(
       // height: 84,
       child: CustomTabs(
+        expand: true,
         initialValue: _selectedMealTime.toString(),
         onValueChanged: (value) {
           print("Meal time changed to $value");

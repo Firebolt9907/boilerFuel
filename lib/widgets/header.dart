@@ -12,11 +12,13 @@ class Header extends StatelessWidget {
     required this.title,
     this.trailingIcon,
     this.trailingPage,
+    this.showBackButton = true,
   });
   final BuildContext context;
   final String title;
   final IconData? trailingIcon;
   final Widget? trailingPage;
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context2) {
@@ -33,31 +35,34 @@ class Header extends StatelessWidget {
       child: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
-          GestureDetector(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              Navigator.of(context).pop();
-            },
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.only(left: 10),
-                child: CupertinoNavigationBarBackButton(
-                  color: DynamicStyling.getBlack(context),
-                  previousPageTitle: "Back",
-                  onPressed: () {
-                    if (Navigator.of(context).canPop()) {
-                      Navigator.of(context).pop(context);
-                    } else {
-                      customCupertinoSheet.CupertinoSheetRoute.popSheet(
-                        context,
-                      );
-                    }
-                  },
+          if (showBackButton)
+            GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop();
+              },
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: CupertinoNavigationBarBackButton(
+                    color: DynamicStyling.getBlack(context),
+                    previousPageTitle: "Back",
+                    onPressed: () {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).pop(context);
+                      } else {
+                        customCupertinoSheet.CupertinoSheetRoute.popSheet(
+                          context,
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
-            ),
-          ),
+            )
+          else
+            SizedBox(height: 12),
           Padding(
             padding: const EdgeInsets.only(left: 24.0, bottom: 18, right: 24),
             child: Row(
@@ -66,11 +71,16 @@ class Header extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: DynamicStyling.getBlack(context),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width - 120,
+                      ),
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: DynamicStyling.getBlack(context),
+                        ),
                       ),
                     ),
                   ],
