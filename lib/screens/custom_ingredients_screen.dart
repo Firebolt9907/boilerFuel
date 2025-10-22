@@ -43,6 +43,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
   final List<String> _suggestionChips = [
     'BEEF',
     'PORK',
+    'CHICKEN',
     'LAMB',
     'TURKEY',
     'DUCK',
@@ -62,6 +63,7 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
   final List<String> _hardcodedAllergens = [
     'BEEF',
     'PORK',
+    'CHICKEN',
     'LAMB',
     'TURKEY',
     'DUCK',
@@ -298,6 +300,10 @@ class _CustomIngredientsScreenState extends State<CustomIngredientsScreen>
                                   ? _removeIngredient(suggestion)
                                   : _addFromSuggestion(suggestion),
                               child: DefaultContainer(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 10,
+                                ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   color: DynamicStyling.getWhite(context),

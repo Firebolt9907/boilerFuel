@@ -8,6 +8,7 @@ import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/custom_tabs.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
+import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
 import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:flutter/foundation.dart';
@@ -226,68 +227,69 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
       body: Column(
         children: [
           // Header
-          Container(
-            decoration: BoxDecoration(
-              color: DynamicStyling.getWhite(context),
-              border: Border(
-                bottom: BorderSide(color: DynamicStyling.getGrey(context)),
-              ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: MediaQuery.of(context).padding.top),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.of(context).pop();
-                  },
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: styling.gray,
-                        ),
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          Navigator.of(context).pop();
-                        },
-                      ),
+          Header(context: context, title: "Suggested Meals"),
+          // Container(
+          //   decoration: BoxDecoration(
+          //     color: DynamicStyling.getWhite(context),
+          //     border: Border(
+          //       bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+          //     ),
+          //   ),
+          //   child: Column(
+          //     children: [
+          //       SizedBox(height: MediaQuery.of(context).padding.top),
+          //       GestureDetector(
+          //         onTap: () {
+          //           HapticFeedback.lightImpact();
+          //           Navigator.of(context).pop();
+          //         },
+          //         child: Row(
+          //           children: [
+          //             IconButton(
+          //               icon: Icon(
+          //                 Icons.arrow_back_ios_new,
+          //                 color: styling.gray,
+          //               ),
+          //               onPressed: () {
+          //                 HapticFeedback.lightImpact();
+          //                 Navigator.of(context).pop();
+          //               },
+          //             ),
 
-                      Text(
-                        'Back',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: styling.gray,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 24.0, bottom: 18),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Suggested Meals",
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: DynamicStyling.getBlack(context),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          //             Text(
+          //               'Back',
+          //               style: TextStyle(
+          //                 fontSize: 14,
+          //                 fontWeight: FontWeight.bold,
+          //                 color: styling.gray,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       Padding(
+          //         padding: const EdgeInsets.only(left: 24.0, bottom: 18),
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //           children: [
+          //             Column(
+          //               crossAxisAlignment: CrossAxisAlignment.start,
+          //               children: [
+          //                 Text(
+          //                   "Suggested Meals",
+          //                   style: TextStyle(
+          //                     fontSize: 24,
+          //                     color: DynamicStyling.getBlack(context),
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
 
           // Content
           Expanded(

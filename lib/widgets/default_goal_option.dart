@@ -54,7 +54,10 @@ class _DefaultGoalOptionState extends State<DefaultGoalOption>
         child: AnimatedContainer(
           duration: Duration(milliseconds: 200),
           width: double.infinity,
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.symmetric(
+            horizontal: widget.isSelected ? 10 : 16,
+            vertical: 10,
+          ),
           decoration: BoxDecoration(
             color: DynamicStyling.getLightGrey(
               context,
@@ -64,7 +67,7 @@ class _DefaultGoalOptionState extends State<DefaultGoalOption>
               color: widget.isSelected
                   ? Colors.transparent
                   : DynamicStyling.getLightGrey(context),
-              width: 2,
+              width: widget.isSelected ? 8 : 2,
             ),
           ),
 

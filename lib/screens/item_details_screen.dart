@@ -350,7 +350,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
       decoration: BoxDecoration(
         color: DynamicStyling.getWhite(context),
         border: Border(
-          bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+          bottom: BorderSide(
+            color: DynamicStyling.getLightGrey(context),
+            width: 2,
+          ),
         ),
       ),
       child: Column(
@@ -370,7 +373,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                       child: Text(
                         widget.food.name,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 30,
                           fontWeight: FontWeight.bold,
                           color: DynamicStyling.getBlack(context),
                           fontFamily: '.SF Pro Display',
@@ -385,6 +388,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
               ],
             ),
           ),
+          SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
         ],
       ),
     );

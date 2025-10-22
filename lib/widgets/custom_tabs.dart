@@ -61,7 +61,7 @@ class _CustomTabsState extends State<CustomTabs> {
             (tab) => MapEntry(
               tab.label,
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 0),
                 child: Text(
                   tab.value,
                   style: TextStyle(color: DynamicStyling.getBlack(context)),

@@ -480,55 +480,24 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     if (_availableMealTimes.isEmpty) return SizedBox.shrink();
 
     return Container(
-      height: 44,
-
-      // decoration: BoxDecoration(
-      //   color: DynamicStyling.getLightGrey(context),
-      //   borderRadius: BorderRadius.circular(20),
-      // ),
-      child: CupertinoSlidingSegmentedControl<MealTime>(
-        backgroundColor: DynamicStyling.getLightGrey(context),
-        thumbColor: DynamicStyling.getWhite(context),
-        groupValue: _selectedMealTime,
-        onValueChanged: (MealTime? value) {
-          if (value != null) {
-            setState(() {
-              _selectedMealTime = value;
-            });
-          }
+      // height: 84,
+      child: CustomTabs(
+        initialValue: _selectedMealTime.toString(),
+        onValueChanged: (value) {
+          print("Meal time changed to $value");
+          setState(() {
+            _selectedMealTime = MealTime.fromString(value);
+            _updateStationFoods();
+          });
         },
-        children: Map<MealTime, Widget>.fromEntries(
-          _availableMealTimes.map(
-            (mealTime) => MapEntry(
-              mealTime,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  mealTime.toString(),
-                  style: TextStyle(color: DynamicStyling.getBlack(context)),
-                ),
-              ),
+        tabs: [
+          for (MealTime mealTime in _availableMealTimes)
+            TabItem(
+              label: mealTime.toDisplayString(),
+              value: mealTime.toString(),
             ),
-          ),
-        ),
+        ],
       ),
-      // child: CustomTabs(
-      //   initialValue: _selectedMealTime.toString(),
-      //   onValueChanged: (value) {
-      //     print("Meal time changed to $value");
-      //     setState(() {
-      //       _selectedMealTime = MealTime.fromString(value);
-      //       _updateStationFoods();
-      //     });
-      //   },
-      //   tabs: [
-      //     for (MealTime mealTime in _availableMealTimes)
-      //       TabItem(
-      //         label: mealTime.toDisplayString(),
-      //         value: mealTime.toString(),
-      //       ),
-      //   ],
-      // ),
     );
   }
 

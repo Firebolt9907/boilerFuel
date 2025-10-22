@@ -4,6 +4,7 @@ import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
+import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,73 +69,74 @@ class _CollectionScreenState extends State<CollectionScreen>
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: DynamicStyling.getWhite(context),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: DynamicStyling.getGrey(context),
-                        ),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: MediaQuery.of(context).padding.top),
-                        GestureDetector(
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.of(context).pop();
-                          },
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(
-                                  Icons.arrow_back_ios_new,
-                                  color: styling.gray,
-                                ),
-                                onPressed: () {
-                                  HapticFeedback.lightImpact();
-                                  Navigator.of(context).pop();
-                                },
-                              ),
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     color: DynamicStyling.getWhite(context),
+                  //     border: Border(
+                  //       bottom: BorderSide(
+                  //         color: DynamicStyling.getGrey(context),
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   child: Column(
+                  //     children: [
+                  //       SizedBox(height: MediaQuery.of(context).padding.top),
+                  //       GestureDetector(
+                  //         onTap: () {
+                  //           HapticFeedback.lightImpact();
+                  //           Navigator.of(context).pop();
+                  //         },
+                  //         child: Row(
+                  //           children: [
+                  //             IconButton(
+                  //               icon: Icon(
+                  //                 Icons.arrow_back_ios_new,
+                  //                 color: styling.gray,
+                  //               ),
+                  //               onPressed: () {
+                  //                 HapticFeedback.lightImpact();
+                  //                 Navigator.of(context).pop();
+                  //               },
+                  //             ),
 
-                              Text(
-                                'Back',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: styling.gray,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 24.0,
-                            bottom: 18,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.collectionName,
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      color: DynamicStyling.getBlack(context),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  //             Text(
+                  //               'Back',
+                  //               style: TextStyle(
+                  //                 fontSize: 14,
+                  //                 fontWeight: FontWeight.bold,
+                  //                 color: styling.gray,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       Padding(
+                  //         padding: const EdgeInsets.only(
+                  //           left: 24.0,
+                  //           bottom: 18,
+                  //         ),
+                  //         child: Row(
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             Column(
+                  //               crossAxisAlignment: CrossAxisAlignment.start,
+                  //               children: [
+                  //                 Text(
+                  //                   widget.collectionName,
+                  //                   style: TextStyle(
+                  //                     fontSize: 24,
+                  //                     color: DynamicStyling.getBlack(context),
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  Header(context: context, title: widget.collectionName),
                   // Collection info header
                   // _buildCollectionHeader(),
 

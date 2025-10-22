@@ -40,16 +40,21 @@ class Header extends StatelessWidget {
             },
             child: Align(
               alignment: Alignment.centerLeft,
-              child: CupertinoNavigationBarBackButton(
-                color: DynamicStyling.getBlack(context),
-                previousPageTitle: "Back",
-                onPressed: () {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop(context);
-                  } else {
-                    customCupertinoSheet.CupertinoSheetRoute.popSheet(context);
-                  }
-                },
+              child: Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: CupertinoNavigationBarBackButton(
+                  color: DynamicStyling.getBlack(context),
+                  previousPageTitle: "Back",
+                  onPressed: () {
+                    if (Navigator.of(context).canPop()) {
+                      Navigator.of(context).pop(context);
+                    } else {
+                      customCupertinoSheet.CupertinoSheetRoute.popSheet(
+                        context,
+                      );
+                    }
+                  },
+                ),
               ),
             ),
           ),
