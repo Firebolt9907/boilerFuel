@@ -413,7 +413,14 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                             !useMealPlanning),
                   ),
 
-                  SizedBox(height: 20),
+                  SizedBox(
+                    height:
+                        20 +
+                        (MediaQuery.viewInsetsOf(context).bottom <=
+                                MediaQuery.viewPaddingOf(context).bottom
+                            ? MediaQuery.viewPaddingOf(context).bottom
+                            : MediaQuery.viewInsetsOf(context).bottom),
+                  ),
 
                   // Progress indicator
                   // Row(
