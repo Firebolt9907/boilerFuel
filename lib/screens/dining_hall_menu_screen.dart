@@ -95,7 +95,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
   // Scroll animation variables
   late ScrollController _scrollController;
-  double _scrollCollapseThreshold = 50.0; // Pixels scrolled to fully collapse
+  double _scrollCollapseThreshold = 80.0; // Pixels scrolled to fully collapse
   double _currentScrollProgress =
       0.0; // 0.0 = fully expanded, 1.0 = fully collapsed
   double _lastScrollPosition = 0.0;
@@ -117,6 +117,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   }
 
   void _onScroll() {
+    // TODO: Replace setState with ValueNotifier to improve performance
     double scrollPixels = _scrollController.position.pixels;
 
     // Don't process animation if we're at the very top (scrollPixels <= 0)
@@ -583,6 +584,9 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           }
         },
         child: DefaultContainer(
+          primaryColor: !foodItem.isCollection && foodItem.firstFood.restricted
+              ? Colors.red
+              : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

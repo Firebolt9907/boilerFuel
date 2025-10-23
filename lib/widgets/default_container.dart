@@ -9,6 +9,7 @@ class DefaultContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTap;
   final Color? splashColor;
+  final Color? primaryColor;
 
   const DefaultContainer({
     super.key,
@@ -17,6 +18,7 @@ class DefaultContainer extends StatelessWidget {
     this.padding,
     this.onTap,
     this.splashColor,
+    this.primaryColor,
   });
 
   @override
@@ -26,9 +28,12 @@ class DefaultContainer extends StatelessWidget {
         decoration ??
         BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: DynamicStyling.getWhite(context),
+          color:
+              primaryColor?.withAlpha(40) ?? DynamicStyling.getWhite(context),
           border: Border.all(
-            color: DynamicStyling.getLightGrey(context),
+            color:
+                primaryColor?.withAlpha(100) ??
+                DynamicStyling.getLightGrey(context),
             width: 2,
           ),
         );
