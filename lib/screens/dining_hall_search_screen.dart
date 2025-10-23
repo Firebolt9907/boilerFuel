@@ -221,10 +221,13 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
       body: Column(
         children: [
           // Header
-          Header(context: context, title: "Search for Foods" +
-                                  (widget.diningHall != null
-                                      ? " at ${widget.diningHall}"
-                                      : "")),
+          Header(
+            context: context,
+            title:
+                "Search for Foods" +
+                (widget.diningHall != null ? " at ${widget.diningHall}" : ""),
+            showBackButton: false,
+          ),
           // Container(
           //   decoration: BoxDecoration(
           //     color: DynamicStyling.getWhite(context),
@@ -425,6 +428,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
       // ),
       child: CustomTabs(
         initialValue: _selectedMealTime.toString(),
+        expand: true,
         onValueChanged: (value) {
           print("Meal time changed to $value");
           setState(() {
