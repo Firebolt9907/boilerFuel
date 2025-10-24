@@ -524,7 +524,53 @@ Widget _buildNutritionLabel(BuildContext context, Food food) {
           ),
 
           Container(color: DynamicStyling.getGrey(context), height: 1),
-
+          if (food.saturatedFat != -1) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Saturated Fat ',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: DynamicStyling.getBlack(context),
+                            fontFamily: '.SF Pro Display',
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${food.saturatedFat.ceil()}g',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: DynamicStyling.getBlack(context),
+                            fontFamily: '.SF Pro Text',
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    "${(food.saturatedFat * 100 / 50).ceil()}%",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: DynamicStyling.getBlack(context),
+                      fontFamily: '.SF Pro Display',
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(color: DynamicStyling.getGrey(context), height: 1),
+          ],
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -569,52 +615,96 @@ Widget _buildNutritionLabel(BuildContext context, Food food) {
 
           Container(color: DynamicStyling.getGrey(context), height: 1),
 
-          Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Total Sugars ',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          color: DynamicStyling.getBlack(context),
-                          fontFamily: '.SF Pro Display',
-                          decoration: TextDecoration.none,
-                        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Total Sugars ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: DynamicStyling.getBlack(context),
+                        fontFamily: '.SF Pro Display',
+                        decoration: TextDecoration.none,
                       ),
-                      TextSpan(
-                        text: '${food.sugar.ceil()}g',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          color: DynamicStyling.getBlack(context),
-                          fontFamily: '.SF Pro Text',
-                          decoration: TextDecoration.none,
-                        ),
+                    ),
+                    TextSpan(
+                      text: '${food.sugar.ceil()}g',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: DynamicStyling.getBlack(context),
+                        fontFamily: '.SF Pro Text',
+                        decoration: TextDecoration.none,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Text(
-                  "${(food.sugar * 100 / 50).ceil()}%",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
-                    color: DynamicStyling.getBlack(context),
-                    fontFamily: '.SF Pro Display',
-                    decoration: TextDecoration.none,
-                  ),
+              ),
+              Text(
+                "${(food.sugar * 100 / 50).ceil()}%",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: DynamicStyling.getBlack(context),
+                  fontFamily: '.SF Pro Display',
+                  decoration: TextDecoration.none,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
 
           Container(color: DynamicStyling.getGrey(context), height: 1),
+          if (food.addedSugars != -1) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Added Sugars ',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: DynamicStyling.getBlack(context),
+                            fontFamily: '.SF Pro Display',
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${food.addedSugars.ceil()}g',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: DynamicStyling.getBlack(context),
+                            fontFamily: '.SF Pro Text',
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    "${(food.addedSugars * 100 / 50).ceil()}%",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: DynamicStyling.getBlack(context),
+                      fontFamily: '.SF Pro Display',
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(color: DynamicStyling.getGrey(context), height: 1),
+          ],
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
