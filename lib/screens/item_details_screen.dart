@@ -1,13 +1,9 @@
-import 'package:boiler_fuel/main.dart';
-import 'package:boiler_fuel/widgets/custom_app_bar.dart';
-import 'package:boiler_fuel/widgets/titanium_container.dart';
 import 'package:bottom_sheet_scroll_physics/bottom_sheet_scroll_physics.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import '../constants.dart';
 import '../styling.dart';
-import 'dart:math' as math;
 
 class ItemDetailsScreen extends StatefulWidget {
   final Food food;
@@ -25,54 +21,13 @@ class ItemDetailsScreen extends StatefulWidget {
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen>
     with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late AnimationController _floatingController;
-  late AnimationController _pulseController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _floatingAnimation;
-  late Animation<double> _pulseAnimation;
-
   @override
   void initState() {
     super.initState();
-
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _floatingController = AnimationController(
-      duration: Duration(milliseconds: 4000),
-      vsync: this,
-    );
-    _pulseController = AnimationController(
-      duration: Duration(milliseconds: 2000),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 1.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    _floatingAnimation = Tween<double>(begin: -10.0, end: 10.0).animate(
-      CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut),
-    );
-    _pulseAnimation = Tween<double>(begin: 0.95, end: 1.05).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    _animationController.forward();
-    Future.delayed(Duration(milliseconds: 400), () {
-      if (mounted) {
-        _floatingController.repeat(reverse: true);
-        _pulseController.repeat(reverse: true);
-      }
-    });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _floatingController.dispose();
-    _pulseController.dispose();
     super.dispose();
   }
 
@@ -399,13 +354,6 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
           SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
         ],
       ),
-    );
-  }
-
-  Widget _buildFoodsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [_buildIngredients(widget.food, 0)],
     );
   }
 
