@@ -217,7 +217,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: DynamicStyling.getWhite(context),
       body: Column(
         children: [
           // Header

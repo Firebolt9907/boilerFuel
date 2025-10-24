@@ -155,6 +155,7 @@ class _DietPreferenceSwipeScreenState extends State<DietPreferenceSwipeScreen>
     final isCompleted = _currentIndex >= _preferences.length;
 
     return Scaffold(
+      backgroundColor: DynamicStyling.getWhite(context),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

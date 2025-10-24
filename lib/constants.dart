@@ -14,6 +14,8 @@ class Food {
   bool restricted;
   String rejectedReason;
   String? collection;
+  bool isFavorited;
+  String servingSize;
 
   Food({
     required this.name,
@@ -29,6 +31,8 @@ class Food {
     this.rejectedReason = "",
     this.station = "",
     this.collection,
+    this.isFavorited = false,
+    this.servingSize = "100g",
   });
 
   Map<String, dynamic> toMap() {
@@ -46,6 +50,8 @@ class Food {
       'station': station,
       'collection': collection,
       'restricted': restricted,
+      'isFavorited': isFavorited,
+      'servingSize': servingSize,
     };
   }
 
@@ -55,7 +61,7 @@ class Food {
   }
 
   String toMiniString() {
-    return '{name:$name,id:$id,calories:$calories,protein:$protein,carbs:$carbs,fat:$fat,sugar:$sugar,restricted:$restricted}';
+    return '{name:$name,id:$id,calories:$calories,protein:$protein,carbs:$carbs,fat:$fat,sugar:$sugar,restricted:$restricted,isFavorited:$isFavorited,servingSize:$servingSize}';
   }
 
   factory Food.fromMap(Map<String, dynamic> map) {
@@ -73,6 +79,8 @@ class Food {
       rejectedReason: map['rejectedReason'] ?? "",
       collection: map['collection'],
       restricted: map['restricted'] ?? false,
+      isFavorited: map['isFavorited'] ?? false,
+      servingSize: map['servingSize'],
     );
   }
 
@@ -119,6 +127,8 @@ class Food {
       ingredients: data['ingredients'] ?? '',
       labels: labels,
       restricted: data['restricted'] ?? false,
+      isFavorited: data['isFavorited'] ?? false,
+      servingSize: data['servingSize'],
     );
   }
 }
@@ -475,7 +485,7 @@ enum MealTime {
     final hour = DateTime.now().hour;
     if (hour < 11) return MealTime.breakfast;
     if (hour < 16) return MealTime.lunch;
-    return MealTime.dinner; 
+    return MealTime.dinner;
   }
 }
 
@@ -1124,7 +1134,7 @@ var ingredientAliases = {
 };
 
 var ingredientAliasFalsePositives = {
-  "pork": ["bun"],
+  "pork": ["bun", "graham"],
 };
 
 class Meal {

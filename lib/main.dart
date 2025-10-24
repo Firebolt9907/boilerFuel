@@ -177,6 +177,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        DynamicStyling.isMaterialYou = lightDynamic != null;
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
@@ -185,11 +186,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     ? lightDynamic
                     : darkDynamic) ??
                 ColorScheme.fromSeed(
-                  seedColor: Colors.blue,
+                  seedColor: Colors.lightBlue,
                   brightness: MediaQuery.of(context).platformBrightness,
                 ),
             useMaterial3: true,
-            // useSystemColors: true,
           ),
           home: user == null ? WelcomeScreen() : HomeScreen(user: user!),
         );

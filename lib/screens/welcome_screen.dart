@@ -33,10 +33,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: DynamicStyling.getWhite(context),
       body: Stack(
         children: [
-          // Floating decorative elements
-
           // Main content
           Padding(
             padding: EdgeInsets.only(

@@ -1,4 +1,5 @@
 import 'package:boiler_fuel/main.dart';
+import 'package:boiler_fuel/styling.dart';
 
 import 'package:flutter/material.dart';
 
@@ -29,8 +30,8 @@ class DefaultButton extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           backgroundColor: isEnabled
-              ? Theme.of(context).buttonTheme.colorScheme!.onSurface
-              : Color(0xff818089),
+              ? DynamicStyling.getBlack(context)
+              : DynamicStyling.getGrey(context),
         ),
       ),
     );
