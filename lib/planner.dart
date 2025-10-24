@@ -76,6 +76,7 @@ class CalorieMacroCalculator {
     required Gender gender,
     ActivityLevel activityLevel = ActivityLevel.sedentary,
     required Goal goal,
+    double? weeklyChangeLbs,
     double proteinPercentage = 0.25, // 25% protein
     double fatPercentage = 0.25, // 25% fat
     // Carbs will be the remainder (50%)
@@ -96,7 +97,13 @@ class CalorieMacroCalculator {
     );
 
     double tdee = calculateTDEE(bmr, activityLevel);
-    double targetCalories = adjustCaloriesForGoal(tdee, goal);
+    double targetCalories;
+    if (weeklyChangeLbs != null) {
+      // Use 3500 kcal per lb ≈ 500 kcal/day per lb/week
+      targetCalories = tdee + (weeklyChangeLbs * 500);
+    } else {
+      targetCalories = adjustCaloriesForGoal(tdee, goal);
+    }
 
     // Ensure minimum calories for safety
     targetCalories = max(targetCalories, gender == Gender.female ? 1200 : 1500);

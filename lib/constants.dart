@@ -348,6 +348,7 @@ class User {
   MacroResult macros;
   final int age;
   final Gender gender;
+  final ActivityLevel activityLevel;
 
   User({
     required this.uid,
@@ -363,6 +364,7 @@ class User {
     required this.age,
     required this.gender,
     required this.macros,
+    this.activityLevel = ActivityLevel.sedentary,
   });
 
   Map<String, dynamic> toMap() {
@@ -380,6 +382,7 @@ class User {
       'age': age,
       'gender': gender.toString(),
       'macros': macros.toMap(),
+      'activityLevel': activityLevel.toString(),
     };
   }
 
@@ -400,7 +403,30 @@ class User {
       age: map['age'] ?? 19,
       macros: MacroResult.fromMap(map['macros']),
       gender: Gender.fromString(map['gender']) ?? Gender.male,
+      activityLevel: _parseActivityLevel(map['activityLevel'] as String?),
     );
+  }
+
+  static ActivityLevel _parseActivityLevel(String? value) {
+    if (value == null) return ActivityLevel.sedentary;
+    try {
+      switch (value) {
+        case 'ActivityLevel.sedentary':
+          return ActivityLevel.sedentary;
+        case 'ActivityLevel.lightly':
+          return ActivityLevel.lightly;
+        case 'ActivityLevel.moderately':
+          return ActivityLevel.moderately;
+        case 'ActivityLevel.very':
+          return ActivityLevel.very;
+        case 'ActivityLevel.extremely':
+          return ActivityLevel.extremely;
+        default:
+          return ActivityLevel.sedentary;
+      }
+    } catch (e) {
+      return ActivityLevel.sedentary;
+    }
   }
 }
 
