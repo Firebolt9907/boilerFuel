@@ -7,13 +7,19 @@ class Database {
   Future<Food> getFoodByID(String foodID) async {
     Food? localFood = await LocalDatabase().getFoodByID(foodID);
     if (localFood != null) {
+      print("Food $foodID found locally");
       return localFood;
     }
+
     Food? fbFood = await FBDatabase().getFoodByID(foodID);
     if (fbFood != null) {
+      print("Food $foodID not found locally, fetched from Firebase");
       await LocalDatabase().addFood(fbFood);
       return fbFood;
     }
+    print(
+      "Food $foodID not found locally or in Firebase, fetching from WebAPI",
+    );
     Food newFood = (await WebAPI().fetchFoodResponse(foodID))!;
     await LocalDatabase().addFood(newFood);
     return newFood;
@@ -88,8 +94,9 @@ class Database {
       print(
         "Dining hall $diningHallID not found locally, fetching from Firebase",
       );
-      DiningHall? fbDiningHall =
-          await FBDatabase().getDiningHallByName(diningHallID);
+      DiningHall? fbDiningHall = await FBDatabase().getDiningHallByName(
+        diningHallID,
+      );
       if (fbDiningHall != null) {
         await LocalDatabase().addDiningHall(fbDiningHall);
       }
