@@ -265,6 +265,9 @@ DO NOT include any other text outside of the JSON block.
                 carbs: (f['carbs'] ?? 0).toDouble(),
                 sugar: (f['sugar'] ?? 0).toDouble(),
                 ingredients: "",
+                saturatedFat: 0,
+                addedSugars: 0,
+                servingSize: "1 serving",
                 labels: [],
               );
             },
@@ -415,7 +418,11 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
                     fat: (f['fats'] ?? 0).toDouble(),
                     carbs: (f['carbs'] ?? 0).toDouble(),
                     sugar: (f['sugar'] ?? 0).toDouble(),
+                    saturatedFat: 0,
+                    addedSugars: 0,
+                    servingSize: "1 serving",
                     ingredients: "UNKNOWN",
+
                     labels: [],
                   );
                 },

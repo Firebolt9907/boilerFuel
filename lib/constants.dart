@@ -16,6 +16,8 @@ class Food {
   String? collection;
   bool isFavorited;
   String servingSize;
+  double saturatedFat;
+  double addedSugars;
 
   Food({
     required this.name,
@@ -32,7 +34,9 @@ class Food {
     this.station = "",
     this.collection,
     this.isFavorited = false,
-    this.servingSize = "100g",
+    required this.servingSize,
+    required this.saturatedFat,
+    required this.addedSugars,
   });
 
   Map<String, dynamic> toMap() {
@@ -52,6 +56,8 @@ class Food {
       'restricted': restricted,
       'isFavorited': isFavorited,
       'servingSize': servingSize,
+      'saturatedFat': saturatedFat,
+      'addedSugars': addedSugars,
     };
   }
 
@@ -61,7 +67,7 @@ class Food {
   }
 
   String toMiniString() {
-    return '{name:$name,id:$id,calories:$calories,protein:$protein,carbs:$carbs,fat:$fat,sugar:$sugar,restricted:$restricted,isFavorited:$isFavorited,servingSize:$servingSize}';
+    return '{name:$name,id:$id,calories:$calories,protein:$protein,carbs:$carbs,fat:$fat,sugar:$sugar,restricted:$restricted,isFavorited:$isFavorited,servingSize:$servingSize,saturatedFat:$saturatedFat,addedSugars:$addedSugars,servingSize:$servingSize}';
   }
 
   factory Food.fromMap(Map<String, dynamic> map) {
@@ -83,6 +89,8 @@ class Food {
       servingSize: map['servingSize'] == null
           ? "1 serving"
           : map['servingSize'],
+      saturatedFat: (map['saturatedFat'] ?? -1) * 1.0,
+      addedSugars: (map['addedSugars'] ?? -1) * 1.0,
     );
   }
 
@@ -101,6 +109,9 @@ class Food {
     double carbs = -1;
     double fat = -1;
     double sugar = -1;
+    double addedSugars = -1;
+    double saturatedFat = -1;
+    String servingSize = "1 serving";
 
     if (data['nutritionFacts'] != null) {
       for (var fact in data['nutritionFacts']) {
@@ -114,6 +125,12 @@ class Food {
           fat = (fact['value'] ?? 0).toDouble();
         } else if (fact['name'] == 'Sugars') {
           sugar = (fact['value'] ?? 0).toDouble();
+        } else if (fact['name'] == 'Added Sugars') {
+          addedSugars = (fact['value'] ?? 0).toDouble();
+        } else if (fact['name'] == 'Saturated Fat') {
+          saturatedFat = (fact['value'] ?? 0).toDouble();
+        } else if (fact['name'] == 'Serving Size') {
+          servingSize = fact['label'] ?? "1 serving";
         }
       }
     }
@@ -130,7 +147,9 @@ class Food {
       labels: labels,
       restricted: data['restricted'] ?? false,
       isFavorited: data['isFavorited'] ?? false,
-      servingSize: data['servingSize'] ?? '1 serving',
+      servingSize: servingSize,
+      saturatedFat: saturatedFat,
+      addedSugars: addedSugars,
     );
   }
 }
@@ -907,11 +926,11 @@ class DiningHallStatus {
     String formatTimeOfDay(TimeOfDay time, BuildContext context) {
       final is24Hour = MediaQuery.of(context).alwaysUse24HourFormat;
       if (is24Hour) {
-        return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+        return '${time.hour.toString()}:${time.minute.toString().padLeft(2, '0')}';
       } else {
         final hour = time.hourOfPeriod;
         final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-        return '${hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')} $period';
+        return '${hour.toString()}:${time.minute.toString().padLeft(2, '0')} $period';
       }
     }
 

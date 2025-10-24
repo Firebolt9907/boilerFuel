@@ -1,16 +1,13 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'local_database.dart';
-
+// dart format width=80
+// GENERATED CODE, DO NOT EDIT BY HAND.
 // ignore_for_file: type=lint
-class $UsersTableTable extends UsersTable
-    with TableInfo<$UsersTableTable, UsersTableData> {
+import 'package:drift/drift.dart';
+
+class UsersTable extends Table with TableInfo<UsersTable, UsersTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $UsersTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
+  UsersTable(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
@@ -22,8 +19,6 @@ class $UsersTableTable extends UsersTable
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
-  @override
   late final GeneratedColumn<String> uid = GeneratedColumn<String>(
     'uid',
     aliasedName,
@@ -31,8 +26,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
     aliasedName,
@@ -40,10 +33,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _useDietaryMeta = const VerificationMeta(
-    'useDietary',
-  );
-  @override
   late final GeneratedColumn<bool> useDietary = GeneratedColumn<bool>(
     'use_dietary',
     aliasedName,
@@ -54,10 +43,6 @@ class $UsersTableTable extends UsersTable
       'CHECK ("use_dietary" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _useMealPlanningMeta = const VerificationMeta(
-    'useMealPlanning',
-  );
-  @override
   late final GeneratedColumn<bool> useMealPlanning = GeneratedColumn<bool>(
     'use_meal_planning',
     aliasedName,
@@ -68,8 +53,6 @@ class $UsersTableTable extends UsersTable
       'CHECK ("use_meal_planning" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _genderMeta = const VerificationMeta('gender');
-  @override
   late final GeneratedColumn<String> gender = GeneratedColumn<String>(
     'gender',
     aliasedName,
@@ -77,8 +60,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _ageMeta = const VerificationMeta('age');
-  @override
   late final GeneratedColumn<int> age = GeneratedColumn<int>(
     'age',
     aliasedName,
@@ -86,8 +67,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _weightMeta = const VerificationMeta('weight');
-  @override
   late final GeneratedColumn<int> weight = GeneratedColumn<int>(
     'weight',
     aliasedName,
@@ -95,8 +74,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _heightMeta = const VerificationMeta('height');
-  @override
   late final GeneratedColumn<int> height = GeneratedColumn<int>(
     'height',
     aliasedName,
@@ -104,8 +81,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _goalMeta = const VerificationMeta('goal');
-  @override
   late final GeneratedColumn<String> goal = GeneratedColumn<String>(
     'goal',
     aliasedName,
@@ -113,9 +88,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dietaryRestrictionsMeta =
-      const VerificationMeta('dietaryRestrictions');
-  @override
   late final GeneratedColumn<String> dietaryRestrictions =
       GeneratedColumn<String>(
         'dietary_restrictions',
@@ -124,10 +96,6 @@ class $UsersTableTable extends UsersTable
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       );
-  static const VerificationMeta _mealPlanMeta = const VerificationMeta(
-    'mealPlan',
-  );
-  @override
   late final GeneratedColumn<String> mealPlan = GeneratedColumn<String>(
     'meal_plan',
     aliasedName,
@@ -135,9 +103,6 @@ class $UsersTableTable extends UsersTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _diningCourtRankingMeta =
-      const VerificationMeta('diningCourtRanking');
-  @override
   late final GeneratedColumn<String> diningCourtRanking =
       GeneratedColumn<String>(
         'dining_court_ranking',
@@ -146,8 +111,6 @@ class $UsersTableTable extends UsersTable
         type: DriftSqlType.string,
         requiredDuringInsert: true,
       );
-  static const VerificationMeta _macrosMeta = const VerificationMeta('macros');
-  @override
   late final GeneratedColumn<String> macros = GeneratedColumn<String>(
     'macros',
     aliasedName,
@@ -177,132 +140,6 @@ class $UsersTableTable extends UsersTable
   @override
   String get actualTableName => $name;
   static const String $name = 'users_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<UsersTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('uid')) {
-      context.handle(
-        _uidMeta,
-        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_uidMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('use_dietary')) {
-      context.handle(
-        _useDietaryMeta,
-        useDietary.isAcceptableOrUnknown(data['use_dietary']!, _useDietaryMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_useDietaryMeta);
-    }
-    if (data.containsKey('use_meal_planning')) {
-      context.handle(
-        _useMealPlanningMeta,
-        useMealPlanning.isAcceptableOrUnknown(
-          data['use_meal_planning']!,
-          _useMealPlanningMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_useMealPlanningMeta);
-    }
-    if (data.containsKey('gender')) {
-      context.handle(
-        _genderMeta,
-        gender.isAcceptableOrUnknown(data['gender']!, _genderMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_genderMeta);
-    }
-    if (data.containsKey('age')) {
-      context.handle(
-        _ageMeta,
-        age.isAcceptableOrUnknown(data['age']!, _ageMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_ageMeta);
-    }
-    if (data.containsKey('weight')) {
-      context.handle(
-        _weightMeta,
-        weight.isAcceptableOrUnknown(data['weight']!, _weightMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_weightMeta);
-    }
-    if (data.containsKey('height')) {
-      context.handle(
-        _heightMeta,
-        height.isAcceptableOrUnknown(data['height']!, _heightMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_heightMeta);
-    }
-    if (data.containsKey('goal')) {
-      context.handle(
-        _goalMeta,
-        goal.isAcceptableOrUnknown(data['goal']!, _goalMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_goalMeta);
-    }
-    if (data.containsKey('dietary_restrictions')) {
-      context.handle(
-        _dietaryRestrictionsMeta,
-        dietaryRestrictions.isAcceptableOrUnknown(
-          data['dietary_restrictions']!,
-          _dietaryRestrictionsMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dietaryRestrictionsMeta);
-    }
-    if (data.containsKey('meal_plan')) {
-      context.handle(
-        _mealPlanMeta,
-        mealPlan.isAcceptableOrUnknown(data['meal_plan']!, _mealPlanMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_mealPlanMeta);
-    }
-    if (data.containsKey('dining_court_ranking')) {
-      context.handle(
-        _diningCourtRankingMeta,
-        diningCourtRanking.isAcceptableOrUnknown(
-          data['dining_court_ranking']!,
-          _diningCourtRankingMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_diningCourtRankingMeta);
-    }
-    if (data.containsKey('macros')) {
-      context.handle(
-        _macrosMeta,
-        macros.isAcceptableOrUnknown(data['macros']!, _macrosMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_macrosMeta);
-    }
-    return context;
-  }
-
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
@@ -369,8 +206,8 @@ class $UsersTableTable extends UsersTable
   }
 
   @override
-  $UsersTableTable createAlias(String alias) {
-    return $UsersTableTable(attachedDatabase, alias);
+  UsersTable createAlias(String alias) {
+    return UsersTable(attachedDatabase, alias);
   }
 }
 
@@ -806,14 +643,11 @@ class UsersTableCompanion extends UpdateCompanion<UsersTableData> {
   }
 }
 
-class $MealsTableTable extends MealsTable
-    with TableInfo<$MealsTableTable, MealsTableData> {
+class MealsTable extends Table with TableInfo<MealsTable, MealsTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $MealsTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
+  MealsTable(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
@@ -825,10 +659,6 @@ class $MealsTableTable extends MealsTable
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _diningCourtMeta = const VerificationMeta(
-    'diningCourt',
-  );
-  @override
   late final GeneratedColumn<String> diningCourt = GeneratedColumn<String>(
     'dining_court',
     aliasedName,
@@ -836,8 +666,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
-  @override
   late final GeneratedColumn<String> date = GeneratedColumn<String>(
     'date',
     aliasedName,
@@ -845,10 +673,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _mealTimeMeta = const VerificationMeta(
-    'mealTime',
-  );
-  @override
   late final GeneratedColumn<String> mealTime = GeneratedColumn<String>(
     'meal_time',
     aliasedName,
@@ -856,8 +680,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
     aliasedName,
@@ -865,10 +687,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _foodItemsMeta = const VerificationMeta(
-    'foodItems',
-  );
-  @override
   late final GeneratedColumn<String> foodItems = GeneratedColumn<String>(
     'food_items',
     aliasedName,
@@ -876,10 +694,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _totalCaloriesMeta = const VerificationMeta(
-    'totalCalories',
-  );
-  @override
   late final GeneratedColumn<double> totalCalories = GeneratedColumn<double>(
     'total_calories',
     aliasedName,
@@ -887,10 +701,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _totalProteinMeta = const VerificationMeta(
-    'totalProtein',
-  );
-  @override
   late final GeneratedColumn<double> totalProtein = GeneratedColumn<double>(
     'total_protein',
     aliasedName,
@@ -898,8 +708,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _mealIdMeta = const VerificationMeta('mealId');
-  @override
   late final GeneratedColumn<String> mealId = GeneratedColumn<String>(
     'meal_id',
     aliasedName,
@@ -907,10 +715,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _totalCarbsMeta = const VerificationMeta(
-    'totalCarbs',
-  );
-  @override
   late final GeneratedColumn<double> totalCarbs = GeneratedColumn<double>(
     'total_carbs',
     aliasedName,
@@ -918,10 +722,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _totalFatsMeta = const VerificationMeta(
-    'totalFats',
-  );
-  @override
   late final GeneratedColumn<double> totalFats = GeneratedColumn<double>(
     'total_fats',
     aliasedName,
@@ -929,10 +729,6 @@ class $MealsTableTable extends MealsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _isFavoritedMeta = const VerificationMeta(
-    'isFavorited',
-  );
-  @override
   late final GeneratedColumn<bool> isFavorited = GeneratedColumn<bool>(
     'is_favorited',
     aliasedName,
@@ -942,12 +738,8 @@ class $MealsTableTable extends MealsTable
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'CHECK ("is_favorited" IN (0, 1))',
     ),
-    defaultValue: const Constant(false),
+    defaultValue: const CustomExpression('0'),
   );
-  static const VerificationMeta _isAIMealMeta = const VerificationMeta(
-    'isAIMeal',
-  );
-  @override
   late final GeneratedColumn<bool> isAIMeal = GeneratedColumn<bool>(
     'is_a_i_meal',
     aliasedName,
@@ -957,12 +749,8 @@ class $MealsTableTable extends MealsTable
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'CHECK ("is_a_i_meal" IN (0, 1))',
     ),
-    defaultValue: const Constant(false),
+    defaultValue: const CustomExpression('0'),
   );
-  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
-    'lastUpdated',
-  );
-  @override
   late final GeneratedColumn<int> lastUpdated = GeneratedColumn<int>(
     'last_updated',
     aliasedName,
@@ -992,134 +780,6 @@ class $MealsTableTable extends MealsTable
   @override
   String get actualTableName => $name;
   static const String $name = 'meals_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<MealsTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('dining_court')) {
-      context.handle(
-        _diningCourtMeta,
-        diningCourt.isAcceptableOrUnknown(
-          data['dining_court']!,
-          _diningCourtMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_diningCourtMeta);
-    }
-    if (data.containsKey('date')) {
-      context.handle(
-        _dateMeta,
-        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
-    if (data.containsKey('meal_time')) {
-      context.handle(
-        _mealTimeMeta,
-        mealTime.isAcceptableOrUnknown(data['meal_time']!, _mealTimeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_mealTimeMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('food_items')) {
-      context.handle(
-        _foodItemsMeta,
-        foodItems.isAcceptableOrUnknown(data['food_items']!, _foodItemsMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_foodItemsMeta);
-    }
-    if (data.containsKey('total_calories')) {
-      context.handle(
-        _totalCaloriesMeta,
-        totalCalories.isAcceptableOrUnknown(
-          data['total_calories']!,
-          _totalCaloriesMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_totalCaloriesMeta);
-    }
-    if (data.containsKey('total_protein')) {
-      context.handle(
-        _totalProteinMeta,
-        totalProtein.isAcceptableOrUnknown(
-          data['total_protein']!,
-          _totalProteinMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_totalProteinMeta);
-    }
-    if (data.containsKey('meal_id')) {
-      context.handle(
-        _mealIdMeta,
-        mealId.isAcceptableOrUnknown(data['meal_id']!, _mealIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_mealIdMeta);
-    }
-    if (data.containsKey('total_carbs')) {
-      context.handle(
-        _totalCarbsMeta,
-        totalCarbs.isAcceptableOrUnknown(data['total_carbs']!, _totalCarbsMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_totalCarbsMeta);
-    }
-    if (data.containsKey('total_fats')) {
-      context.handle(
-        _totalFatsMeta,
-        totalFats.isAcceptableOrUnknown(data['total_fats']!, _totalFatsMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_totalFatsMeta);
-    }
-    if (data.containsKey('is_favorited')) {
-      context.handle(
-        _isFavoritedMeta,
-        isFavorited.isAcceptableOrUnknown(
-          data['is_favorited']!,
-          _isFavoritedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_a_i_meal')) {
-      context.handle(
-        _isAIMealMeta,
-        isAIMeal.isAcceptableOrUnknown(data['is_a_i_meal']!, _isAIMealMeta),
-      );
-    }
-    if (data.containsKey('last_updated')) {
-      context.handle(
-        _lastUpdatedMeta,
-        lastUpdated.isAcceptableOrUnknown(
-          data['last_updated']!,
-          _lastUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastUpdatedMeta);
-    }
-    return context;
-  }
-
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
@@ -1186,8 +846,8 @@ class $MealsTableTable extends MealsTable
   }
 
   @override
-  $MealsTableTable createAlias(String alias) {
-    return $MealsTableTable(attachedDatabase, alias);
+  MealsTable createAlias(String alias) {
+    return MealsTable(attachedDatabase, alias);
   }
 }
 
@@ -1619,14 +1279,11 @@ class MealsTableCompanion extends UpdateCompanion<MealsTableData> {
   }
 }
 
-class $FoodsTableTable extends FoodsTable
-    with TableInfo<$FoodsTableTable, FoodsTableData> {
+class FoodsTable extends Table with TableInfo<FoodsTable, FoodsTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $FoodsTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
+  FoodsTable(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
@@ -1638,8 +1295,6 @@ class $FoodsTableTable extends FoodsTable
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _foodIdMeta = const VerificationMeta('foodId');
-  @override
   late final GeneratedColumn<String> foodId = GeneratedColumn<String>(
     'food_id',
     aliasedName,
@@ -1647,8 +1302,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
     aliasedName,
@@ -1656,10 +1309,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _caloriesMeta = const VerificationMeta(
-    'calories',
-  );
-  @override
   late final GeneratedColumn<double> calories = GeneratedColumn<double>(
     'calories',
     aliasedName,
@@ -1667,10 +1316,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _proteinMeta = const VerificationMeta(
-    'protein',
-  );
-  @override
   late final GeneratedColumn<double> protein = GeneratedColumn<double>(
     'protein',
     aliasedName,
@@ -1678,8 +1323,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _carbsMeta = const VerificationMeta('carbs');
-  @override
   late final GeneratedColumn<double> carbs = GeneratedColumn<double>(
     'carbs',
     aliasedName,
@@ -1687,8 +1330,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _fatsMeta = const VerificationMeta('fats');
-  @override
   late final GeneratedColumn<double> fats = GeneratedColumn<double>(
     'fats',
     aliasedName,
@@ -1696,8 +1337,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _sugarMeta = const VerificationMeta('sugar');
-  @override
   late final GeneratedColumn<double> sugar = GeneratedColumn<double>(
     'sugar',
     aliasedName,
@@ -1705,8 +1344,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _labelsMeta = const VerificationMeta('labels');
-  @override
   late final GeneratedColumn<String> labels = GeneratedColumn<String>(
     'labels',
     aliasedName,
@@ -1714,10 +1351,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _ingredientsMeta = const VerificationMeta(
-    'ingredients',
-  );
-  @override
   late final GeneratedColumn<String> ingredients = GeneratedColumn<String>(
     'ingredients',
     aliasedName,
@@ -1725,10 +1358,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _stationMeta = const VerificationMeta(
-    'station',
-  );
-  @override
   late final GeneratedColumn<String> station = GeneratedColumn<String>(
     'station',
     aliasedName,
@@ -1736,10 +1365,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _collectionMeta = const VerificationMeta(
-    'collection',
-  );
-  @override
   late final GeneratedColumn<String> collection = GeneratedColumn<String>(
     'collection',
     aliasedName,
@@ -1747,10 +1372,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
-    'lastUpdated',
-  );
-  @override
   late final GeneratedColumn<int> lastUpdated = GeneratedColumn<int>(
     'last_updated',
     aliasedName,
@@ -1758,10 +1379,6 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _isFavoritedMeta = const VerificationMeta(
-    'isFavorited',
-  );
-  @override
   late final GeneratedColumn<bool> isFavorited = GeneratedColumn<bool>(
     'is_favorited',
     aliasedName,
@@ -1771,12 +1388,8 @@ class $FoodsTableTable extends FoodsTable
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'CHECK ("is_favorited" IN (0, 1))',
     ),
-    defaultValue: const Constant(false),
+    defaultValue: const CustomExpression('0'),
   );
-  static const VerificationMeta _servingSizeMeta = const VerificationMeta(
-    'servingSize',
-  );
-  @override
   late final GeneratedColumn<String> servingSize = GeneratedColumn<String>(
     'serving_size',
     aliasedName,
@@ -1784,29 +1397,19 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _saturatedFatMeta = const VerificationMeta(
-    'saturatedFat',
-  );
-  @override
   late final GeneratedColumn<double> saturatedFat = GeneratedColumn<double>(
     'saturated_fat',
     aliasedName,
     false,
     type: DriftSqlType.double,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
+    requiredDuringInsert: true,
   );
-  static const VerificationMeta _addedSugarsMeta = const VerificationMeta(
-    'addedSugars',
-  );
-  @override
   late final GeneratedColumn<double> addedSugars = GeneratedColumn<double>(
     'added_sugars',
     aliasedName,
     false,
     type: DriftSqlType.double,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
+    requiredDuringInsert: true,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -1833,157 +1436,6 @@ class $FoodsTableTable extends FoodsTable
   @override
   String get actualTableName => $name;
   static const String $name = 'foods_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<FoodsTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('food_id')) {
-      context.handle(
-        _foodIdMeta,
-        foodId.isAcceptableOrUnknown(data['food_id']!, _foodIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_foodIdMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('calories')) {
-      context.handle(
-        _caloriesMeta,
-        calories.isAcceptableOrUnknown(data['calories']!, _caloriesMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_caloriesMeta);
-    }
-    if (data.containsKey('protein')) {
-      context.handle(
-        _proteinMeta,
-        protein.isAcceptableOrUnknown(data['protein']!, _proteinMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_proteinMeta);
-    }
-    if (data.containsKey('carbs')) {
-      context.handle(
-        _carbsMeta,
-        carbs.isAcceptableOrUnknown(data['carbs']!, _carbsMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_carbsMeta);
-    }
-    if (data.containsKey('fats')) {
-      context.handle(
-        _fatsMeta,
-        fats.isAcceptableOrUnknown(data['fats']!, _fatsMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_fatsMeta);
-    }
-    if (data.containsKey('sugar')) {
-      context.handle(
-        _sugarMeta,
-        sugar.isAcceptableOrUnknown(data['sugar']!, _sugarMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_sugarMeta);
-    }
-    if (data.containsKey('labels')) {
-      context.handle(
-        _labelsMeta,
-        labels.isAcceptableOrUnknown(data['labels']!, _labelsMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_labelsMeta);
-    }
-    if (data.containsKey('ingredients')) {
-      context.handle(
-        _ingredientsMeta,
-        ingredients.isAcceptableOrUnknown(
-          data['ingredients']!,
-          _ingredientsMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_ingredientsMeta);
-    }
-    if (data.containsKey('station')) {
-      context.handle(
-        _stationMeta,
-        station.isAcceptableOrUnknown(data['station']!, _stationMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_stationMeta);
-    }
-    if (data.containsKey('collection')) {
-      context.handle(
-        _collectionMeta,
-        collection.isAcceptableOrUnknown(data['collection']!, _collectionMeta),
-      );
-    }
-    if (data.containsKey('last_updated')) {
-      context.handle(
-        _lastUpdatedMeta,
-        lastUpdated.isAcceptableOrUnknown(
-          data['last_updated']!,
-          _lastUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastUpdatedMeta);
-    }
-    if (data.containsKey('is_favorited')) {
-      context.handle(
-        _isFavoritedMeta,
-        isFavorited.isAcceptableOrUnknown(
-          data['is_favorited']!,
-          _isFavoritedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('serving_size')) {
-      context.handle(
-        _servingSizeMeta,
-        servingSize.isAcceptableOrUnknown(
-          data['serving_size']!,
-          _servingSizeMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_servingSizeMeta);
-    }
-    if (data.containsKey('saturated_fat')) {
-      context.handle(
-        _saturatedFatMeta,
-        saturatedFat.isAcceptableOrUnknown(
-          data['saturated_fat']!,
-          _saturatedFatMeta,
-        ),
-      );
-    }
-    if (data.containsKey('added_sugars')) {
-      context.handle(
-        _addedSugarsMeta,
-        addedSugars.isAcceptableOrUnknown(
-          data['added_sugars']!,
-          _addedSugarsMeta,
-        ),
-      );
-    }
-    return context;
-  }
-
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
@@ -2062,8 +1514,8 @@ class $FoodsTableTable extends FoodsTable
   }
 
   @override
-  $FoodsTableTable createAlias(String alias) {
-    return $FoodsTableTable(attachedDatabase, alias);
+  FoodsTable createAlias(String alias) {
+    return FoodsTable(attachedDatabase, alias);
   }
 }
 
@@ -2395,8 +1847,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     required int lastUpdated,
     this.isFavorited = const Value.absent(),
     required String servingSize,
-    this.saturatedFat = const Value.absent(),
-    this.addedSugars = const Value.absent(),
+    required double saturatedFat,
+    required double addedSugars,
   }) : foodId = Value(foodId),
        name = Value(name),
        calories = Value(calories),
@@ -2408,7 +1860,9 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
        ingredients = Value(ingredients),
        station = Value(station),
        lastUpdated = Value(lastUpdated),
-       servingSize = Value(servingSize);
+       servingSize = Value(servingSize),
+       saturatedFat = Value(saturatedFat),
+       addedSugars = Value(addedSugars);
   static Insertable<FoodsTableData> custom({
     Expression<int>? id,
     Expression<String>? foodId,
@@ -2571,14 +2025,12 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
   }
 }
 
-class $DiningHallFoodsTableTable extends DiningHallFoodsTable
-    with TableInfo<$DiningHallFoodsTableTable, DiningHallFoodsTableData> {
+class DiningHallFoodsTable extends Table
+    with TableInfo<DiningHallFoodsTable, DiningHallFoodsTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $DiningHallFoodsTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
+  DiningHallFoodsTable(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
@@ -2590,10 +2042,6 @@ class $DiningHallFoodsTableTable extends DiningHallFoodsTable
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _diningHallMeta = const VerificationMeta(
-    'diningHall',
-  );
-  @override
   late final GeneratedColumn<String> diningHall = GeneratedColumn<String>(
     'dining_hall',
     aliasedName,
@@ -2601,8 +2049,6 @@ class $DiningHallFoodsTableTable extends DiningHallFoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
-  @override
   late final GeneratedColumn<String> date = GeneratedColumn<String>(
     'date',
     aliasedName,
@@ -2610,10 +2056,6 @@ class $DiningHallFoodsTableTable extends DiningHallFoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _mealTimeMeta = const VerificationMeta(
-    'mealTime',
-  );
-  @override
   late final GeneratedColumn<String> mealTime = GeneratedColumn<String>(
     'meal_time',
     aliasedName,
@@ -2621,10 +2063,6 @@ class $DiningHallFoodsTableTable extends DiningHallFoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _miniFoodMeta = const VerificationMeta(
-    'miniFood',
-  );
-  @override
   late final GeneratedColumn<String> miniFood = GeneratedColumn<String>(
     'mini_food',
     aliasedName,
@@ -2632,10 +2070,6 @@ class $DiningHallFoodsTableTable extends DiningHallFoodsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _lastUpdatedMeta = const VerificationMeta(
-    'lastUpdated',
-  );
-  @override
   late final GeneratedColumn<int> lastUpdated = GeneratedColumn<int>(
     'last_updated',
     aliasedName,
@@ -2657,62 +2091,6 @@ class $DiningHallFoodsTableTable extends DiningHallFoodsTable
   @override
   String get actualTableName => $name;
   static const String $name = 'dining_hall_foods_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<DiningHallFoodsTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('dining_hall')) {
-      context.handle(
-        _diningHallMeta,
-        diningHall.isAcceptableOrUnknown(data['dining_hall']!, _diningHallMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_diningHallMeta);
-    }
-    if (data.containsKey('date')) {
-      context.handle(
-        _dateMeta,
-        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
-    if (data.containsKey('meal_time')) {
-      context.handle(
-        _mealTimeMeta,
-        mealTime.isAcceptableOrUnknown(data['meal_time']!, _mealTimeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_mealTimeMeta);
-    }
-    if (data.containsKey('mini_food')) {
-      context.handle(
-        _miniFoodMeta,
-        miniFood.isAcceptableOrUnknown(data['mini_food']!, _miniFoodMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_miniFoodMeta);
-    }
-    if (data.containsKey('last_updated')) {
-      context.handle(
-        _lastUpdatedMeta,
-        lastUpdated.isAcceptableOrUnknown(
-          data['last_updated']!,
-          _lastUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastUpdatedMeta);
-    }
-    return context;
-  }
-
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
@@ -2750,8 +2128,8 @@ class $DiningHallFoodsTableTable extends DiningHallFoodsTable
   }
 
   @override
-  $DiningHallFoodsTableTable createAlias(String alias) {
-    return $DiningHallFoodsTableTable(attachedDatabase, alias);
+  DiningHallFoodsTable createAlias(String alias) {
+    return DiningHallFoodsTable(attachedDatabase, alias);
   }
 }
 
@@ -2983,14 +2361,12 @@ class DiningHallFoodsTableCompanion
   }
 }
 
-class $DiningHallsTableTable extends DiningHallsTable
-    with TableInfo<$DiningHallsTableTable, DiningHallsTableData> {
+class DiningHallsTable extends Table
+    with TableInfo<DiningHallsTable, DiningHallsTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $DiningHallsTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
+  DiningHallsTable(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
     'id',
     aliasedName,
@@ -3002,10 +2378,6 @@ class $DiningHallsTableTable extends DiningHallsTable
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _diningHallIdMeta = const VerificationMeta(
-    'diningHallId',
-  );
-  @override
   late final GeneratedColumn<String> diningHallId = GeneratedColumn<String>(
     'dining_hall_id',
     aliasedName,
@@ -3013,8 +2385,6 @@ class $DiningHallsTableTable extends DiningHallsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
     'name',
     aliasedName,
@@ -3022,10 +2392,6 @@ class $DiningHallsTableTable extends DiningHallsTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _scheduleMeta = const VerificationMeta(
-    'schedule',
-  );
-  @override
   late final GeneratedColumn<String> schedule = GeneratedColumn<String>(
     'schedule',
     aliasedName,
@@ -3040,46 +2406,6 @@ class $DiningHallsTableTable extends DiningHallsTable
   @override
   String get actualTableName => $name;
   static const String $name = 'dining_halls_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<DiningHallsTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('dining_hall_id')) {
-      context.handle(
-        _diningHallIdMeta,
-        diningHallId.isAcceptableOrUnknown(
-          data['dining_hall_id']!,
-          _diningHallIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_diningHallIdMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('schedule')) {
-      context.handle(
-        _scheduleMeta,
-        schedule.isAcceptableOrUnknown(data['schedule']!, _scheduleMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_scheduleMeta);
-    }
-    return context;
-  }
-
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
@@ -3106,8 +2432,8 @@ class $DiningHallsTableTable extends DiningHallsTable
   }
 
   @override
-  $DiningHallsTableTable createAlias(String alias) {
-    return $DiningHallsTableTable(attachedDatabase, alias);
+  DiningHallsTable createAlias(String alias) {
+    return DiningHallsTable(attachedDatabase, alias);
   }
 }
 
@@ -3287,17 +2613,15 @@ class DiningHallsTableCompanion extends UpdateCompanion<DiningHallsTableData> {
   }
 }
 
-abstract class _$AppDb extends GeneratedDatabase {
-  _$AppDb(QueryExecutor e) : super(e);
-  $AppDbManager get managers => $AppDbManager(this);
-  late final $UsersTableTable usersTable = $UsersTableTable(this);
-  late final $MealsTableTable mealsTable = $MealsTableTable(this);
-  late final $FoodsTableTable foodsTable = $FoodsTableTable(this);
-  late final $DiningHallFoodsTableTable diningHallFoodsTable =
-      $DiningHallFoodsTableTable(this);
-  late final $DiningHallsTableTable diningHallsTable = $DiningHallsTableTable(
+class DatabaseAtV3 extends GeneratedDatabase {
+  DatabaseAtV3(QueryExecutor e) : super(e);
+  late final UsersTable usersTable = UsersTable(this);
+  late final MealsTable mealsTable = MealsTable(this);
+  late final FoodsTable foodsTable = FoodsTable(this);
+  late final DiningHallFoodsTable diningHallFoodsTable = DiningHallFoodsTable(
     this,
   );
+  late final DiningHallsTable diningHallsTable = DiningHallsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3309,1620 +2633,6 @@ abstract class _$AppDb extends GeneratedDatabase {
     diningHallFoodsTable,
     diningHallsTable,
   ];
-}
-
-typedef $$UsersTableTableCreateCompanionBuilder =
-    UsersTableCompanion Function({
-      Value<int> id,
-      required String uid,
-      required String name,
-      required bool useDietary,
-      required bool useMealPlanning,
-      required String gender,
-      required int age,
-      required int weight,
-      required int height,
-      required String goal,
-      required String dietaryRestrictions,
-      required String mealPlan,
-      required String diningCourtRanking,
-      required String macros,
-    });
-typedef $$UsersTableTableUpdateCompanionBuilder =
-    UsersTableCompanion Function({
-      Value<int> id,
-      Value<String> uid,
-      Value<String> name,
-      Value<bool> useDietary,
-      Value<bool> useMealPlanning,
-      Value<String> gender,
-      Value<int> age,
-      Value<int> weight,
-      Value<int> height,
-      Value<String> goal,
-      Value<String> dietaryRestrictions,
-      Value<String> mealPlan,
-      Value<String> diningCourtRanking,
-      Value<String> macros,
-    });
-
-class $$UsersTableTableFilterComposer
-    extends Composer<_$AppDb, $UsersTableTable> {
-  $$UsersTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get uid => $composableBuilder(
-    column: $table.uid,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get useDietary => $composableBuilder(
-    column: $table.useDietary,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get useMealPlanning => $composableBuilder(
-    column: $table.useMealPlanning,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get gender => $composableBuilder(
-    column: $table.gender,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get age => $composableBuilder(
-    column: $table.age,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get weight => $composableBuilder(
-    column: $table.weight,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get height => $composableBuilder(
-    column: $table.height,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get goal => $composableBuilder(
-    column: $table.goal,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get dietaryRestrictions => $composableBuilder(
-    column: $table.dietaryRestrictions,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get mealPlan => $composableBuilder(
-    column: $table.mealPlan,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get diningCourtRanking => $composableBuilder(
-    column: $table.diningCourtRanking,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get macros => $composableBuilder(
-    column: $table.macros,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$UsersTableTableOrderingComposer
-    extends Composer<_$AppDb, $UsersTableTable> {
-  $$UsersTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get uid => $composableBuilder(
-    column: $table.uid,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get useDietary => $composableBuilder(
-    column: $table.useDietary,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get useMealPlanning => $composableBuilder(
-    column: $table.useMealPlanning,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get gender => $composableBuilder(
-    column: $table.gender,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get age => $composableBuilder(
-    column: $table.age,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get weight => $composableBuilder(
-    column: $table.weight,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get height => $composableBuilder(
-    column: $table.height,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get goal => $composableBuilder(
-    column: $table.goal,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get dietaryRestrictions => $composableBuilder(
-    column: $table.dietaryRestrictions,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get mealPlan => $composableBuilder(
-    column: $table.mealPlan,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get diningCourtRanking => $composableBuilder(
-    column: $table.diningCourtRanking,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get macros => $composableBuilder(
-    column: $table.macros,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$UsersTableTableAnnotationComposer
-    extends Composer<_$AppDb, $UsersTableTable> {
-  $$UsersTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get uid =>
-      $composableBuilder(column: $table.uid, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<bool> get useDietary => $composableBuilder(
-    column: $table.useDietary,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get useMealPlanning => $composableBuilder(
-    column: $table.useMealPlanning,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get gender =>
-      $composableBuilder(column: $table.gender, builder: (column) => column);
-
-  GeneratedColumn<int> get age =>
-      $composableBuilder(column: $table.age, builder: (column) => column);
-
-  GeneratedColumn<int> get weight =>
-      $composableBuilder(column: $table.weight, builder: (column) => column);
-
-  GeneratedColumn<int> get height =>
-      $composableBuilder(column: $table.height, builder: (column) => column);
-
-  GeneratedColumn<String> get goal =>
-      $composableBuilder(column: $table.goal, builder: (column) => column);
-
-  GeneratedColumn<String> get dietaryRestrictions => $composableBuilder(
-    column: $table.dietaryRestrictions,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get mealPlan =>
-      $composableBuilder(column: $table.mealPlan, builder: (column) => column);
-
-  GeneratedColumn<String> get diningCourtRanking => $composableBuilder(
-    column: $table.diningCourtRanking,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get macros =>
-      $composableBuilder(column: $table.macros, builder: (column) => column);
-}
-
-class $$UsersTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDb,
-          $UsersTableTable,
-          UsersTableData,
-          $$UsersTableTableFilterComposer,
-          $$UsersTableTableOrderingComposer,
-          $$UsersTableTableAnnotationComposer,
-          $$UsersTableTableCreateCompanionBuilder,
-          $$UsersTableTableUpdateCompanionBuilder,
-          (
-            UsersTableData,
-            BaseReferences<_$AppDb, $UsersTableTable, UsersTableData>,
-          ),
-          UsersTableData,
-          PrefetchHooks Function()
-        > {
-  $$UsersTableTableTableManager(_$AppDb db, $UsersTableTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$UsersTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$UsersTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$UsersTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> uid = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<bool> useDietary = const Value.absent(),
-                Value<bool> useMealPlanning = const Value.absent(),
-                Value<String> gender = const Value.absent(),
-                Value<int> age = const Value.absent(),
-                Value<int> weight = const Value.absent(),
-                Value<int> height = const Value.absent(),
-                Value<String> goal = const Value.absent(),
-                Value<String> dietaryRestrictions = const Value.absent(),
-                Value<String> mealPlan = const Value.absent(),
-                Value<String> diningCourtRanking = const Value.absent(),
-                Value<String> macros = const Value.absent(),
-              }) => UsersTableCompanion(
-                id: id,
-                uid: uid,
-                name: name,
-                useDietary: useDietary,
-                useMealPlanning: useMealPlanning,
-                gender: gender,
-                age: age,
-                weight: weight,
-                height: height,
-                goal: goal,
-                dietaryRestrictions: dietaryRestrictions,
-                mealPlan: mealPlan,
-                diningCourtRanking: diningCourtRanking,
-                macros: macros,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String uid,
-                required String name,
-                required bool useDietary,
-                required bool useMealPlanning,
-                required String gender,
-                required int age,
-                required int weight,
-                required int height,
-                required String goal,
-                required String dietaryRestrictions,
-                required String mealPlan,
-                required String diningCourtRanking,
-                required String macros,
-              }) => UsersTableCompanion.insert(
-                id: id,
-                uid: uid,
-                name: name,
-                useDietary: useDietary,
-                useMealPlanning: useMealPlanning,
-                gender: gender,
-                age: age,
-                weight: weight,
-                height: height,
-                goal: goal,
-                dietaryRestrictions: dietaryRestrictions,
-                mealPlan: mealPlan,
-                diningCourtRanking: diningCourtRanking,
-                macros: macros,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$UsersTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDb,
-      $UsersTableTable,
-      UsersTableData,
-      $$UsersTableTableFilterComposer,
-      $$UsersTableTableOrderingComposer,
-      $$UsersTableTableAnnotationComposer,
-      $$UsersTableTableCreateCompanionBuilder,
-      $$UsersTableTableUpdateCompanionBuilder,
-      (
-        UsersTableData,
-        BaseReferences<_$AppDb, $UsersTableTable, UsersTableData>,
-      ),
-      UsersTableData,
-      PrefetchHooks Function()
-    >;
-typedef $$MealsTableTableCreateCompanionBuilder =
-    MealsTableCompanion Function({
-      Value<int> id,
-      required String diningCourt,
-      required String date,
-      required String mealTime,
-      required String name,
-      required String foodItems,
-      required double totalCalories,
-      required double totalProtein,
-      required String mealId,
-      required double totalCarbs,
-      required double totalFats,
-      Value<bool> isFavorited,
-      Value<bool> isAIMeal,
-      required int lastUpdated,
-    });
-typedef $$MealsTableTableUpdateCompanionBuilder =
-    MealsTableCompanion Function({
-      Value<int> id,
-      Value<String> diningCourt,
-      Value<String> date,
-      Value<String> mealTime,
-      Value<String> name,
-      Value<String> foodItems,
-      Value<double> totalCalories,
-      Value<double> totalProtein,
-      Value<String> mealId,
-      Value<double> totalCarbs,
-      Value<double> totalFats,
-      Value<bool> isFavorited,
-      Value<bool> isAIMeal,
-      Value<int> lastUpdated,
-    });
-
-class $$MealsTableTableFilterComposer
-    extends Composer<_$AppDb, $MealsTableTable> {
-  $$MealsTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get diningCourt => $composableBuilder(
-    column: $table.diningCourt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get mealTime => $composableBuilder(
-    column: $table.mealTime,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get foodItems => $composableBuilder(
-    column: $table.foodItems,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get totalCalories => $composableBuilder(
-    column: $table.totalCalories,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get totalProtein => $composableBuilder(
-    column: $table.totalProtein,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get mealId => $composableBuilder(
-    column: $table.mealId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get totalCarbs => $composableBuilder(
-    column: $table.totalCarbs,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get totalFats => $composableBuilder(
-    column: $table.totalFats,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isFavorited => $composableBuilder(
-    column: $table.isFavorited,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isAIMeal => $composableBuilder(
-    column: $table.isAIMeal,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$MealsTableTableOrderingComposer
-    extends Composer<_$AppDb, $MealsTableTable> {
-  $$MealsTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get diningCourt => $composableBuilder(
-    column: $table.diningCourt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get mealTime => $composableBuilder(
-    column: $table.mealTime,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get foodItems => $composableBuilder(
-    column: $table.foodItems,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get totalCalories => $composableBuilder(
-    column: $table.totalCalories,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get totalProtein => $composableBuilder(
-    column: $table.totalProtein,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get mealId => $composableBuilder(
-    column: $table.mealId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get totalCarbs => $composableBuilder(
-    column: $table.totalCarbs,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get totalFats => $composableBuilder(
-    column: $table.totalFats,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isFavorited => $composableBuilder(
-    column: $table.isFavorited,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isAIMeal => $composableBuilder(
-    column: $table.isAIMeal,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$MealsTableTableAnnotationComposer
-    extends Composer<_$AppDb, $MealsTableTable> {
-  $$MealsTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get diningCourt => $composableBuilder(
-    column: $table.diningCourt,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => column);
-
-  GeneratedColumn<String> get mealTime =>
-      $composableBuilder(column: $table.mealTime, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get foodItems =>
-      $composableBuilder(column: $table.foodItems, builder: (column) => column);
-
-  GeneratedColumn<double> get totalCalories => $composableBuilder(
-    column: $table.totalCalories,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get totalProtein => $composableBuilder(
-    column: $table.totalProtein,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get mealId =>
-      $composableBuilder(column: $table.mealId, builder: (column) => column);
-
-  GeneratedColumn<double> get totalCarbs => $composableBuilder(
-    column: $table.totalCarbs,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get totalFats =>
-      $composableBuilder(column: $table.totalFats, builder: (column) => column);
-
-  GeneratedColumn<bool> get isFavorited => $composableBuilder(
-    column: $table.isFavorited,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isAIMeal =>
-      $composableBuilder(column: $table.isAIMeal, builder: (column) => column);
-
-  GeneratedColumn<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => column,
-  );
-}
-
-class $$MealsTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDb,
-          $MealsTableTable,
-          MealsTableData,
-          $$MealsTableTableFilterComposer,
-          $$MealsTableTableOrderingComposer,
-          $$MealsTableTableAnnotationComposer,
-          $$MealsTableTableCreateCompanionBuilder,
-          $$MealsTableTableUpdateCompanionBuilder,
-          (
-            MealsTableData,
-            BaseReferences<_$AppDb, $MealsTableTable, MealsTableData>,
-          ),
-          MealsTableData,
-          PrefetchHooks Function()
-        > {
-  $$MealsTableTableTableManager(_$AppDb db, $MealsTableTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$MealsTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$MealsTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$MealsTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> diningCourt = const Value.absent(),
-                Value<String> date = const Value.absent(),
-                Value<String> mealTime = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> foodItems = const Value.absent(),
-                Value<double> totalCalories = const Value.absent(),
-                Value<double> totalProtein = const Value.absent(),
-                Value<String> mealId = const Value.absent(),
-                Value<double> totalCarbs = const Value.absent(),
-                Value<double> totalFats = const Value.absent(),
-                Value<bool> isFavorited = const Value.absent(),
-                Value<bool> isAIMeal = const Value.absent(),
-                Value<int> lastUpdated = const Value.absent(),
-              }) => MealsTableCompanion(
-                id: id,
-                diningCourt: diningCourt,
-                date: date,
-                mealTime: mealTime,
-                name: name,
-                foodItems: foodItems,
-                totalCalories: totalCalories,
-                totalProtein: totalProtein,
-                mealId: mealId,
-                totalCarbs: totalCarbs,
-                totalFats: totalFats,
-                isFavorited: isFavorited,
-                isAIMeal: isAIMeal,
-                lastUpdated: lastUpdated,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String diningCourt,
-                required String date,
-                required String mealTime,
-                required String name,
-                required String foodItems,
-                required double totalCalories,
-                required double totalProtein,
-                required String mealId,
-                required double totalCarbs,
-                required double totalFats,
-                Value<bool> isFavorited = const Value.absent(),
-                Value<bool> isAIMeal = const Value.absent(),
-                required int lastUpdated,
-              }) => MealsTableCompanion.insert(
-                id: id,
-                diningCourt: diningCourt,
-                date: date,
-                mealTime: mealTime,
-                name: name,
-                foodItems: foodItems,
-                totalCalories: totalCalories,
-                totalProtein: totalProtein,
-                mealId: mealId,
-                totalCarbs: totalCarbs,
-                totalFats: totalFats,
-                isFavorited: isFavorited,
-                isAIMeal: isAIMeal,
-                lastUpdated: lastUpdated,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$MealsTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDb,
-      $MealsTableTable,
-      MealsTableData,
-      $$MealsTableTableFilterComposer,
-      $$MealsTableTableOrderingComposer,
-      $$MealsTableTableAnnotationComposer,
-      $$MealsTableTableCreateCompanionBuilder,
-      $$MealsTableTableUpdateCompanionBuilder,
-      (
-        MealsTableData,
-        BaseReferences<_$AppDb, $MealsTableTable, MealsTableData>,
-      ),
-      MealsTableData,
-      PrefetchHooks Function()
-    >;
-typedef $$FoodsTableTableCreateCompanionBuilder =
-    FoodsTableCompanion Function({
-      Value<int> id,
-      required String foodId,
-      required String name,
-      required double calories,
-      required double protein,
-      required double carbs,
-      required double fats,
-      required double sugar,
-      required String labels,
-      required String ingredients,
-      required String station,
-      Value<String?> collection,
-      required int lastUpdated,
-      Value<bool> isFavorited,
-      required String servingSize,
-      Value<double> saturatedFat,
-      Value<double> addedSugars,
-    });
-typedef $$FoodsTableTableUpdateCompanionBuilder =
-    FoodsTableCompanion Function({
-      Value<int> id,
-      Value<String> foodId,
-      Value<String> name,
-      Value<double> calories,
-      Value<double> protein,
-      Value<double> carbs,
-      Value<double> fats,
-      Value<double> sugar,
-      Value<String> labels,
-      Value<String> ingredients,
-      Value<String> station,
-      Value<String?> collection,
-      Value<int> lastUpdated,
-      Value<bool> isFavorited,
-      Value<String> servingSize,
-      Value<double> saturatedFat,
-      Value<double> addedSugars,
-    });
-
-class $$FoodsTableTableFilterComposer
-    extends Composer<_$AppDb, $FoodsTableTable> {
-  $$FoodsTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get foodId => $composableBuilder(
-    column: $table.foodId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get calories => $composableBuilder(
-    column: $table.calories,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get protein => $composableBuilder(
-    column: $table.protein,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get carbs => $composableBuilder(
-    column: $table.carbs,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get fats => $composableBuilder(
-    column: $table.fats,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get sugar => $composableBuilder(
-    column: $table.sugar,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get labels => $composableBuilder(
-    column: $table.labels,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get ingredients => $composableBuilder(
-    column: $table.ingredients,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get station => $composableBuilder(
-    column: $table.station,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get collection => $composableBuilder(
-    column: $table.collection,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isFavorited => $composableBuilder(
-    column: $table.isFavorited,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get servingSize => $composableBuilder(
-    column: $table.servingSize,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get saturatedFat => $composableBuilder(
-    column: $table.saturatedFat,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get addedSugars => $composableBuilder(
-    column: $table.addedSugars,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$FoodsTableTableOrderingComposer
-    extends Composer<_$AppDb, $FoodsTableTable> {
-  $$FoodsTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get foodId => $composableBuilder(
-    column: $table.foodId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get calories => $composableBuilder(
-    column: $table.calories,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get protein => $composableBuilder(
-    column: $table.protein,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get carbs => $composableBuilder(
-    column: $table.carbs,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get fats => $composableBuilder(
-    column: $table.fats,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get sugar => $composableBuilder(
-    column: $table.sugar,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get labels => $composableBuilder(
-    column: $table.labels,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get ingredients => $composableBuilder(
-    column: $table.ingredients,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get station => $composableBuilder(
-    column: $table.station,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get collection => $composableBuilder(
-    column: $table.collection,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isFavorited => $composableBuilder(
-    column: $table.isFavorited,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get servingSize => $composableBuilder(
-    column: $table.servingSize,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get saturatedFat => $composableBuilder(
-    column: $table.saturatedFat,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get addedSugars => $composableBuilder(
-    column: $table.addedSugars,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$FoodsTableTableAnnotationComposer
-    extends Composer<_$AppDb, $FoodsTableTable> {
-  $$FoodsTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get foodId =>
-      $composableBuilder(column: $table.foodId, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<double> get calories =>
-      $composableBuilder(column: $table.calories, builder: (column) => column);
-
-  GeneratedColumn<double> get protein =>
-      $composableBuilder(column: $table.protein, builder: (column) => column);
-
-  GeneratedColumn<double> get carbs =>
-      $composableBuilder(column: $table.carbs, builder: (column) => column);
-
-  GeneratedColumn<double> get fats =>
-      $composableBuilder(column: $table.fats, builder: (column) => column);
-
-  GeneratedColumn<double> get sugar =>
-      $composableBuilder(column: $table.sugar, builder: (column) => column);
-
-  GeneratedColumn<String> get labels =>
-      $composableBuilder(column: $table.labels, builder: (column) => column);
-
-  GeneratedColumn<String> get ingredients => $composableBuilder(
-    column: $table.ingredients,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get station =>
-      $composableBuilder(column: $table.station, builder: (column) => column);
-
-  GeneratedColumn<String> get collection => $composableBuilder(
-    column: $table.collection,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isFavorited => $composableBuilder(
-    column: $table.isFavorited,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get servingSize => $composableBuilder(
-    column: $table.servingSize,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get saturatedFat => $composableBuilder(
-    column: $table.saturatedFat,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get addedSugars => $composableBuilder(
-    column: $table.addedSugars,
-    builder: (column) => column,
-  );
-}
-
-class $$FoodsTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDb,
-          $FoodsTableTable,
-          FoodsTableData,
-          $$FoodsTableTableFilterComposer,
-          $$FoodsTableTableOrderingComposer,
-          $$FoodsTableTableAnnotationComposer,
-          $$FoodsTableTableCreateCompanionBuilder,
-          $$FoodsTableTableUpdateCompanionBuilder,
-          (
-            FoodsTableData,
-            BaseReferences<_$AppDb, $FoodsTableTable, FoodsTableData>,
-          ),
-          FoodsTableData,
-          PrefetchHooks Function()
-        > {
-  $$FoodsTableTableTableManager(_$AppDb db, $FoodsTableTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$FoodsTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$FoodsTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$FoodsTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> foodId = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<double> calories = const Value.absent(),
-                Value<double> protein = const Value.absent(),
-                Value<double> carbs = const Value.absent(),
-                Value<double> fats = const Value.absent(),
-                Value<double> sugar = const Value.absent(),
-                Value<String> labels = const Value.absent(),
-                Value<String> ingredients = const Value.absent(),
-                Value<String> station = const Value.absent(),
-                Value<String?> collection = const Value.absent(),
-                Value<int> lastUpdated = const Value.absent(),
-                Value<bool> isFavorited = const Value.absent(),
-                Value<String> servingSize = const Value.absent(),
-                Value<double> saturatedFat = const Value.absent(),
-                Value<double> addedSugars = const Value.absent(),
-              }) => FoodsTableCompanion(
-                id: id,
-                foodId: foodId,
-                name: name,
-                calories: calories,
-                protein: protein,
-                carbs: carbs,
-                fats: fats,
-                sugar: sugar,
-                labels: labels,
-                ingredients: ingredients,
-                station: station,
-                collection: collection,
-                lastUpdated: lastUpdated,
-                isFavorited: isFavorited,
-                servingSize: servingSize,
-                saturatedFat: saturatedFat,
-                addedSugars: addedSugars,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String foodId,
-                required String name,
-                required double calories,
-                required double protein,
-                required double carbs,
-                required double fats,
-                required double sugar,
-                required String labels,
-                required String ingredients,
-                required String station,
-                Value<String?> collection = const Value.absent(),
-                required int lastUpdated,
-                Value<bool> isFavorited = const Value.absent(),
-                required String servingSize,
-                Value<double> saturatedFat = const Value.absent(),
-                Value<double> addedSugars = const Value.absent(),
-              }) => FoodsTableCompanion.insert(
-                id: id,
-                foodId: foodId,
-                name: name,
-                calories: calories,
-                protein: protein,
-                carbs: carbs,
-                fats: fats,
-                sugar: sugar,
-                labels: labels,
-                ingredients: ingredients,
-                station: station,
-                collection: collection,
-                lastUpdated: lastUpdated,
-                isFavorited: isFavorited,
-                servingSize: servingSize,
-                saturatedFat: saturatedFat,
-                addedSugars: addedSugars,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$FoodsTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDb,
-      $FoodsTableTable,
-      FoodsTableData,
-      $$FoodsTableTableFilterComposer,
-      $$FoodsTableTableOrderingComposer,
-      $$FoodsTableTableAnnotationComposer,
-      $$FoodsTableTableCreateCompanionBuilder,
-      $$FoodsTableTableUpdateCompanionBuilder,
-      (
-        FoodsTableData,
-        BaseReferences<_$AppDb, $FoodsTableTable, FoodsTableData>,
-      ),
-      FoodsTableData,
-      PrefetchHooks Function()
-    >;
-typedef $$DiningHallFoodsTableTableCreateCompanionBuilder =
-    DiningHallFoodsTableCompanion Function({
-      Value<int> id,
-      required String diningHall,
-      required String date,
-      required String mealTime,
-      required String miniFood,
-      required int lastUpdated,
-    });
-typedef $$DiningHallFoodsTableTableUpdateCompanionBuilder =
-    DiningHallFoodsTableCompanion Function({
-      Value<int> id,
-      Value<String> diningHall,
-      Value<String> date,
-      Value<String> mealTime,
-      Value<String> miniFood,
-      Value<int> lastUpdated,
-    });
-
-class $$DiningHallFoodsTableTableFilterComposer
-    extends Composer<_$AppDb, $DiningHallFoodsTableTable> {
-  $$DiningHallFoodsTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get diningHall => $composableBuilder(
-    column: $table.diningHall,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get mealTime => $composableBuilder(
-    column: $table.mealTime,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get miniFood => $composableBuilder(
-    column: $table.miniFood,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$DiningHallFoodsTableTableOrderingComposer
-    extends Composer<_$AppDb, $DiningHallFoodsTableTable> {
-  $$DiningHallFoodsTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get diningHall => $composableBuilder(
-    column: $table.diningHall,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get mealTime => $composableBuilder(
-    column: $table.mealTime,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get miniFood => $composableBuilder(
-    column: $table.miniFood,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$DiningHallFoodsTableTableAnnotationComposer
-    extends Composer<_$AppDb, $DiningHallFoodsTableTable> {
-  $$DiningHallFoodsTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get diningHall => $composableBuilder(
-    column: $table.diningHall,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => column);
-
-  GeneratedColumn<String> get mealTime =>
-      $composableBuilder(column: $table.mealTime, builder: (column) => column);
-
-  GeneratedColumn<String> get miniFood =>
-      $composableBuilder(column: $table.miniFood, builder: (column) => column);
-
-  GeneratedColumn<int> get lastUpdated => $composableBuilder(
-    column: $table.lastUpdated,
-    builder: (column) => column,
-  );
-}
-
-class $$DiningHallFoodsTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDb,
-          $DiningHallFoodsTableTable,
-          DiningHallFoodsTableData,
-          $$DiningHallFoodsTableTableFilterComposer,
-          $$DiningHallFoodsTableTableOrderingComposer,
-          $$DiningHallFoodsTableTableAnnotationComposer,
-          $$DiningHallFoodsTableTableCreateCompanionBuilder,
-          $$DiningHallFoodsTableTableUpdateCompanionBuilder,
-          (
-            DiningHallFoodsTableData,
-            BaseReferences<
-              _$AppDb,
-              $DiningHallFoodsTableTable,
-              DiningHallFoodsTableData
-            >,
-          ),
-          DiningHallFoodsTableData,
-          PrefetchHooks Function()
-        > {
-  $$DiningHallFoodsTableTableTableManager(
-    _$AppDb db,
-    $DiningHallFoodsTableTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$DiningHallFoodsTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$DiningHallFoodsTableTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$DiningHallFoodsTableTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> diningHall = const Value.absent(),
-                Value<String> date = const Value.absent(),
-                Value<String> mealTime = const Value.absent(),
-                Value<String> miniFood = const Value.absent(),
-                Value<int> lastUpdated = const Value.absent(),
-              }) => DiningHallFoodsTableCompanion(
-                id: id,
-                diningHall: diningHall,
-                date: date,
-                mealTime: mealTime,
-                miniFood: miniFood,
-                lastUpdated: lastUpdated,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String diningHall,
-                required String date,
-                required String mealTime,
-                required String miniFood,
-                required int lastUpdated,
-              }) => DiningHallFoodsTableCompanion.insert(
-                id: id,
-                diningHall: diningHall,
-                date: date,
-                mealTime: mealTime,
-                miniFood: miniFood,
-                lastUpdated: lastUpdated,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$DiningHallFoodsTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDb,
-      $DiningHallFoodsTableTable,
-      DiningHallFoodsTableData,
-      $$DiningHallFoodsTableTableFilterComposer,
-      $$DiningHallFoodsTableTableOrderingComposer,
-      $$DiningHallFoodsTableTableAnnotationComposer,
-      $$DiningHallFoodsTableTableCreateCompanionBuilder,
-      $$DiningHallFoodsTableTableUpdateCompanionBuilder,
-      (
-        DiningHallFoodsTableData,
-        BaseReferences<
-          _$AppDb,
-          $DiningHallFoodsTableTable,
-          DiningHallFoodsTableData
-        >,
-      ),
-      DiningHallFoodsTableData,
-      PrefetchHooks Function()
-    >;
-typedef $$DiningHallsTableTableCreateCompanionBuilder =
-    DiningHallsTableCompanion Function({
-      Value<int> id,
-      required String diningHallId,
-      required String name,
-      required String schedule,
-    });
-typedef $$DiningHallsTableTableUpdateCompanionBuilder =
-    DiningHallsTableCompanion Function({
-      Value<int> id,
-      Value<String> diningHallId,
-      Value<String> name,
-      Value<String> schedule,
-    });
-
-class $$DiningHallsTableTableFilterComposer
-    extends Composer<_$AppDb, $DiningHallsTableTable> {
-  $$DiningHallsTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get diningHallId => $composableBuilder(
-    column: $table.diningHallId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get schedule => $composableBuilder(
-    column: $table.schedule,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$DiningHallsTableTableOrderingComposer
-    extends Composer<_$AppDb, $DiningHallsTableTable> {
-  $$DiningHallsTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get diningHallId => $composableBuilder(
-    column: $table.diningHallId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get schedule => $composableBuilder(
-    column: $table.schedule,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$DiningHallsTableTableAnnotationComposer
-    extends Composer<_$AppDb, $DiningHallsTableTable> {
-  $$DiningHallsTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get diningHallId => $composableBuilder(
-    column: $table.diningHallId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get schedule =>
-      $composableBuilder(column: $table.schedule, builder: (column) => column);
-}
-
-class $$DiningHallsTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDb,
-          $DiningHallsTableTable,
-          DiningHallsTableData,
-          $$DiningHallsTableTableFilterComposer,
-          $$DiningHallsTableTableOrderingComposer,
-          $$DiningHallsTableTableAnnotationComposer,
-          $$DiningHallsTableTableCreateCompanionBuilder,
-          $$DiningHallsTableTableUpdateCompanionBuilder,
-          (
-            DiningHallsTableData,
-            BaseReferences<
-              _$AppDb,
-              $DiningHallsTableTable,
-              DiningHallsTableData
-            >,
-          ),
-          DiningHallsTableData,
-          PrefetchHooks Function()
-        > {
-  $$DiningHallsTableTableTableManager(_$AppDb db, $DiningHallsTableTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$DiningHallsTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$DiningHallsTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$DiningHallsTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> diningHallId = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> schedule = const Value.absent(),
-              }) => DiningHallsTableCompanion(
-                id: id,
-                diningHallId: diningHallId,
-                name: name,
-                schedule: schedule,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String diningHallId,
-                required String name,
-                required String schedule,
-              }) => DiningHallsTableCompanion.insert(
-                id: id,
-                diningHallId: diningHallId,
-                name: name,
-                schedule: schedule,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$DiningHallsTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDb,
-      $DiningHallsTableTable,
-      DiningHallsTableData,
-      $$DiningHallsTableTableFilterComposer,
-      $$DiningHallsTableTableOrderingComposer,
-      $$DiningHallsTableTableAnnotationComposer,
-      $$DiningHallsTableTableCreateCompanionBuilder,
-      $$DiningHallsTableTableUpdateCompanionBuilder,
-      (
-        DiningHallsTableData,
-        BaseReferences<_$AppDb, $DiningHallsTableTable, DiningHallsTableData>,
-      ),
-      DiningHallsTableData,
-      PrefetchHooks Function()
-    >;
-
-class $AppDbManager {
-  final _$AppDb _db;
-  $AppDbManager(this._db);
-  $$UsersTableTableTableManager get usersTable =>
-      $$UsersTableTableTableManager(_db, _db.usersTable);
-  $$MealsTableTableTableManager get mealsTable =>
-      $$MealsTableTableTableManager(_db, _db.mealsTable);
-  $$FoodsTableTableTableManager get foodsTable =>
-      $$FoodsTableTableTableManager(_db, _db.foodsTable);
-  $$DiningHallFoodsTableTableTableManager get diningHallFoodsTable =>
-      $$DiningHallFoodsTableTableTableManager(_db, _db.diningHallFoodsTable);
-  $$DiningHallsTableTableTableManager get diningHallsTable =>
-      $$DiningHallsTableTableTableManager(_db, _db.diningHallsTable);
+  @override
+  int get schemaVersion => 3;
 }

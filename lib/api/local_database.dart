@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+import 'local_database.steps.dart';
 
 import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:boiler_fuel/constants.dart';
@@ -66,6 +67,8 @@ class FoodsTable extends Table {
   IntColumn get lastUpdated => integer()();
   BoolColumn get isFavorited => boolean().withDefault(const Constant(false))();
   TextColumn get servingSize => text()();
+  RealColumn get saturatedFat => real().withDefault(const Constant(0))();
+  RealColumn get addedSugars => real().withDefault(const Constant(0))();
 }
 
 class DiningHallFoodsTable extends Table {
@@ -97,7 +100,19 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onUpgrade: stepByStep(
+        from2To3: (m, schema) async {
+          await m.addColumn(foodsTable, foodsTable.addedSugars);
+          await m.addColumn(foodsTable, foodsTable.saturatedFat);
+        },
+      ),
+    );
+  }
 }
 
 LazyDatabase _openConnection() {
@@ -105,17 +120,17 @@ LazyDatabase _openConnection() {
     final dbFolder = await getApplicationDocumentsDirectory();
 
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
-    int resetLocalDB = await SharedPrefs.getResetLocalData();
-    try {
-      if (resetLocalDB <= 32) {
-        print("Deleting old database to add new columns");
-        await file.delete();
-        await SharedPrefs.setResetLocalData(33);
-        print("Deleted old database - new schema will be created");
-      }
-    } catch (e) {
-      print(e);
-    }
+    // int resetLocalDB = await SharedPrefs.getResetLocalData();
+    // try {
+    //   if (resetLocalDB <= 32) {
+    //     print("Deleting old database to add new columns");
+    //     await file.delete();
+    //     await SharedPrefs.setResetLocalData(33);
+    //     print("Deleted old database - new schema will be created");
+    //   }
+    // } catch (e) {
+    //   print(e);
+    // }
 
     return NativeDatabase.createInBackground(file);
   });
@@ -540,6 +555,8 @@ class LocalDatabase {
           lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
           isFavorited: Value(food.isFavorited),
           servingSize: Value(food.servingSize),
+          saturatedFat: Value(food.saturatedFat),
+          addedSugars: Value(food.addedSugars),
         ),
       );
       print("Food updated: ${food.name}");
@@ -563,6 +580,8 @@ class LocalDatabase {
               lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
               isFavorited: Value(food.isFavorited),
               servingSize: Value(food.servingSize),
+              saturatedFat: Value(food.saturatedFat),
+              addedSugars: Value(food.addedSugars),
             ),
           );
       print("Food inserted: ${food.name}");
@@ -590,6 +609,8 @@ class LocalDatabase {
         station: row.station.isNotEmpty ? row.station : "",
         isFavorited: row.isFavorited,
         servingSize: row.servingSize,
+        saturatedFat: row.saturatedFat,
+        addedSugars: row.addedSugars,
       );
     } else {
       print("No food found with ID: $foodId");
