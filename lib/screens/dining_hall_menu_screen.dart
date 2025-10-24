@@ -166,123 +166,113 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   int menuCallCount = 0;
 
   Future<void> _loadDiningHallMenu() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
+    setState(() {
+      _isLoading = true;
+    });
 
-      DiningHall? hall = await Database().getDiningHallByName(
+    DiningHall? hall = await Database().getDiningHallByName(widget.diningHall);
+    diningHallInfo = hall;
+    List<MealTime> availableTimes = [];
+    for (MealTime mealTime in MealTime.values) {
+      Schedule diningHallSchedule = diningHallInfo!.schedule;
+      if (diningHallSchedule.isMealTimeAvailable(mealTime)) {
+        availableTimes.add(mealTime);
+      }
+    }
+    setState(() {
+      _availableMealTimes = availableTimes;
+    });
+
+    // Get list of meal times to process
+    List<MealTime> mealTimesToProcess = MealTime.values
+        .where(
+          (mealTime) =>
+              !(mealTime == MealTime.brunch &&
+                  widget.diningHall != "Hillenbrand"),
+        )
+        .toList();
+
+    // Fetch data from database (must be done on main thread)
+    Map<MealTime, List<Food>> mealTimeFood = {};
+
+    for (MealTime mealTime in mealTimesToProcess) {
+      menuCallCount++;
+      print("calling Database().getDiningCourtMeal; call #$menuCallCount");
+
+      List<Food>? diningHallFoods = await Database().getDiningCourtMeal(
         widget.diningHall,
+        DateTime.now(),
+        mealTime,
       );
-      diningHallInfo = hall;
-      List<MealTime> availableTimes = [];
-      for (MealTime mealTime in MealTime.values) {
-        Schedule diningHallSchedule = diningHallInfo!.schedule;
-        if (diningHallSchedule.isMealTimeAvailable(mealTime)) {
-          availableTimes.add(mealTime);
-        }
+
+      if (diningHallFoods != null && diningHallFoods.isNotEmpty) {
+        mealTimeFood[mealTime] = diningHallFoods;
       }
-      setState(() {
-        _availableMealTimes = availableTimes;
+
+      print(
+        "Fetched ${diningHallFoods?.length ?? 0} foods for #$menuCallCount",
+      );
+    }
+
+    if (mealTimeFood.isNotEmpty) {
+      // Move heavy processing to isolate
+      _MenuProcessingData processingData = _MenuProcessingData(
+        mealTimeFood: mealTimeFood,
+        dietaryRestrictions: widget.user.dietaryRestrictions,
+        diningHall: widget.diningHall,
+      );
+
+      // Process data in isolate to prevent UI freezing
+      _MenuProcessingResult result = await compute(
+        _processMenuData,
+        processingData,
+      );
+
+      if (!mounted) return;
+
+      // Handle initial meal time selection
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.initialMealTime != null) {
+          int initialIndex = result.availableTimes.indexOf(
+            widget.initialMealTime!,
+          );
+
+          if (initialIndex >= 0 &&
+              initialIndex < result.availableTimes.length) {
+            _updateStationFoods();
+          } else {
+            _updateStationFoods();
+            setState(() {
+              _selectedMealTime = result.availableTimes.first;
+            });
+          }
+        }
       });
 
-      // Get list of meal times to process
-      List<MealTime> mealTimesToProcess = MealTime.values
-          .where(
-            (mealTime) =>
-                !(mealTime == MealTime.brunch &&
-                    widget.diningHall != "Hillenbrand"),
-          )
-          .toList();
+      // Update state with processed data
+      setState(() {
+        _selectedMealTime =
+            widget.initialMealTime != null &&
+                result.availableTimes.contains(widget.initialMealTime)
+            ? widget.initialMealTime
+            : result.availableTimes.first;
 
-      // Fetch data from database (must be done on main thread)
-      Map<MealTime, List<Food>> mealTimeFood = {};
+        _allMealData = result.mealTimeData;
 
-      for (MealTime mealTime in mealTimesToProcess) {
-        menuCallCount++;
-        print("calling Database().getDiningCourtMeal; call #$menuCallCount");
+        _isLoading = false;
 
-        List<Food>? diningHallFoods = await Database().getDiningCourtMeal(
-          widget.diningHall,
-          DateTime.now(),
-          mealTime,
-        );
+        // Set default selections
+      });
 
-        if (diningHallFoods != null && diningHallFoods.isNotEmpty) {
-          mealTimeFood[mealTime] = diningHallFoods;
-        }
-
-        print(
-          "Fetched ${diningHallFoods?.length ?? 0} foods for #$menuCallCount",
-        );
+      // Update station foods after setState
+      if (_availableMealTimes.isNotEmpty) {
+        _updateStationFoods();
       }
 
-      if (mealTimeFood.isNotEmpty) {
-        // Move heavy processing to isolate
-        _MenuProcessingData processingData = _MenuProcessingData(
-          mealTimeFood: mealTimeFood,
-          dietaryRestrictions: widget.user.dietaryRestrictions,
-          diningHall: widget.diningHall,
-        );
-
-        // Process data in isolate to prevent UI freezing
-        _MenuProcessingResult result = await compute(
-          _processMenuData,
-          processingData,
-        );
-
-        if (!mounted) return;
-
-        // Handle initial meal time selection
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (widget.initialMealTime != null) {
-            int initialIndex = result.availableTimes.indexOf(
-              widget.initialMealTime!,
-            );
-
-            if (initialIndex >= 0 &&
-                initialIndex < result.availableTimes.length) {
-              _updateStationFoods();
-            } else {
-              _updateStationFoods();
-              setState(() {
-                _selectedMealTime = result.availableTimes.first;
-              });
-            }
-          }
-        });
-
-        // Update state with processed data
-        setState(() {
-          _selectedMealTime =
-              widget.initialMealTime != null &&
-                  result.availableTimes.contains(widget.initialMealTime)
-              ? widget.initialMealTime
-              : result.availableTimes.first;
-
-          _allMealData = result.mealTimeData;
-
-          _isLoading = false;
-
-          // Set default selections
-        });
-
-        // Update station foods after setState
-        if (_availableMealTimes.isNotEmpty) {
-          _updateStationFoods();
-        }
-
-        print(
-          "Menu loading completed with ${_availableMealTimes.length} meal times",
-        );
-      } else {
-        if (!mounted) return;
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      print('Error loading dining hall menu: $e');
+      print(
+        "Menu loading completed with ${_availableMealTimes.length} meal times",
+      );
+    } else {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
@@ -356,13 +346,18 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                   );
                                 },
                               ),
-                              _buildMealTimeSelector(),
+                              if (_allMealData.isEmpty)
+                                SizedBox()
+                              else
+                                _buildMealTimeSelector(),
 
                               const SizedBox(height: 8),
                               // Station selector
-
-                              // PageView for stations - give it a bounded max height
-                              Expanded(child: _buildStationPageView()),
+                              if (_allMealData.isEmpty)
+                                SizedBox()
+                              else
+                                // PageView for stations - give it a bounded max height
+                                Expanded(child: _buildStationPageView()),
                             ],
                           ),
                         ),

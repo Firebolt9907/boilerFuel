@@ -80,7 +80,9 @@ class Food {
       collection: map['collection'],
       restricted: map['restricted'] ?? false,
       isFavorited: map['isFavorited'] ?? false,
-      servingSize: map['servingSize'],
+      servingSize: map['servingSize'] == null
+          ? "1 serving"
+          : map['servingSize'],
     );
   }
 
@@ -128,7 +130,7 @@ class Food {
       labels: labels,
       restricted: data['restricted'] ?? false,
       isFavorited: data['isFavorited'] ?? false,
-      servingSize: data['servingSize'],
+      servingSize: data['servingSize'] ?? '1 serving',
     );
   }
 }
