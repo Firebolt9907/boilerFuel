@@ -368,6 +368,7 @@ class User {
   final int age;
   final Gender gender;
   final ActivityLevel activityLevel;
+  final int mealsPerDay;
 
   User({
     required this.uid,
@@ -383,6 +384,7 @@ class User {
     required this.age,
     required this.gender,
     required this.macros,
+    required this.mealsPerDay,
     this.activityLevel = ActivityLevel.sedentary,
   });
 
@@ -402,6 +404,7 @@ class User {
       'gender': gender.toString(),
       'macros': macros.toMap(),
       'activityLevel': activityLevel.toString(),
+      'mealsPerDay': mealsPerDay,
     };
   }
 
@@ -423,6 +426,7 @@ class User {
       macros: MacroResult.fromMap(map['macros']),
       gender: Gender.fromString(map['gender']) ?? Gender.male,
       activityLevel: _parseActivityLevel(map['activityLevel'] as String?),
+      mealsPerDay: map['mealsPerDay'] ?? 2,
     );
   }
 

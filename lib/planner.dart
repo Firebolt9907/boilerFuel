@@ -360,7 +360,7 @@ Calories: ${targetCalories}kcal
 Protein: ${targetProtein}g
 Carbs: ${targetCarbs}g
 Fat: ${targetFat}g
-The NAME of each meal should be related to the ingredients used in the meal!
+The NAME of each meal should be related to the major ingredients used in the meal!
 Return as a JSON as formatted as 
 {
   ${availableMealTimesFormatted}: {
@@ -656,10 +656,10 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
     required User user,
     DateTime? date,
   }) async {
-    double mealCalories = user.macros.calories / 2;
-    double mealProtein = user.macros.protein / 2;
-    double mealCarbs = user.macros.carbs / 2;
-    double mealFat = user.macros.fat / 2;
+    double mealCalories = user.macros.calories / user.mealsPerDay;
+    double mealProtein = user.macros.protein / user.mealsPerDay;
+    double mealCarbs = user.macros.carbs / user.mealsPerDay;
+    double mealFat = user.macros.fat / user.mealsPerDay;
 
     // Create a list to hold all the meal generation futures
     List<Future<Map<MealTime, Meal>>> mealGenerationTasks = [];

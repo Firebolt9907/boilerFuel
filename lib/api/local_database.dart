@@ -32,6 +32,7 @@ class UsersTable extends Table {
   TextColumn get mealPlan => text()();
   TextColumn get diningCourtRanking => text()();
   TextColumn get macros => text()();
+  IntColumn get mealsPerDay => integer().withDefault(const Constant(2))();
 }
 
 class MealsTable extends Table {
@@ -100,7 +101,7 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -109,6 +110,9 @@ class AppDb extends _$AppDb {
         from2To3: (m, schema) async {
           await m.addColumn(foodsTable, foodsTable.addedSugars);
           await m.addColumn(foodsTable, foodsTable.saturatedFat);
+        },
+        from3To4: (m, schema) async {
+          await m.addColumn(usersTable, usersTable.mealsPerDay);
         },
       ),
     );
@@ -207,6 +211,7 @@ class LocalDatabase {
         dietaryRestrictions: _stringToDietaryRestrictions(
           usersRes.first.dietaryRestrictions,
         ),
+        mealsPerDay: usersRes.first.mealsPerDay,
         macros: MacroResult.fromMap(jsonDecode(usersRes.first.macros)),
         mealPlan: MealPlan.fromString(usersRes.first.mealPlan),
         diningHallRank: usersRes.first.diningCourtRanking.split(","),
@@ -233,6 +238,7 @@ class LocalDatabase {
           age: Value(user.age),
           gender: Value(user.gender.toString()),
           goal: Value(user.goal.toString()),
+          mealsPerDay: Value(user.mealsPerDay),
           macros: Value(jsonEncode(user.macros.toMap())),
           dietaryRestrictions: Value(
             _dietaryRestrictionsToString(user.dietaryRestrictions),
@@ -258,6 +264,7 @@ class LocalDatabase {
               gender: Value(user.gender.toString()),
               goal: Value(user.goal.toString()),
               macros: Value(jsonEncode(user.macros.toMap())),
+              mealsPerDay: Value(user.mealsPerDay),
               dietaryRestrictions: Value(
                 _dietaryRestrictionsToString(user.dietaryRestrictions),
               ),
