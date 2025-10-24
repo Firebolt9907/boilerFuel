@@ -811,7 +811,12 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       child: Column(
         children: [
-          SizedBox(height: MediaQuery.of(context).padding.top - 12),
+          // Clamp to 0 to avoid negative height on platforms with small/zero safe area (e.g., macOS)
+          SizedBox(
+            height: (MediaQuery.of(context).padding.top - 12)
+                .clamp(0.0, double.infinity)
+                .toDouble(),
+          ),
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: Row(

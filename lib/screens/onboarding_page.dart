@@ -1,14 +1,15 @@
-import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/user_info_screen.dart';
 import 'package:boiler_fuel/styling.dart';
+import 'package:boiler_fuel/constants.dart';
 import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:boiler_fuel/widgets/feature_choice_tile.dart';
 import 'package:boiler_fuel/widgets/feature_tile.dart';
+import 'package:boiler_fuel/widgets/activity_level_selector.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../widgets/custom_app_bar.dart';
+// import '../widgets/custom_app_bar.dart';
 
 class OnBoardingPage extends StatefulWidget {
   const OnBoardingPage({super.key});
@@ -23,6 +24,8 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   String editDescription = "";
   bool useDietary = true;
   bool useMealPlanning = true;
+  ActivityLevel? selectedActivityLevel;
+  // Pace selection now happens after goal selection in UserInfoScreen
 
   @override
   void initState() {
@@ -127,6 +130,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                   //     ),
                   //   ],
                   // ),
+                  makeActivityPage(),
                   makePage(
                     title: 'Customize Your Experience',
                     subtitle:
@@ -163,13 +167,15 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                   ),
                 ],
               ),
-              Container(
-                margin: const EdgeInsets.only(bottom: 40),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: _buildIndicator(),
+              // Hide indicators on activity level page, show only activity level indicators
+              if (currentIndex != 2)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 40),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: _buildIndicator(),
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -189,27 +195,40 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
       child: Column(
         children: <Widget>[
           SizedBox(height: MediaQuery.of(context).padding.top + 12),
+          // Modern title with better spacing
           Text(
             title,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 28,
               color: DynamicStyling.getBlack(context),
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Subtle divider line
+          Container(
+            width: 40,
+            height: 3,
+            decoration: BoxDecoration(
+              color: DynamicStyling.getBlack(context),
+              borderRadius: BorderRadius.circular(1.5),
             ),
           ),
           const SizedBox(height: 16),
-
+          // Improved subtitle styling
           Text(
             subtitle,
-
             style: TextStyle(
-              fontSize: 20,
-              color: DynamicStyling.getDarkGrey(context),
+              fontSize: 16,
+              color: DynamicStyling.getBlack(context).withOpacity(0.7),
+              fontWeight: FontWeight.w400,
+              height: 1.5,
             ),
+            textAlign: TextAlign.center,
           ),
-          if (body != null) ...body,
+          if (body != null) ...[const SizedBox(height: 28), ...body],
           if (lastPage) Spacer(),
-
           if (lastPage)
             DefaultButton(
               isEnabled: useDietary || useMealPlanning,
@@ -221,6 +240,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                     builder: (context) => UserInfoScreen(
                       useDietary: useDietary,
                       useMealPlanning: useMealPlanning,
+                      activityLevel: selectedActivityLevel,
                     ),
                   ),
                 );
@@ -240,6 +260,78 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     );
   }
 
+  Widget makeActivityPage() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      color: DynamicStyling.getWhite(context),
+      child: Column(
+        children: <Widget>[
+          SizedBox(height: MediaQuery.of(context).padding.top + 12),
+          Text(
+            'Your Activity Level',
+            style: TextStyle(
+              fontSize: 28,
+              color: DynamicStyling.getBlack(context),
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 3,
+            decoration: BoxDecoration(
+              color: DynamicStyling.getBlack(context),
+              borderRadius: BorderRadius.circular(1.5),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Help us calculate your personalized nutrition goals',
+            style: TextStyle(
+              fontSize: 16,
+              color: DynamicStyling.getBlack(context).withOpacity(0.7),
+              fontWeight: FontWeight.w400,
+              height: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          // Let the selector take the remaining height to prevent negative constraints
+          Expanded(
+            child: ActivityLevelSelector(
+              initialValue: selectedActivityLevel,
+              onSelected: (level) {
+                setState(() => selectedActivityLevel = level);
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          DefaultButton(
+            isEnabled: true,
+            onTap: () {
+              // Advance to pace selection instead of leaving onboarding
+              _pageController.nextPage(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+            text: Text(
+              'Next',
+              style: TextStyle(
+                color: DynamicStyling.getWhite(context),
+                fontSize: 15,
+              ),
+            ),
+          ),
+          SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  // Pace selection page removed. Pace is chosen after goal selection in UserInfoScreen.
+
   Widget _indicator(bool isActive) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -257,7 +349,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
   List<Widget> _buildIndicator() {
     List<Widget> indicators = [];
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < 4; i++) {
       if (currentIndex == i) {
         indicators.add(_indicator(true));
       } else {

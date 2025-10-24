@@ -17,20 +17,28 @@ class FeatureTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(16),
-
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: DynamicStyling.getBlack(context).withOpacity(0.08),
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        color: DynamicStyling.getWhite(context),
+      ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: DynamicStyling.getLightGrey(context),
-              borderRadius: BorderRadius.circular(12),
+              color: DynamicStyling.getBlack(context).withOpacity(0.05),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               icon,
               color: DynamicStyling.getBlack(context),
-              size: 24,
+              size: 22,
             ),
           ),
           SizedBox(width: 16),
@@ -41,13 +49,19 @@ class FeatureTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: DynamicStyling.getBlack(context),
+                    letterSpacing: 0.2,
+                  ),
                 ),
-
+                SizedBox(height: 4),
                 Text(
                   description,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
                     color: DynamicStyling.getDarkGrey(context),
                   ),
                 ),

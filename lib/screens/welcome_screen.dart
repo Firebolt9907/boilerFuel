@@ -1,13 +1,9 @@
-import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/onboarding_page.dart';
-import 'package:boiler_fuel/screens/user_info_screen.dart';
 import 'package:boiler_fuel/styling.dart';
-import 'package:boiler_fuel/widgets/animated_button.dart';
 import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -16,8 +12,6 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen>
     with TickerProviderStateMixin {
-  bool _isDisposed = false; // Add this flag to track disposal
-
   @override
   void initState() {
     super.initState();
@@ -25,8 +19,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   void dispose() {
-    _isDisposed = true; // Set flag before disposing
-
     super.dispose();
   }
 
@@ -35,8 +27,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Floating decorative elements
-
           // Main content
           Padding(
             padding: EdgeInsets.only(
@@ -104,7 +94,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   ),
                   child: Text(
                     'Your personal dining companion for smart meal planning and nutrition tracking',
-                    // style: TextStyle(color: , letterSpacing: 0.5),
                     style: Theme.of(context).textTheme.displaySmall!.copyWith(
                       letterSpacing: 0.5,
                       fontSize: 16,
@@ -123,7 +112,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       fontSize: 16,
                       color: DynamicStyling.getWhite(context),
                     ),
-                    // style: TextStyle(fontSize: 16, color: DynamicStyling.getWhite(context)),
                   ),
                   onTap: () {
                     HapticFeedback.mediumImpact();
@@ -151,9 +139,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ],
             ),
           ),
-
-          // Spacer(),
-          // SizedBox(height: 24),
         ],
       ),
     );
