@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/screens/activity_level_screen.dart';
 import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/constants.dart';
@@ -156,7 +157,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
           context,
           CupertinoPageRoute(
             builder: (context) =>
-                SuggestedMacrosScreen(user: user, isEditing: true),
+                ActivityLevelScreen(user: user, isEditing: true),
           ),
         );
         Navigator.pop(context, newU);
@@ -174,7 +175,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => SuggestedMacrosScreen(user: user),
+          builder: (context) => ActivityLevelScreen(user: user),
         ),
       );
     }

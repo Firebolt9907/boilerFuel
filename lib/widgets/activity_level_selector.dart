@@ -17,13 +17,8 @@ class ActivityLevelSelector extends StatefulWidget {
   State<ActivityLevelSelector> createState() => _ActivityLevelSelectorState();
 }
 
-class _ActivityLevelSelectorState extends State<ActivityLevelSelector>
-    with TickerProviderStateMixin {
+class _ActivityLevelSelectorState extends State<ActivityLevelSelector> {
   late PageController _pageController;
-  late AnimationController _fadeController;
-  late AnimationController _scaleController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
 
   int _currentPage = 0;
   ActivityLevel? _selectedLevel;
@@ -84,36 +79,11 @@ class _ActivityLevelSelectorState extends State<ActivityLevelSelector>
       initialPage: initialIndex >= 0 ? initialIndex : 0,
     );
     _currentPage = initialIndex >= 0 ? initialIndex : 0;
-
-    _fadeController = AnimationController(
-      duration: Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    _scaleController = AnimationController(
-      duration: Duration(milliseconds: 400),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
-
-    _scaleAnimation = Tween<double>(
-      begin: 0.9,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOut));
-
-    _fadeController.forward();
-    _scaleController.forward();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _fadeController.dispose();
-    _scaleController.dispose();
     super.dispose();
   }
 
@@ -126,29 +96,24 @@ class _ActivityLevelSelectorState extends State<ActivityLevelSelector>
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        // The page view takes the available vertical space from the parent
-        Expanded(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() => _currentPage = index);
-                  _fadeController.reset();
-                  _scaleController.reset();
-                  _fadeController.forward();
-                  _scaleController.forward();
-                },
-                itemCount: _levels.length,
-                itemBuilder: (context, index) {
-                  return SingleChildScrollView(
-                    child: _buildActivityCard(_levels[index]),
-                  );
-                },
-              ),
+        // The page view with constrained height
+        SizedBox(
+          height: 450,
+          child: Flexible(
+            fit: FlexFit.loose,
+            child: PageView.builder(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() => _currentPage = index);
+              },
+              itemCount: _levels.length,
+              itemBuilder: (context, index) {
+                return SingleChildScrollView(
+                  child: _buildActivityCard(_levels[index]),
+                );
+              },
             ),
           ),
         ),

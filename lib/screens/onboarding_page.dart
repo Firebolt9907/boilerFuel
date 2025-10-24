@@ -130,7 +130,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                   //     ),
                   //   ],
                   // ),
-                  makeActivityPage(),
+                  // makeActivityPage(),
                   makePage(
                     title: 'Customize Your Experience',
                     subtitle:
@@ -167,15 +167,15 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                   ),
                 ],
               ),
+
               // Hide indicators on activity level page, show only activity level indicators
-              if (currentIndex != 2)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 40),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _buildIndicator(),
-                  ),
+              Container(
+                margin: const EdgeInsets.only(bottom: 40),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: _buildIndicator(),
                 ),
+              ),
             ],
           ),
         ),
@@ -204,6 +204,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
               fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
             ),
+            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           // Subtle divider line
@@ -260,75 +261,9 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
     );
   }
 
-  Widget makeActivityPage() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      color: DynamicStyling.getWhite(context),
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: MediaQuery.of(context).padding.top + 12),
-          Text(
-            'Your Activity Level',
-            style: TextStyle(
-              fontSize: 28,
-              color: DynamicStyling.getBlack(context),
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            width: 40,
-            height: 3,
-            decoration: BoxDecoration(
-              color: DynamicStyling.getBlack(context),
-              borderRadius: BorderRadius.circular(1.5),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Help us calculate your personalized nutrition goals',
-            style: TextStyle(
-              fontSize: 16,
-              color: DynamicStyling.getBlack(context).withOpacity(0.7),
-              fontWeight: FontWeight.w400,
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          // Let the selector take the remaining height to prevent negative constraints
-          Expanded(
-            child: ActivityLevelSelector(
-              initialValue: selectedActivityLevel,
-              onSelected: (level) {
-                setState(() => selectedActivityLevel = level);
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          DefaultButton(
-            isEnabled: true,
-            onTap: () {
-              // Advance to pace selection instead of leaving onboarding
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            },
-            text: Text(
-              'Next',
-              style: TextStyle(
-                color: DynamicStyling.getWhite(context),
-                fontSize: 15,
-              ),
-            ),
-          ),
-          SizedBox(height: 40),
-        ],
-      ),
-    );
-  }
+  // Widget makeActivityPage() {
+  //   return
+  // }
 
   // Pace selection page removed. Pace is chosen after goal selection in UserInfoScreen.
 
@@ -349,7 +284,7 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
   List<Widget> _buildIndicator() {
     List<Widget> indicators = [];
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < 3; i++) {
       if (currentIndex == i) {
         indicators.add(_indicator(true));
       } else {
