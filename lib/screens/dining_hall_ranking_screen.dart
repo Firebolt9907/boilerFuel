@@ -126,7 +126,10 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen> {
             const SizedBox(height: 8),
             Text(
               'Drag to reorder by your preference',
-              style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 18,
+                color: DynamicStyling.getDarkGrey(context),
+              ),
             ),
             const SizedBox(height: 32),
             // Reorderable list
@@ -208,7 +211,9 @@ class _DiningHallRankingScreenState extends State<DiningHallRankingScreen> {
       height: 8,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isActive ? Theme.of(context).primaryColor : Colors.grey[300],
+        color: isActive
+            ? Theme.of(context).primaryColor
+            : DynamicStyling.getGrey(context),
       ),
     );
   }
@@ -236,7 +241,7 @@ class DiningHallCard extends StatelessWidget {
           height: 32,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).primaryColor.withAlpha(30),
           ),
           child: Center(
             child: Text(
@@ -265,7 +270,11 @@ class DiningHallCard extends StatelessWidget {
           ),
         ),
         // Drag handle icon
-        Icon(Icons.drag_handle, color: Colors.grey[400], size: 20),
+        Icon(
+          Icons.drag_handle,
+          color: DynamicStyling.getGrey(context),
+          size: 20,
+        ),
       ],
     );
 

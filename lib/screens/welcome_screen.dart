@@ -25,6 +25,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: DynamicStyling.getWhite(context),
       body: Stack(
         children: [
           // Main content
@@ -46,7 +47,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   height: 120,
                   width: 120,
                   decoration: BoxDecoration(
-                    color: DynamicStyling.getBlack(context),
+                    color: DynamicStyling.isDarkMode(context)
+                        ? Colors.white
+                        : Colors.black,
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(32),
                     boxShadow: [

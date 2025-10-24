@@ -54,7 +54,6 @@ class _CustomTabsState extends State<CustomTabs> {
           final tabCount = widget.tabs.length;
           final segmentWidth = (constraints.maxWidth / tabCount)
               .floorToDouble();
-
           return CupertinoSlidingSegmentedControl<String>(
             backgroundColor: DynamicStyling.getLightGrey(context),
             thumbColor: DynamicStyling.getWhite(context),

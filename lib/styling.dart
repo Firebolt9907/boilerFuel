@@ -20,23 +20,61 @@ class Styling {
 /// a Color type
 ///
 class DynamicStyling {
+  static bool isMaterialYou = false;
+  static double lightTintMultiplier = 0.2;
+  static double darkTintMultiplier = 0.4;
+
   static Color getBlack(BuildContext context) {
+    if (isMaterialYou) {
+      return Theme.of(context).colorScheme.onPrimaryContainer;
+    }
     return Theme.of(context).colorScheme.onSurface;
   }
 
   static Color getWhite(BuildContext context) {
+    if (isMaterialYou) {
+      Color c = Theme.of(context).colorScheme.primaryContainer;
+      var mult = isDarkMode(context) ? darkTintMultiplier : lightTintMultiplier;
+      List<double> argb = [c.a, c.r * mult, c.g * mult, c.b * mult];
+      if (!isDarkMode(context)) {
+        argb[1] += (1 - mult);
+        argb[2] += (1 - mult);
+        argb[3] += (1 - mult);
+      }
+      argb[0] *= 255;
+      argb[1] *= 255;
+      argb[2] *= 255;
+      argb[3] *= 255;
+      // print(c.toARGB32());
+      // print(argb);
+      return Color.fromARGB(
+        argb[0].round(),
+        argb[1].round(),
+        argb[2].round(),
+        argb[3].round(),
+      );
+    }
     return Theme.of(context).colorScheme.surface;
   }
 
   static Color getDarkGrey(BuildContext context) {
+    if (isMaterialYou) {
+      return Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(170);
+    }
     return Theme.of(context).colorScheme.onSurface.withAlpha(170);
   }
 
   static Color getGrey(BuildContext context) {
+    if (isMaterialYou) {
+      return Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(100);
+    }
     return Theme.of(context).colorScheme.onSurface.withAlpha(100);
   }
 
   static Color getLightGrey(BuildContext context) {
+    if (isMaterialYou) {
+      return Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(20);
+    }
     return Theme.of(context).colorScheme.onSurface.withAlpha(20);
   }
 

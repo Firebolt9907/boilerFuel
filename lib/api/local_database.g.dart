@@ -1758,6 +1758,32 @@ class $FoodsTableTable extends FoodsTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _isFavoritedMeta = const VerificationMeta(
+    'isFavorited',
+  );
+  @override
+  late final GeneratedColumn<bool> isFavorited = GeneratedColumn<bool>(
+    'is_favorited',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_favorited" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _servingSizeMeta = const VerificationMeta(
+    'servingSize',
+  );
+  @override
+  late final GeneratedColumn<String> servingSize = GeneratedColumn<String>(
+    'serving_size',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1773,6 +1799,8 @@ class $FoodsTableTable extends FoodsTable
     station,
     collection,
     lastUpdated,
+    isFavorited,
+    servingSize,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1889,6 +1917,26 @@ class $FoodsTableTable extends FoodsTable
     } else if (isInserting) {
       context.missing(_lastUpdatedMeta);
     }
+    if (data.containsKey('is_favorited')) {
+      context.handle(
+        _isFavoritedMeta,
+        isFavorited.isAcceptableOrUnknown(
+          data['is_favorited']!,
+          _isFavoritedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('serving_size')) {
+      context.handle(
+        _servingSizeMeta,
+        servingSize.isAcceptableOrUnknown(
+          data['serving_size']!,
+          _servingSizeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_servingSizeMeta);
+    }
     return context;
   }
 
@@ -1950,6 +1998,14 @@ class $FoodsTableTable extends FoodsTable
         DriftSqlType.int,
         data['${effectivePrefix}last_updated'],
       )!,
+      isFavorited: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_favorited'],
+      )!,
+      servingSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}serving_size'],
+      )!,
     );
   }
 
@@ -1973,6 +2029,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
   final String station;
   final String? collection;
   final int lastUpdated;
+  final bool isFavorited;
+  final String servingSize;
   const FoodsTableData({
     required this.id,
     required this.foodId,
@@ -1987,6 +2045,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     required this.station,
     this.collection,
     required this.lastUpdated,
+    required this.isFavorited,
+    required this.servingSize,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2006,6 +2066,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
       map['collection'] = Variable<String>(collection);
     }
     map['last_updated'] = Variable<int>(lastUpdated);
+    map['is_favorited'] = Variable<bool>(isFavorited);
+    map['serving_size'] = Variable<String>(servingSize);
     return map;
   }
 
@@ -2026,6 +2088,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
           ? const Value.absent()
           : Value(collection),
       lastUpdated: Value(lastUpdated),
+      isFavorited: Value(isFavorited),
+      servingSize: Value(servingSize),
     );
   }
 
@@ -2048,6 +2112,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
       station: serializer.fromJson<String>(json['station']),
       collection: serializer.fromJson<String?>(json['collection']),
       lastUpdated: serializer.fromJson<int>(json['lastUpdated']),
+      isFavorited: serializer.fromJson<bool>(json['isFavorited']),
+      servingSize: serializer.fromJson<String>(json['servingSize']),
     );
   }
   @override
@@ -2067,6 +2133,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
       'station': serializer.toJson<String>(station),
       'collection': serializer.toJson<String?>(collection),
       'lastUpdated': serializer.toJson<int>(lastUpdated),
+      'isFavorited': serializer.toJson<bool>(isFavorited),
+      'servingSize': serializer.toJson<String>(servingSize),
     };
   }
 
@@ -2084,6 +2152,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     String? station,
     Value<String?> collection = const Value.absent(),
     int? lastUpdated,
+    bool? isFavorited,
+    String? servingSize,
   }) => FoodsTableData(
     id: id ?? this.id,
     foodId: foodId ?? this.foodId,
@@ -2098,6 +2168,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     station: station ?? this.station,
     collection: collection.present ? collection.value : this.collection,
     lastUpdated: lastUpdated ?? this.lastUpdated,
+    isFavorited: isFavorited ?? this.isFavorited,
+    servingSize: servingSize ?? this.servingSize,
   );
   FoodsTableData copyWithCompanion(FoodsTableCompanion data) {
     return FoodsTableData(
@@ -2120,6 +2192,12 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
       lastUpdated: data.lastUpdated.present
           ? data.lastUpdated.value
           : this.lastUpdated,
+      isFavorited: data.isFavorited.present
+          ? data.isFavorited.value
+          : this.isFavorited,
+      servingSize: data.servingSize.present
+          ? data.servingSize.value
+          : this.servingSize,
     );
   }
 
@@ -2138,7 +2216,9 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
           ..write('ingredients: $ingredients, ')
           ..write('station: $station, ')
           ..write('collection: $collection, ')
-          ..write('lastUpdated: $lastUpdated')
+          ..write('lastUpdated: $lastUpdated, ')
+          ..write('isFavorited: $isFavorited, ')
+          ..write('servingSize: $servingSize')
           ..write(')'))
         .toString();
   }
@@ -2158,6 +2238,8 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
     station,
     collection,
     lastUpdated,
+    isFavorited,
+    servingSize,
   );
   @override
   bool operator ==(Object other) =>
@@ -2175,7 +2257,9 @@ class FoodsTableData extends DataClass implements Insertable<FoodsTableData> {
           other.ingredients == this.ingredients &&
           other.station == this.station &&
           other.collection == this.collection &&
-          other.lastUpdated == this.lastUpdated);
+          other.lastUpdated == this.lastUpdated &&
+          other.isFavorited == this.isFavorited &&
+          other.servingSize == this.servingSize);
 }
 
 class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
@@ -2192,6 +2276,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
   final Value<String> station;
   final Value<String?> collection;
   final Value<int> lastUpdated;
+  final Value<bool> isFavorited;
+  final Value<String> servingSize;
   const FoodsTableCompanion({
     this.id = const Value.absent(),
     this.foodId = const Value.absent(),
@@ -2206,6 +2292,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     this.station = const Value.absent(),
     this.collection = const Value.absent(),
     this.lastUpdated = const Value.absent(),
+    this.isFavorited = const Value.absent(),
+    this.servingSize = const Value.absent(),
   });
   FoodsTableCompanion.insert({
     this.id = const Value.absent(),
@@ -2221,6 +2309,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     required String station,
     this.collection = const Value.absent(),
     required int lastUpdated,
+    this.isFavorited = const Value.absent(),
+    required String servingSize,
   }) : foodId = Value(foodId),
        name = Value(name),
        calories = Value(calories),
@@ -2231,7 +2321,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
        labels = Value(labels),
        ingredients = Value(ingredients),
        station = Value(station),
-       lastUpdated = Value(lastUpdated);
+       lastUpdated = Value(lastUpdated),
+       servingSize = Value(servingSize);
   static Insertable<FoodsTableData> custom({
     Expression<int>? id,
     Expression<String>? foodId,
@@ -2246,6 +2337,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     Expression<String>? station,
     Expression<String>? collection,
     Expression<int>? lastUpdated,
+    Expression<bool>? isFavorited,
+    Expression<String>? servingSize,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2261,6 +2354,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
       if (station != null) 'station': station,
       if (collection != null) 'collection': collection,
       if (lastUpdated != null) 'last_updated': lastUpdated,
+      if (isFavorited != null) 'is_favorited': isFavorited,
+      if (servingSize != null) 'serving_size': servingSize,
     });
   }
 
@@ -2278,6 +2373,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     Value<String>? station,
     Value<String?>? collection,
     Value<int>? lastUpdated,
+    Value<bool>? isFavorited,
+    Value<String>? servingSize,
   }) {
     return FoodsTableCompanion(
       id: id ?? this.id,
@@ -2293,6 +2390,8 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
       station: station ?? this.station,
       collection: collection ?? this.collection,
       lastUpdated: lastUpdated ?? this.lastUpdated,
+      isFavorited: isFavorited ?? this.isFavorited,
+      servingSize: servingSize ?? this.servingSize,
     );
   }
 
@@ -2338,6 +2437,12 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
     if (lastUpdated.present) {
       map['last_updated'] = Variable<int>(lastUpdated.value);
     }
+    if (isFavorited.present) {
+      map['is_favorited'] = Variable<bool>(isFavorited.value);
+    }
+    if (servingSize.present) {
+      map['serving_size'] = Variable<String>(servingSize.value);
+    }
     return map;
   }
 
@@ -2356,7 +2461,9 @@ class FoodsTableCompanion extends UpdateCompanion<FoodsTableData> {
           ..write('ingredients: $ingredients, ')
           ..write('station: $station, ')
           ..write('collection: $collection, ')
-          ..write('lastUpdated: $lastUpdated')
+          ..write('lastUpdated: $lastUpdated, ')
+          ..write('isFavorited: $isFavorited, ')
+          ..write('servingSize: $servingSize')
           ..write(')'))
         .toString();
   }
@@ -3867,6 +3974,8 @@ typedef $$FoodsTableTableCreateCompanionBuilder =
       required String station,
       Value<String?> collection,
       required int lastUpdated,
+      Value<bool> isFavorited,
+      required String servingSize,
     });
 typedef $$FoodsTableTableUpdateCompanionBuilder =
     FoodsTableCompanion Function({
@@ -3883,6 +3992,8 @@ typedef $$FoodsTableTableUpdateCompanionBuilder =
       Value<String> station,
       Value<String?> collection,
       Value<int> lastUpdated,
+      Value<bool> isFavorited,
+      Value<String> servingSize,
     });
 
 class $$FoodsTableTableFilterComposer
@@ -3956,6 +4067,16 @@ class $$FoodsTableTableFilterComposer
 
   ColumnFilters<int> get lastUpdated => $composableBuilder(
     column: $table.lastUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isFavorited => $composableBuilder(
+    column: $table.isFavorited,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get servingSize => $composableBuilder(
+    column: $table.servingSize,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -4033,6 +4154,16 @@ class $$FoodsTableTableOrderingComposer
     column: $table.lastUpdated,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isFavorited => $composableBuilder(
+    column: $table.isFavorited,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get servingSize => $composableBuilder(
+    column: $table.servingSize,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FoodsTableTableAnnotationComposer
@@ -4088,6 +4219,16 @@ class $$FoodsTableTableAnnotationComposer
     column: $table.lastUpdated,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get isFavorited => $composableBuilder(
+    column: $table.isFavorited,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get servingSize => $composableBuilder(
+    column: $table.servingSize,
+    builder: (column) => column,
+  );
 }
 
 class $$FoodsTableTableTableManager
@@ -4134,6 +4275,8 @@ class $$FoodsTableTableTableManager
                 Value<String> station = const Value.absent(),
                 Value<String?> collection = const Value.absent(),
                 Value<int> lastUpdated = const Value.absent(),
+                Value<bool> isFavorited = const Value.absent(),
+                Value<String> servingSize = const Value.absent(),
               }) => FoodsTableCompanion(
                 id: id,
                 foodId: foodId,
@@ -4148,6 +4291,8 @@ class $$FoodsTableTableTableManager
                 station: station,
                 collection: collection,
                 lastUpdated: lastUpdated,
+                isFavorited: isFavorited,
+                servingSize: servingSize,
               ),
           createCompanionCallback:
               ({
@@ -4164,6 +4309,8 @@ class $$FoodsTableTableTableManager
                 required String station,
                 Value<String?> collection = const Value.absent(),
                 required int lastUpdated,
+                Value<bool> isFavorited = const Value.absent(),
+                required String servingSize,
               }) => FoodsTableCompanion.insert(
                 id: id,
                 foodId: foodId,
@@ -4178,6 +4325,8 @@ class $$FoodsTableTableTableManager
                 station: station,
                 collection: collection,
                 lastUpdated: lastUpdated,
+                isFavorited: isFavorited,
+                servingSize: servingSize,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

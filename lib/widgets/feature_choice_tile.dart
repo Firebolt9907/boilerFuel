@@ -69,6 +69,7 @@ class FeatureChoiceTile extends StatelessWidget {
               value: isSelected,
               onChanged: onChanged,
               activeColor: DynamicStyling.getBlack(context),
+              checkColor: DynamicStyling.getWhite(context),
             ),
           ],
         ),

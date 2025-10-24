@@ -64,6 +64,8 @@ class FoodsTable extends Table {
   TextColumn get station => text()();
   TextColumn get collection => text().nullable()();
   IntColumn get lastUpdated => integer()();
+  BoolColumn get isFavorited => boolean().withDefault(const Constant(false))();
+  TextColumn get servingSize => text()();
 }
 
 class DiningHallFoodsTable extends Table {
@@ -72,7 +74,6 @@ class DiningHallFoodsTable extends Table {
   TextColumn get date => text()();
   TextColumn get mealTime => text()();
   TextColumn get miniFood => text()();
-
   IntColumn get lastUpdated => integer()();
 }
 
@@ -106,10 +107,10 @@ LazyDatabase _openConnection() {
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     int resetLocalDB = await SharedPrefs.getResetLocalData();
     try {
-      if (resetLocalDB <= 31) {
+      if (resetLocalDB <= 32) {
         print("Deleting old database to add new columns");
         await file.delete();
-        await SharedPrefs.setResetLocalData(32);
+        await SharedPrefs.setResetLocalData(33);
         print("Deleted old database - new schema will be created");
       }
     } catch (e) {
@@ -537,6 +538,8 @@ class LocalDatabase {
           station: Value(food.station ?? ""),
           collection: Value(food.collection),
           lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+          isFavorited: Value(food.isFavorited),
+          servingSize: Value(food.servingSize),
         ),
       );
       print("Food updated: ${food.name}");
@@ -558,6 +561,8 @@ class LocalDatabase {
               station: Value(food.station ?? ""),
               collection: Value(food.collection),
               lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+              isFavorited: Value(food.isFavorited),
+              servingSize: Value(food.servingSize),
             ),
           );
       print("Food inserted: ${food.name}");
@@ -583,6 +588,8 @@ class LocalDatabase {
         collection: row.collection,
         labels: (jsonDecode(row.labels) as List<dynamic>).cast<String>(),
         station: row.station.isNotEmpty ? row.station : "",
+        isFavorited: row.isFavorited,
+        servingSize: row.servingSize,
       );
     } else {
       print("No food found with ID: $foodId");

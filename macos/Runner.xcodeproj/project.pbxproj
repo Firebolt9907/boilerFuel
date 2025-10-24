@@ -27,8 +27,8 @@
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
-		5B3286246896B6C649BE4BE0 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A9D01E18CD6BA69885C5BA3 /* Pods_RunnerTests.framework */; };
-		F5ECA791AF22667A0ACD82D9 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00DA238B52B0D32C9DBCF621 /* Pods_Runner.framework */; };
+		88C6E47BE45A94D489609A17 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD1E48D02B7E9CFAF9922FCC /* Pods_RunnerTests.framework */; };
+		9D9A64432AF5C062E9CC877B /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA6EDB18D0898208B376D17F /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -197,6 +197,20 @@
 				33BA886A226E78AF003329D5 /* Configs */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		BE3FE00C487E9D984572736D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8DD57F54A677320DF29FC659 /* Pods-Runner.debug.xcconfig */,
+				88A61AFB244A0FF420CF7853 /* Pods-Runner.release.xcconfig */,
+				C0E4E7589C06F5D3E5C5A814 /* Pods-Runner.profile.xcconfig */,
+				94748B98AECE5581FFEEB10A /* Pods-RunnerTests.debug.xcconfig */,
+				F339E8DC758CF8483F715BEE /* Pods-RunnerTests.release.xcconfig */,
+				7C9744F3B561EA071D0F444E /* Pods-RunnerTests.profile.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		D73912EC22F37F3D000D13A0 /* Frameworks */ = {
