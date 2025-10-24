@@ -453,7 +453,7 @@ Widget _buildNutritionLabel(BuildContext context, Food food) {
           ),
 
           Text(
-            "Serving size 1 unit (500g)",
+            "Serving size " + food.servingSize,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
