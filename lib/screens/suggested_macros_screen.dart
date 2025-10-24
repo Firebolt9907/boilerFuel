@@ -75,7 +75,9 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
       widget.user.macros = result;
       await LocalDatabase().saveUser(widget.user);
       await LocalDatabase().deleteCurrentAndFutureMeals();
-      MealPlanner.generateDayMealPlan(user: widget.user);
+      if (widget.user.useMealPlanning) {
+        MealPlanner.generateDayMealPlan(user: widget.user);
+      }
       Navigator.pop(context, widget.user);
       return;
     }
@@ -89,7 +91,9 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
         ),
       );
     } else {
-      MealPlanner.generateDayMealPlan(user: widget.user);
+      if (widget.user.useMealPlanning) {
+        MealPlanner.generateDayMealPlan(user: widget.user);
+      }
 
       Navigator.push(
         context,

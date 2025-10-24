@@ -799,79 +799,88 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: DynamicStyling.getWhite(context),
-        border: Border(
-          bottom: BorderSide(
-            color: DynamicStyling.getLightGrey(context),
-            width: 2,
-          ),
-        ),
-      ),
-      child: Column(
-        children: [
-          SizedBox(height: MediaQuery.of(context).padding.top - 12),
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'UPlate',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Welcome back, ${widget.user.name.split(' ').first}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: DynamicStyling.getGrey(context),
-                      ),
-                    ),
-                  ],
-                ),
-                // if (widget.user.useMealPlanning)
-                DefaultContainer(
-                  onTap: () {
-                    HapticFeedback.mediumImpact();
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => UserSettingsScreen(
-                          user: widget.user,
-                          onUserUpdated: (updatedUser) {
-                            setState(() {
-                              _currentUser = updatedUser;
-                            });
-                            _loadHomeData(updatedUser);
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: DynamicStyling.getLightGrey(context),
-                      width: 1,
-                    ),
-                  ),
-
-                  child: Icon(
-                    Icons.settings_outlined,
-                    color: DynamicStyling.getBlack(context),
-                    size: 20,
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onDoubleTap: () {
+        LocalDatabase().getDiningHallMeals(
+          "Wiley",
+          DateTime.now(),
+          MealTime.lunch,
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: DynamicStyling.getWhite(context),
+          border: Border(
+            bottom: BorderSide(
+              color: DynamicStyling.getLightGrey(context),
+              width: 2,
             ),
           ),
-        ],
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).padding.top - 12),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'UPlate',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Welcome back, ${widget.user.name.split(' ').first}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: DynamicStyling.getGrey(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // if (widget.user.useMealPlanning)
+                  DefaultContainer(
+                    onTap: () {
+                      HapticFeedback.mediumImpact();
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => UserSettingsScreen(
+                            user: widget.user,
+                            onUserUpdated: (updatedUser) {
+                              setState(() {
+                                _currentUser = updatedUser;
+                              });
+                              _loadHomeData(updatedUser);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: DynamicStyling.getLightGrey(context),
+                        width: 1,
+                      ),
+                    ),
+
+                    child: Icon(
+                      Icons.settings_outlined,
+                      color: DynamicStyling.getBlack(context),
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

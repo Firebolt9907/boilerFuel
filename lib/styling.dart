@@ -21,7 +21,8 @@ class Styling {
 ///
 class DynamicStyling {
   static bool isMaterialYou = false;
-  static double tintMultiplier = 0.4;
+  static double lightTintMultiplier = 0.2;
+  static double darkTintMultiplier = 0.4;
 
   static Color getBlack(BuildContext context) {
     if (isMaterialYou) {
@@ -33,16 +34,12 @@ class DynamicStyling {
   static Color getWhite(BuildContext context) {
     if (isMaterialYou) {
       Color c = Theme.of(context).colorScheme.primaryContainer;
-      List<double> argb = [
-        c.a,
-        c.r * tintMultiplier,
-        c.g * tintMultiplier,
-        c.b * tintMultiplier,
-      ];
+      var mult = isDarkMode(context) ? darkTintMultiplier : lightTintMultiplier;
+      List<double> argb = [c.a, c.r * mult, c.g * mult, c.b * mult];
       if (!isDarkMode(context)) {
-        argb[1] += (1 - tintMultiplier);
-        argb[2] += (1 - tintMultiplier);
-        argb[3] += (1 - tintMultiplier);
+        argb[1] += (1 - mult);
+        argb[2] += (1 - mult);
+        argb[3] += (1 - mult);
       }
       argb[0] *= 255;
       argb[1] *= 255;
