@@ -173,9 +173,13 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
           .where(
             (foodItem) =>
                 foodItem.name.toLowerCase().similarityTo(query.toLowerCase()) >=
-                0.3,
+                0.1,
           )
           .toList();
+      filteredFoods = filteredFoods.sublist(
+        0,
+        filteredFoods.length.clamp(0, 5),
+      );
       //sort by similarity
       filteredFoods.sort((a, b) {
         double simA = a.name.toLowerCase().similarityTo(query.toLowerCase());
@@ -194,10 +198,14 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
                   foodItem.name.toLowerCase().similarityTo(
                         searchController.text.toLowerCase(),
                       ) >=
-                      0.3 &&
+                      0.1 &&
                   foodItem.mealTime == _selectedMealTime!,
             )
             .toList();
+        filteredFoods = filteredFoods.sublist(
+          0,
+          filteredFoods.length.clamp(0, 5),
+        );
         //sort by similarity
         filteredFoods.sort((a, b) {
           double simA = a.name.toLowerCase().similarityTo(
@@ -228,81 +236,6 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
                 (widget.diningHall != null ? " at ${widget.diningHall}" : ""),
             showBackButton: false,
           ),
-          // Container(
-          //   decoration: BoxDecoration(
-          //     color: DynamicStyling.getWhite(context),
-          //     border: Border(
-          //       bottom: BorderSide(color: DynamicStyling.getGrey(context)),
-          //     ),
-          //   ),
-          //   child: Column(
-          //     children: [
-          //       SizedBox(height: MediaQuery.of(context).padding.top),
-          //       // GestureDetector(
-          //       //   onTap: () {
-          //       //     HapticFeedback.lightImpact();
-          //       //     Navigator.of(context).pop();
-          //       //   },
-          //       //   child: Row(
-          //       //     children: [
-          //       //       IconButton(
-          //       //         icon: Icon(
-          //       //           Icons.arrow_back_ios_new,
-          //       //           color: styling.gray,
-          //       //         ),
-          //       //         onPressed: () {
-          //       //           HapticFeedback.lightImpact();
-          //       //           Navigator.of(context).pop();
-          //       //         },
-          //       //       ),
-
-          //       //       Text(
-          //       //         'Back',
-          //       //         style: TextStyle(
-          //       //           fontSize: 14,
-          //       //           fontWeight: FontWeight.bold,
-          //       //           color: styling.gray,
-          //       //         ),
-          //       //       ),
-          //       //     ],
-          //       //   ),
-          //       // ),
-          //       Padding(
-          //         padding: const EdgeInsets.only(
-          //           left: 24.0,
-          //           bottom: 18,
-          //           right: 24,
-          //           top: 24,
-          //         ),
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //           children: [
-          //             Column(
-          //               crossAxisAlignment: CrossAxisAlignment.start,
-          //               children: [
-          //                 ConstrainedBox(
-          //                   constraints: BoxConstraints(
-          //                     maxWidth: MediaQuery.of(context).size.width - 120,
-          //                   ),
-          //                   child: Text(
-          //                     "Search for Foods" +
-          //                         (widget.diningHall != null
-          //                             ? " at ${widget.diningHall}"
-          //                             : ""),
-          //                     style: TextStyle(
-          //                       fontSize: 24,
-          //                       color: DynamicStyling.getBlack(context),
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
 
           // Content
           Expanded(
@@ -498,6 +431,9 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
           // }
         },
         child: DefaultContainer(
+          primaryColor: foodItem.food.isFavorited
+              ? Colors.yellow
+              : DynamicStyling.getWhite(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

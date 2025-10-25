@@ -52,7 +52,7 @@ class Header extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.only(left: 10),
                   child: CupertinoNavigationBarBackButton(
-                    color: DynamicStyling.getBlack(context),
+                    color: DynamicStyling.getGrey(context),
                     previousPageTitle: "Back",
                     onPressed: () {
                       HapticFeedback.lightImpact();

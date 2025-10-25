@@ -210,6 +210,39 @@ class _CollectionScreenState extends State<CollectionScreen>
     );
   }
 
+  String _buildFoodSubtitle(Food foodItem) {
+    String subtitle = "";
+    if (foodItem.calories > 0) {
+      subtitle += "${foodItem.calories.toStringAsFixed(2)} cal";
+    }
+    if (widget.isCreatingMeal) {
+      if (subtitle.isNotEmpty) subtitle += " • ";
+      if (foodItem.protein > 0) {
+        String proteinString = foodItem.protein < 1
+            ? foodItem.protein.toStringAsFixed(2)
+            : foodItem.protein.round().toString();
+        subtitle += "${proteinString}g of protein";
+      }
+
+      if (foodItem.carbs > 0) {
+        if (subtitle.isNotEmpty) subtitle += " • ";
+        String carbsString = foodItem.carbs < 1
+            ? foodItem.carbs.toStringAsFixed(2)
+            : foodItem.carbs.round().toString();
+        subtitle += "${carbsString}g of carbs";
+      }
+
+      if (foodItem.fat > 0) {
+        if (subtitle.isNotEmpty) subtitle += " • ";
+        String fatString = foodItem.fat < 1
+            ? foodItem.fat.toStringAsFixed(2)
+            : foodItem.fat.round().toString();
+        subtitle += "${fatString}g of fat";
+      }
+    }
+    return subtitle;
+  }
+
   Widget _buildFoodItem(Food foodItem, int index) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -293,9 +326,9 @@ class _CollectionScreenState extends State<CollectionScreen>
               ),
 
               // Nutrition info (show only for individual items)
-              if (foodItem.calories > 0)
+              if (_buildFoodSubtitle(foodItem).isNotEmpty)
                 Text(
-                  foodItem.calories.round().toString() + " cal",
+                  _buildFoodSubtitle(foodItem),
                   style: TextStyle(
                     fontSize: 14,
                     color: DynamicStyling.getDarkGrey(context),

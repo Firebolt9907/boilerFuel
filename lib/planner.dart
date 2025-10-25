@@ -384,9 +384,9 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
       //       model: "gemini-2.0-flash-lite",
       //     ))!.output ??
       //     "{}";
-
+      print("Sending Gemini prompt for day meal generation...");
       String response = await WebAPI().getGeminiResponse(
-        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
         geminiPrompt,
       );
       print("Gemini response: $response");
@@ -401,12 +401,14 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
           .replaceAll('\n', '')
           .replaceAll('```', '')
           .replaceAll("json", "");
-      print("Cleaned response: $response");
+      // print("Cleaned response: $response");
       try {
         var decoded = jsonDecode(response);
         for (MealTime mealTime in availableFoods.keys) {
-          if (decoded[mealTime.toString()] != null) {
-            var mealData = decoded[mealTime.toString()] as Map;
+          print("Looking for mealTime: ${mealTime.toString()} in response");
+          if (decoded[mealTime.toString().toLowerCase()] != null) {
+            print("Decoding meal for $mealTime");
+            var mealData = decoded[mealTime.toString().toLowerCase()] as Map;
             List<Food> foods = (mealData['foods'] as List).map((f) {
               return availableFoods[mealTime]!.firstWhere(
                 (food) => food.id == f['id'],
@@ -455,6 +457,7 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
             );
           }
         }
+        print("Generated meals: $meals");
         return meals;
       } catch (e) {
         print("Error parsing response: $e");
@@ -481,10 +484,10 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
             return e;
           }).toList(),
           targets: MacroTargets(
-            calories: targetCalories / 2,
-            protein: targetProtein / 2,
-            carbs: targetCarbs / 2,
-            fat: targetFat / 2,
+            calories: targetCalories,
+            protein: targetProtein,
+            carbs: targetCarbs,
+            fat: targetFat,
           ),
           diningHall: diningHall,
           mealTime: mt,
@@ -511,26 +514,6 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
         meals[mt] = optimizedMeal;
       }
       return meals;
-
-      // print("With prompt: $geminiPrompt");
-      // await Future.delayed(Duration(minutes: 1));
-      // return generateDayMeal(
-      //   targetCalories: targetCalories,
-      //   targetProtein: targetProtein,
-      //   targetCarbs: targetCarbs,
-      //   targetFat: targetFat,
-      //   availableFoods: availableFoods,
-      //   diningHall: diningHall,
-      // );
-
-      // return generateMeal(
-      //   targetCalories: targetCalories,
-      //   targetProtein: targetProtein,
-      //   targetCarbs: targetCarbs,
-      //   targetFat: targetFat,
-      //   availableFoods: availableFoods,
-      //   diningHall: diningHall,
-      // );
     }
   }
 
@@ -544,24 +527,6 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
     required User user,
     required DateTime date,
   }) async {
-    // Map<MealTime, List<Food>> availableFoods = {};
-    // for (MealTime mt in MealTime.values) {
-    //   if (mt == MealTime.lateLunch) continue;
-    //   List<Food> food =
-    //       await Database().getDiningCourtMeal(diningHall, date, mt) ?? [];
-    //   print("Fetched ${food.length} food items for $diningHall at $mt");
-    //   print("User dietary restrictions: ${user.dietaryRestrictions.toMap()}");
-    //   List<List<Food>> filteredFoods = user.dietaryRestrictions.filterFoodList(
-    //     food,
-    //   );
-    //   List<Food> filteredFood = filteredFoods.isNotEmpty
-    //       ? filteredFoods[0]
-    //       : [];
-    //   print("Filtered to ${filteredFood.length} available food items");
-    //   if (filteredFood.isNotEmpty) {
-    //     availableFoods[mt] = filteredFood;
-    //   }
-    // }
     Map<MealTime, List<Food>> availableFoods = {};
     for (MealTime mt in MealTime.values) {
       // if (mt == MealTime.lateLunch) continue;
@@ -586,62 +551,6 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
         availableFoods[mt] = filteredFood;
       }
     }
-    // Map<MealTime, Meal> meals = {};
-
-    // for (MealTime mt in availableFoods.keys) {
-    //   final optimizer = MealOptimizerGA(
-    //     oneServingOnly: true,
-    //     availableFoods: availableFoods[mt]!.map((e) {
-    //       e.calories = e.calories < 0 ? 0 : e.calories;
-    //       e.protein = e.protein < 0 ? 0 : e.protein;
-    //       e.carbs = e.carbs < 0 ? 0 : e.carbs;
-    //       e.fat = e.fat < 0 ? 0 : e.fat;
-    //       e.sugar = e.sugar < 0 ? 0 : e.sugar;
-    //       return e;
-    //     }).toList(),
-    //     targets: MacroTargets(
-    //       calories: targetCalories / 2,
-    //       protein: targetProtein / 2,
-    //       carbs: targetCarbs / 2,
-    //       fat: targetFat / 2,
-    //     ),
-    //     diningHall: diningHall,
-    //     mealTime: mt,
-    //   );
-    //   final optimizedMeal = optimizer.optimize(
-    //     mealName: 'Optimized ' + mt.toString() + ' Meal',
-    //     generations: 50,
-    //     onProgress: (generation, fitness) {
-    //       print(
-    //         'Generation $generation: Best fitness = ${fitness.toStringAsFixed(3)}',
-    //       );
-    //     },
-    //   );
-    //   //Change the meal name to be just the top 3 ingredients based on calories
-    //   if (optimizedMeal.foods.isNotEmpty) {
-    //     List<Food> sortedFoods = List<Food>.from(optimizedMeal.foods);
-    //     sortedFoods.sort((a, b) => b.calories.compareTo(a.calories));
-    //     optimizedMeal.name = sortedFoods
-    //         .sublist(0, min(2, sortedFoods.length))
-    //         .map((f) => f.name)
-    //         .join(" and ");
-    //   }
-    //   optimizedMeal.mealTime = mt;
-
-    //   meals[mt] = optimizedMeal;
-    // }
-    // return meals;
-
-    // Meal meal = await generateMeal(
-    //   targetCalories: targetCalories,
-    //   targetProtein: targetProtein,
-    //   targetCarbs: targetCarbs,
-    //   targetFat: targetFat,
-    //   availableFoods: availableFood,
-    //   diningHall: diningHall,
-    // );
-
-    // meal.mealTime = mealTime;
 
     return await generateDayMeal(
       targetCalories: targetCalories,
@@ -664,6 +573,9 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
 
     // Create a list to hold all the meal generation futures
     List<Future<Map<MealTime, Meal>>> mealGenerationTasks = [];
+    print(
+      "Generating meal plan for ${date ?? DateTime.now()} with ${user.mealsPerDay} meals per day",
+    );
 
     // Add meal generation for all dining halls to the task list
     for (String diningHall in _diningHalls) {
@@ -687,20 +599,24 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
     List<Map<MealTime, Meal>> generatedMeals = await Future.wait(
       mealGenerationTasks,
     );
-    for (Map<MealTime, Meal>? meal in generatedMeals) {
-      if (meal != null) {
-        for (MealTime mt in meal.keys) {
-          Meal m = meal[mt]!;
-          print(
-            "Generated meal for ${m.diningHall} at ${mt.toString()} with ${m.calories} kcal, ${m.protein}g protein, ${m.carbs}g carbs, ${m.fat}g fat",
-          );
-          await LocalDatabase().addMeal(m, mt, date ?? DateTime.now());
-        }
+    print(
+      "Completed meal generation for all dining halls. ${generatedMeals.length} results.",
+    );
+    for (Map<MealTime, Meal> meal in generatedMeals) {
+      print("Generated meal map: $meal");
+
+      for (MealTime mt in meal.keys) {
+        Meal m = meal[mt]!;
+        print(
+          "Generated meal for ${m.diningHall} at ${mt.toString()} with ${m.calories} kcal, ${m.protein}g protein, ${m.carbs}g carbs, ${m.fat}g fat",
+        );
+        await LocalDatabase().addMeal(m, mt, date ?? DateTime.now());
       }
     }
     print(
       "Generated ${generatedMeals.where((meal) => meal != null).length} meals successfully for ${date ?? DateTime.now()}",
     );
+    await SharedPrefs.setLastGeneratedAIMeal(date ?? DateTime.now());
     double averagePromptTokens = await SharedPrefs.getAveragePromptTokens();
     double averageResponseTokens = await SharedPrefs.getAverageResponseTokens();
     int totalPrompts = await SharedPrefs.getTotalPrompts();

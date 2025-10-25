@@ -1,12 +1,15 @@
 import 'dart:async';
 
+import 'package:boiler_fuel/api/firebase_database.dart';
 import 'package:boiler_fuel/api/local_database.dart';
+import 'package:boiler_fuel/api/shared_preferences.dart';
 import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/dietary_restrictions_screen.dart';
 import 'package:boiler_fuel/screens/dining_hall_ranking_screen.dart';
 
 import 'package:boiler_fuel/screens/user_info_screen.dart';
 import 'package:boiler_fuel/screens/welcome_screen.dart';
+import 'package:boiler_fuel/widgets/default_text_field.dart';
 import 'package:boiler_fuel/widgets/header.dart';
 
 import 'package:boiler_fuel/widgets/settings_button.dart';
@@ -147,32 +150,17 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                                 UserInfoScreen(user: currentUser),
                           ),
                         );
+
                         if (user != null) {
+                          setState(() {
+                            currentUser = user;
+                          });
                           widget.onUserUpdated(user);
                         }
                       },
                     ),
                   ),
-                  // TitaniumButton(
-                  //   title: "Dietary Restrictions",
-                  //   subtitle:
-                  //       "Change your dietary restrictions, like allergies and food preferences.",
-                  //   icon: Icons.no_food,
-                  //   onTap: () async {
-                  //     User? user = await Navigator.push(
-                  //       context,
-                  //       CupertinoPageRoute(
-                  //         builder: (context) => DietaryRestrictionsScreen(
-                  //           user: currentUser!,
-                  //           isEditing: true,
-                  //         ),
-                  //       ),
-                  //     );
-                  //     if (user != null) {
-                  //       widget.onUserUpdated(user);
-                  //     }
-                  //   },
-                  // ),
+
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SettingsButton(
@@ -191,7 +179,11 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                             ),
                           ),
                         );
+
                         if (user != null) {
+                          setState(() {
+                            currentUser = user;
+                          });
                           widget.onUserUpdated(user);
                         }
                       },
@@ -215,33 +207,256 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                             ),
                           ),
                         );
+
                         if (user != null) {
+                          setState(() {
+                            currentUser = user;
+                          });
                           widget.onUserUpdated(user);
                         }
                       },
                     ),
                   ),
 
-                  // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: SettingsButton(
-                  //     title: "Purdue Meal Plan",
-                  //     subtitle: "Change your current purdue meal plan",
-                  //     icon: Icons.dinner_dining,
-                  //     onTap: () async {
-                  //       User? user = await Navigator.push(
-                  //         context,
-                  //         CupertinoPageRoute(
-                  //           builder: (context) =>
-                  //               MealPlanScreen(user: currentUser!, isEditing: true),
-                  //         ),
-                  //       );
-                  //       if (user != null) {
-                  //         widget.onUserUpdated(user);
-                  //       }
-                  //     },
-                  //   ),
-                  // ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SettingsButton(
+                      title: "Submit Feedback",
+                      subtitle:
+                          "Help us improve UPlate by submitting your feedback.",
+                      icon: Icons.feedback,
+                      onTap: () async {
+                        HapticFeedback.mediumImpact();
+                        // Show sleek confirmation dialog
+                        showDialog<bool>(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (BuildContext context) {
+                            bool isSubmitting = false;
+                            TextEditingController feedbackController =
+                                TextEditingController();
+
+                            return StatefulBuilder(
+                              builder: (context, setState) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  backgroundColor: DynamicStyling.getWhite(
+                                    context,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        // Icon
+                                        Container(
+                                          width: 64,
+                                          height: 64,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.green.withOpacity(
+                                              0.1,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.feedback_rounded,
+                                              color: Colors.green,
+                                              size: 32,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Title
+                                        Text(
+                                          'Submit Feedback',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                            color: DynamicStyling.getBlack(
+                                              context,
+                                            ),
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 12),
+
+                                        // Description
+                                        Text(
+                                          'We value your feedback! Please let us know your thoughts or any issues you\'ve encountered.',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: DynamicStyling.getDarkGrey(
+                                              context,
+                                            ),
+                                            height: 1.5,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        DefaultTextField(
+                                          controller: feedbackController,
+                                          maxLines: 6,
+                                          hint: 'Enter your feedback here...',
+                                        ),
+                                        const SizedBox(height: 28),
+
+                                        // Buttons
+                                        Row(
+                                          children: [
+                                            // Cancel Button
+                                            Expanded(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                    color:
+                                                        DynamicStyling.getGrey(
+                                                          context,
+                                                        ),
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Material(
+                                                  color: Colors.transparent,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      HapticFeedback.lightImpact();
+                                                      Navigator.of(
+                                                        context,
+                                                      ).pop();
+                                                    },
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 12.0,
+                                                          ),
+                                                      child: Text(
+                                                        'Cancel',
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color:
+                                                              DynamicStyling.getBlack(
+                                                                context,
+                                                              ),
+                                                        ),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+
+                                            // Delete Button
+                                            isSubmitting
+                                                ? CircularProgressIndicator(
+                                                    color: Colors.green,
+                                                  )
+                                                : Expanded(
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              12,
+                                                            ),
+                                                        color: Colors.green,
+                                                      ),
+                                                      child: Material(
+                                                        color:
+                                                            Colors.transparent,
+                                                        child: InkWell(
+                                                          onTap: () async {
+                                                            HapticFeedback.mediumImpact();
+                                                            setState(() {
+                                                              isSubmitting =
+                                                                  true;
+                                                            });
+                                                            await FBDatabase()
+                                                                .submitFeedback(
+                                                                  feedbackController
+                                                                      .text,
+                                                                );
+
+                                                            if (mounted) {
+                                                              ScaffoldMessenger.of(
+                                                                context,
+                                                              ).showSnackBar(
+                                                                SnackBar(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .green,
+                                                                  content: Text(
+                                                                    'Thank you for your feedback!',
+                                                                    style: TextStyle(
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                              Navigator.of(
+                                                                context,
+                                                              ).pop();
+                                                            }
+                                                          },
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                12,
+                                                              ),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  vertical:
+                                                                      12.0,
+                                                                ),
+                                                            child: Text(
+                                                              'Submit',
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SettingsButton(
@@ -402,6 +617,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                                                                 .close();
                                                             await LocalDatabase()
                                                                 .deleteDB(true);
+                                                            await SharedPrefs.clearAll();
                                                             aiMealStream =
                                                                 StreamController<
                                                                   Map<

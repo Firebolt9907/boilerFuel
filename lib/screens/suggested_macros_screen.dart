@@ -75,6 +75,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
       widget.user.macros = result;
       await LocalDatabase().saveUser(widget.user);
       await LocalDatabase().deleteCurrentAndFutureMeals();
+      await SharedPrefs.setLastGeneratedAIMeal(null);
       if (widget.user.useMealPlanning) {
         MealPlanner.generateDayMealPlan(user: widget.user);
       }
@@ -207,7 +208,7 @@ class _SuggestedMacrosScreenState extends State<SuggestedMacrosScreen>
                 child: TextButton(
                   onPressed: () {
                     HapticFeedback.mediumImpact();
-                    Navigator.pop(context);
+                    Navigator.pop(context, null);
                   },
                   child: Text(
                     'Back',

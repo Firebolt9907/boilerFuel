@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       // print("Ensured dining halls exist in Firebase");
       if (user != null) {
         DateTime latestMealPlanDate =
-            (await LocalDatabase().getLastMeal()) ??
+            (await SharedPrefs.getLastGeneratedAIMeal()) ??
             DateTime.now().subtract(Duration(days: 1));
         //check if latestMealPlanDate is past 3 days in future
         DateTime now = DateTime.now();
@@ -118,7 +118,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           });
           if (user != null) {
             DateTime latestMealPlanDate =
-                (await LocalDatabase().getLastMeal()) ??
+                (await SharedPrefs.getLastGeneratedAIMeal()) ??
                 DateTime.now().subtract(Duration(days: 1));
             //check if latestMealPlanDate is past 3 days in future
             DateTime now = DateTime.now();

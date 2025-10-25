@@ -6,6 +6,7 @@ class DefaultTextField extends StatefulWidget {
   final TextEditingController controller;
   final String? label;
   final String? hint;
+  final int? maxLines;
   final TextInputType keyboardType;
   final Function(String)? onChanged;
 
@@ -15,6 +16,7 @@ class DefaultTextField extends StatefulWidget {
     this.hint,
     this.keyboardType = TextInputType.text,
     this.onChanged,
+    this.maxLines = 1,
   });
 
   @override
@@ -44,6 +46,7 @@ class _DefaultTextFieldState extends State<DefaultTextField>
         onTap: () => HapticFeedback.selectionClick(),
         controller: widget.controller,
         keyboardType: widget.keyboardType,
+        maxLines: widget.maxLines,
         style: TextStyle(color: DynamicStyling.getBlack(context), fontSize: 16),
         onChanged: widget.onChanged,
         decoration: InputDecoration(

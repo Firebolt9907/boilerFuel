@@ -73,6 +73,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       _mealsPerDayController.text = checkNulls(
         widget.user!.mealsPerDay.toString(),
       );
+      print(
+        "Loaded user: ${widget.user!.name} with activity level ${widget.user!.activityLevel}",
+      );
     } else {
       useDietary = widget.useDietary ?? true;
       useMealPlanning = widget.useMealPlanning ?? true;
@@ -149,15 +152,18 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       diningHallRank: widget.user?.diningHallRank ?? [],
       age: int.tryParse(_ageController.text) ?? -1,
       gender: _selectedGender ?? Gender.na,
-      activityLevel: _selectedActivityLevel ?? ActivityLevel.sedentary,
+      activityLevel: widget.user?.activityLevel ?? ActivityLevel.sedentary,
     );
     if (widget.user != null) {
-      LocalDatabase().saveUser(user);
-      await LocalDatabase().deleteCurrentAndFutureMeals();
       if (!useMealPlanning) {
+        await LocalDatabase().deleteCurrentAndFutureMeals();
+
+        LocalDatabase().saveUser(user);
+
         Navigator.pop(context, user);
         return;
       } else {
+        user.activityLevel = widget.user!.activityLevel;
         User? newU = await Navigator.push(
           context,
           CupertinoPageRoute(
@@ -165,7 +171,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                 ActivityLevelScreen(user: user, isEditing: true),
           ),
         );
-        Navigator.pop(context, newU);
+        if (newU != null) Navigator.pop(context, newU);
         return;
       }
     }
@@ -611,6 +617,23 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                                 _ageController.text.isNotEmpty) ||
                             !useMealPlanning),
                   ),
+                  if (widget.user != null) SizedBox(height: 8),
+                  if (widget.user != null)
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          HapticFeedback.mediumImpact();
+                          Navigator.pop(context, null);
+                        },
+                        child: Text(
+                          'Back',
+                          style: TextStyle(
+                            color: DynamicStyling.getDarkGrey(context),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
 
                   SizedBox(
                     height:

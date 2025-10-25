@@ -25,12 +25,14 @@ class FoodItem {
   final String station;
   bool isFoodAvailable;
   String diningHall;
+  List<MealTime> mealTimes;
   FoodItem({
     required this.name,
     required this.food,
     required this.station,
     required this.isFoodAvailable,
     required this.diningHall,
+    required this.mealTimes,
   });
 }
 
@@ -70,9 +72,16 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
           FoodItem(
             name: foods[i].name,
             food: foods[i],
-            station: available != null ? available.split("-")[1] : "",
+            station: available != null
+                ? available.split("-")[1].split(":")[0]
+                : "",
             isFoodAvailable: available != null,
             diningHall: available != null ? available.split("-")[0] : "",
+            mealTimes: available != null
+                ? available.split(":")[1].split(",").map((e) {
+                    return MealTime.fromString(e);
+                  }).toList()
+                : [],
           ),
         );
       }
@@ -264,7 +273,7 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
             ),
             SizedBox(height: 8),
             Text(
-              'Tap on the bookmark icon on any food item to save it here.',
+              'Tap on the star icon on any food item to save it here.',
               style: TextStyle(
                 color: DynamicStyling.getDarkGrey(context),
                 fontSize: 14,
@@ -340,7 +349,7 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
                 SizedBox(height: 6),
                 if (food.isFoodAvailable)
                   Text(
-                    "Available at ${food.station} in ${food.diningHall}",
+                    "Available at ${food.station} in ${food.diningHall} for ${food.mealTimes.map((e) => e.toDisplayString()).join(", ")}",
                     style: TextStyle(
                       fontSize: 14,
                       color: DynamicStyling.getDarkGrey(context),

@@ -613,7 +613,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
 
   Widget _buildFoodsSection() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(top: 16, bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

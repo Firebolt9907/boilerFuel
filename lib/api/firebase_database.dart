@@ -575,4 +575,11 @@ class FBDatabase {
     // }
     return null;
   }
+
+  Future<void> submitFeedback(String feedback) async {
+    await FirebaseFirestore.instance.collection('feedback').add({
+      'feedback': feedback,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  }
 }

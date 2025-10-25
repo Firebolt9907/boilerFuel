@@ -35,16 +35,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  late AnimationController _animationController;
-  late AnimationController _floatingController;
-  late AnimationController _pulseController;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _floatingAnimation;
-  late Animation<double> _pulseAnimation;
-  late AnimationController _statusBarController;
-  late Animation<double> _statusBarAnimation;
-  PageController _scrollController = PageController();
-
   // animated ellipsis for generating text
   String _generatingEllipsis = '';
   Timer? _ellipsisTimer;
@@ -54,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   List<String> _rankedDiningHalls = [];
   Map<MealTime, Map<String, Meal>> _suggestedMeals = {};
+  List<Meal> _savedMeals = [];
   bool _isLoading = true;
 
   Meal? displayMeal;
@@ -68,43 +59,6 @@ class _HomeScreenState extends State<HomeScreen>
       _currentUser = widget.user;
     });
     WidgetsBinding.instance.addObserver(this);
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _floatingController = AnimationController(
-      duration: Duration(milliseconds: 4000),
-      vsync: this,
-    );
-    _pulseController = AnimationController(
-      duration: Duration(milliseconds: 2000),
-      vsync: this,
-    );
-    _statusBarController = AnimationController(
-      duration: Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-    _floatingAnimation = Tween<double>(begin: -15.0, end: 15.0).animate(
-      CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut),
-    );
-    _pulseAnimation = Tween<double>(begin: 0.9, end: 1.1).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    _statusBarAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
-      CurvedAnimation(parent: _statusBarController, curve: Curves.elasticOut),
-    );
-
-    _animationController.forward();
-    Future.delayed(Duration(milliseconds: 400), () {
-      _floatingController.repeat(reverse: true);
-      _pulseController.repeat(reverse: true);
-      _statusBarController.repeat(reverse: true);
-    });
 
     _loadHomeData(widget.user);
 
@@ -122,11 +76,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _floatingController.dispose();
-    _pulseController.dispose();
-    _statusBarController.dispose();
-
     _ellipsisTimer?.cancel();
     super.dispose();
   }
@@ -242,25 +191,69 @@ class _HomeScreenState extends State<HomeScreen>
   void getDisplayMeal(
     Map<MealTime, Map<String, Meal>> suggestedMeals,
     List<DiningHall> rankedDiningHalls,
-  ) {
+  ) async {
     Meal? firstMeal;
     MealTime? firstMealTime;
+
     for (DiningHall hall in rankedDiningHalls) {
       DiningHallStatus hallStatus = _getDiningHallStatus(
         _diningHalls.firstWhere((dh) => dh.name == hall.name),
       );
       MealTime? currentMealTime = hallStatus.currentMealTime;
-      print("Current Meal Time: $currentMealTime");
-      print("DINING HALL: ${hall.name}");
-      print("IS OPEN: ${hallStatus.isOpen}");
-      Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
-          ? suggestedMeals[currentMealTime]
-          : null;
-      if (mealsForCurrentTime != null &&
-          mealsForCurrentTime.containsKey(hall.name)) {
-        firstMeal = mealsForCurrentTime[hall.name];
+      if (currentMealTime == null) {
+        continue;
+      }
+      List<Meal> mealsForCurrentTime = [];
+      for (Meal sMeal in _savedMeals) {
+        print("Checking saved meal: ${sMeal.name} for time ${sMeal.mealTime}");
+        if (sMeal.mealTime != currentMealTime) {
+          continue;
+        }
+        bool isMealAvailable = true;
+        for (var food in sMeal.foods) {
+          String? isFoodAvailable = await LocalDatabase().isFoodAvailable(
+            food.id,
+            m: sMeal.mealTime,
+          );
+          if (isFoodAvailable == null) {
+            isMealAvailable = false;
+            break;
+          }
+        }
+        if (isMealAvailable) {
+          print("Saved meal available: ${sMeal.name}");
+          mealsForCurrentTime.add(sMeal);
+        }
+      }
+      if (mealsForCurrentTime.isNotEmpty) {
+        firstMeal = mealsForCurrentTime.first;
         firstMealTime = currentMealTime;
         break;
+      }
+    }
+    if (firstMeal != null && firstMealTime != null) {
+      setState(() {
+        displayMeal = firstMeal;
+        _selectedMealTime = firstMealTime!;
+        print("displayMeal set to: ${displayMeal?.name}");
+        print("displayMeal mealTime: ${displayMeal?.mealTime}");
+      });
+    } else {
+      for (DiningHall hall in rankedDiningHalls) {
+        DiningHallStatus hallStatus = _getDiningHallStatus(
+          _diningHalls.firstWhere((dh) => dh.name == hall.name),
+        );
+        MealTime? currentMealTime = hallStatus.currentMealTime;
+
+        Map<String, Meal>? mealsForCurrentTime = currentMealTime != null
+            ? suggestedMeals[currentMealTime]
+            : null;
+        if (mealsForCurrentTime != null &&
+            mealsForCurrentTime.containsKey(hall.name)) {
+          firstMeal = mealsForCurrentTime[hall.name];
+          firstMealTime = currentMealTime;
+          break;
+        }
       }
     }
     if (firstMeal != null && firstMealTime != null) {
@@ -303,11 +296,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _loadHomeData(User user) async {
-    //Scroll to beginning
-    if (_scrollController.hasClients) {
-      _scrollController.jumpToPage(0);
-    }
-
     // Use user's dining hall ranking from their profile
     _rankedDiningHalls = List.from(user.diningHallRank);
     List<DiningHall> diningHalls = await Database().getDiningHalls();
@@ -319,7 +307,9 @@ class _HomeScreenState extends State<HomeScreen>
       if (indexB == -1) indexB = _rankedDiningHalls.length;
       return indexA.compareTo(indexB);
     });
+    List<Meal> savedMeals = await LocalDatabase().getFavoritedMeals();
     setState(() {
+      _savedMeals = savedMeals;
       print(_rankedDiningHalls);
       print(diningHalls.map((e) => e.name).toList());
       _diningHalls = diningHalls;
@@ -637,150 +627,153 @@ class _HomeScreenState extends State<HomeScreen>
                           _buildSuggestedMealCard(context),
                         if (widget.user.useMealPlanning)
                           const SizedBox(height: 12),
-                        if (widget.user.useMealPlanning)
-                          Card(
-                            elevation: 0,
-                            color: DynamicStyling.getWhite(context),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                width: 2,
-                                color: DynamicStyling.getLightGrey(context),
-                              ),
-                            ),
-                            child: InkWell(
-                              onTap: onViewSavedMeals,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(12),
-                              ),
-                              splashColor: DynamicStyling.getLightGrey(context),
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(20, 255, 0, 0),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Icon(
-                                        Icons.bookmark_outline,
-                                        color: Color(0xfffb2c35),
-                                        size: 24,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Saved Meals',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'View and manage your saved meals',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: DynamicStyling.getDarkGrey(
-                                                context,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Icon(
-                                      Icons.chevron_right,
-                                      color: DynamicStyling.getGrey(context),
-                                      size: 24,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
 
-                        if (widget.user.useMealPlanning)
-                          const SizedBox(height: 12),
+                        // if (widget.user.useMealPlanning)
+                        //   Card(
+                        //     elevation: 0,
+                        //     color: DynamicStyling.getWhite(context),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       side: BorderSide(
+                        //         width: 2,
+                        //         color: DynamicStyling.getLightGrey(context),
+                        //       ),
+                        //     ),
+                        //     child: InkWell(
+                        //       onTap: onViewSavedMeals,
+                        //       borderRadius: BorderRadius.all(
+                        //         Radius.circular(12),
+                        //       ),
+                        //       splashColor: DynamicStyling.getLightGrey(context),
+                        //       child: Padding(
+                        //         padding: const EdgeInsets.all(20.0),
+                        //         child: Row(
+                        //           children: [
+                        //             Container(
+                        //               padding: EdgeInsets.all(12),
+                        //               decoration: BoxDecoration(
+                        //                 color: Color.fromARGB(20, 255, 0, 0),
+                        //                 borderRadius: BorderRadius.circular(12),
+                        //               ),
+                        //               child: Icon(
+                        //                 Icons.bookmark_outline,
+                        //                 color: Color(0xfffb2c35),
+                        //                 size: 24,
+                        //               ),
+                        //             ),
+                        //             const SizedBox(width: 16),
+                        //             Expanded(
+                        //               child: Column(
+                        //                 crossAxisAlignment:
+                        //                     CrossAxisAlignment.start,
+                        //                 mainAxisAlignment:
+                        //                     MainAxisAlignment.center,
+                        //                 children: [
+                        //                   Text(
+                        //                     'Saved Meals',
+                        //                     style: TextStyle(fontSize: 16),
+                        //                   ),
+                        //                   const SizedBox(height: 4),
+                        //                   Text(
+                        //                     'View and manage your saved meals',
+                        //                     style: TextStyle(
+                        //                       fontSize: 14,
+                        //                       color: DynamicStyling.getDarkGrey(
+                        //                         context,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             Spacer(),
+                        //             Icon(
+                        //               Icons.chevron_right,
+                        //               color: DynamicStyling.getGrey(context),
+                        //               size: 24,
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
 
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 12),
-                          child: Card(
-                            elevation: 0,
-                            color: DynamicStyling.getWhite(context),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                width: 2,
-                                color: DynamicStyling.getLightGrey(context),
-                              ),
-                            ),
-                            child: InkWell(
-                              onTap: onViewFavoritedFoods,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(12),
-                              ),
-                              splashColor: DynamicStyling.getLightGrey(context),
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(20, 255, 255, 0),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Icon(
-                                        Icons.star_outline,
-                                        color: Colors.yellow,
-                                        size: 24,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Favorite Foods',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            'View and manage your favorited food items',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: DynamicStyling.getDarkGrey(
-                                                context,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Icon(
-                                      Icons.chevron_right,
-                                      color: DynamicStyling.getGrey(context),
-                                      size: 24,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        // if (widget.user.useMealPlanning)
+                        //   const SizedBox(height: 12),
+
+                        // Padding(
+                        //   padding: EdgeInsets.only(bottom: 12),
+                        //   child: Card(
+                        //     elevation: 0,
+                        //     color: DynamicStyling.getWhite(context),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       side: BorderSide(
+                        //         width: 2,
+                        //         color: DynamicStyling.getLightGrey(context),
+                        //       ),
+                        //     ),
+                        //     child: InkWell(
+                        //       onTap: onViewFavoritedFoods,
+                        //       borderRadius: BorderRadius.all(
+                        //         Radius.circular(12),
+                        //       ),
+                        //       splashColor: DynamicStyling.getLightGrey(context),
+                        //       child: Padding(
+                        //         padding: const EdgeInsets.all(20.0),
+                        //         child: Row(
+                        //           children: [
+                        //             Container(
+                        //               padding: EdgeInsets.all(12),
+                        //               decoration: BoxDecoration(
+                        //                 color: Color.fromARGB(20, 255, 255, 0),
+                        //                 borderRadius: BorderRadius.circular(12),
+                        //               ),
+                        //               child: Icon(
+                        //                 Icons.star_outline,
+                        //                 color: Colors.yellow,
+                        //                 size: 24,
+                        //               ),
+                        //             ),
+                        //             const SizedBox(width: 16),
+                        //             Expanded(
+                        //               child: Column(
+                        //                 crossAxisAlignment:
+                        //                     CrossAxisAlignment.center,
+                        //                 mainAxisAlignment:
+                        //                     MainAxisAlignment.center,
+                        //                 children: [
+                        //                   Text(
+                        //                     'Favorite Foods',
+                        //                     style: TextStyle(fontSize: 16),
+                        //                   ),
+                        //                   const SizedBox(height: 4),
+                        //                   Text(
+                        //                     'View and manage your favorited food items',
+                        //                     style: TextStyle(
+                        //                       fontSize: 14,
+                        //                       color: DynamicStyling.getDarkGrey(
+                        //                         context,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //             Spacer(),
+                        //             Icon(
+                        //               Icons.chevron_right,
+                        //               color: DynamicStyling.getGrey(context),
+                        //               size: 24,
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        _buildSavedFoodsCard(context),
+                        const SizedBox(height: 12),
 
                         // Dining Halls Section
                         Row(
@@ -880,6 +873,174 @@ class _HomeScreenState extends State<HomeScreen>
           diningHall: displayMeal!.diningHall,
         ),
       ),
+    );
+  }
+
+  Widget _buildSavedFoodsCard(BuildContext context) {
+    return Row(
+      children: [
+        if (widget.user.useMealPlanning)
+          Expanded(
+            child: Card(
+              elevation: 0,
+              color: DynamicStyling.getWhite(context),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  width: 2,
+                  color: DynamicStyling.getLightGrey(context),
+                ),
+              ),
+              child: InkWell(
+                onTap: onViewSavedMeals,
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                splashColor: DynamicStyling.getLightGrey(context),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(20, 255, 0, 0),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.bookmark_outline,
+                          color: Color(0xfffb2c35),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Saved Meals',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'View your saved meals',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: DynamicStyling.getDarkGrey(context),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        if (widget.user.useMealPlanning) const SizedBox(width: 12),
+        Expanded(
+          child: Card(
+            elevation: 0,
+            color: DynamicStyling.getWhite(context),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                width: 2,
+                color: DynamicStyling.getLightGrey(context),
+              ),
+            ),
+            child: InkWell(
+              onTap: onViewFavoritedFoods,
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              splashColor: DynamicStyling.getLightGrey(context),
+              child: widget.user.useMealPlanning
+                  ? Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(20, 255, 255, 0),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.star_outline,
+                              color: Colors.yellow,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Favorite Foods',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'View your favorited food items',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: DynamicStyling.getDarkGrey(context),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(20, 255, 255, 0),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.star_outline,
+                              color: Colors.yellow,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Favorite Foods',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'View and manage your favorited food items',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: DynamicStyling.getDarkGrey(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Spacer(),
+                          Icon(
+                            Icons.chevron_right,
+                            color: DynamicStyling.getGrey(context),
+                            size: 24,
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

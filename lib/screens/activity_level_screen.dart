@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/planner.dart';
 import 'package:boiler_fuel/screens/suggested_macros_screen.dart';
 import 'package:boiler_fuel/styling.dart';
 
@@ -30,7 +31,7 @@ class _ActivityLevelScreenState extends State<ActivityLevelScreen>
   TextEditingController proteinController = TextEditingController();
   TextEditingController carbsController = TextEditingController();
   TextEditingController fatController = TextEditingController();
-  ActivityLevel? selectedActivityLevel;
+  ActivityLevel selectedActivityLevel = ActivityLevel.sedentary;
   @override
   void initState() {
     super.initState();
@@ -40,6 +41,7 @@ class _ActivityLevelScreenState extends State<ActivityLevelScreen>
     proteinController.text = widget.user.macros.protein.toStringAsFixed(0);
     carbsController.text = widget.user.macros.carbs.toStringAsFixed(0);
     fatController.text = widget.user.macros.fat.toStringAsFixed(0);
+    selectedActivityLevel = widget.user.activityLevel;
     setState(() {});
   }
 
@@ -50,6 +52,42 @@ class _ActivityLevelScreenState extends State<ActivityLevelScreen>
 
   void _completeSetup() async {
     HapticFeedback.mediumImpact();
+    widget.user.activityLevel = selectedActivityLevel;
+    double? _weeklyChangeLbs;
+    if (widget.user.goal == Goal.lose) {
+      _weeklyChangeLbs = -0.5;
+    } else if (widget.user.goal == Goal.gain) {
+      _weeklyChangeLbs = 0.5;
+    }
+    final macros = CalorieMacroCalculator.calculateMacros(
+      age: widget.user.age,
+      weightLbs: widget.user.weight.toDouble(),
+      heightInches: widget.user.height.toDouble(),
+      gender: widget.user.gender,
+      goal: widget.user.goal,
+      activityLevel: selectedActivityLevel,
+      weeklyChangeLbs: (widget.user.goal == Goal.maintain)
+          ? null
+          : _weeklyChangeLbs,
+    );
+    widget.user.macros = macros;
+    if (widget.isEditing) {
+      User? result = await Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (context) => SuggestedMacrosScreen(
+            user: widget.user,
+            isEditing: widget.isEditing,
+          ),
+        ),
+      );
+      if (result != null) {
+        
+        Navigator.pop(context, result);
+      } 
+      
+      return;
+    }
 
     Navigator.push(
       context,
@@ -106,7 +144,9 @@ class _ActivityLevelScreenState extends State<ActivityLevelScreen>
                   child: ActivityLevelSelector(
                     initialValue: selectedActivityLevel,
                     onSelected: (level) {
+                      print('Selected activity level: $level');
                       selectedActivityLevel = level;
+                      setState(() {});
                       // Don't call setState here - let the selector manage its own state
                     },
                   ),
@@ -117,7 +157,7 @@ class _ActivityLevelScreenState extends State<ActivityLevelScreen>
               // Start journey button
               DefaultButton(
                 text: Text(
-                  widget.isEditing ? 'Save Changes' : 'Continue',
+                  widget.isEditing ? 'Next' : 'Continue',
                   style: TextStyle(
                     color: DynamicStyling.getWhite(context),
                     fontSize: 16,
@@ -134,7 +174,7 @@ class _ActivityLevelScreenState extends State<ActivityLevelScreen>
                 child: TextButton(
                   onPressed: () {
                     HapticFeedback.mediumImpact();
-                    Navigator.pop(context);
+                    Navigator.pop(context, null);
                   },
                   child: Text(
                     'Back',

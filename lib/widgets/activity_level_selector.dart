@@ -97,14 +97,17 @@ class _ActivityLevelSelectorState extends State<ActivityLevelSelector> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         // The page view with constrained height
         SizedBox(
-          height: 450,
+          height: 350,
           child: PageView.builder(
             controller: _pageController,
             onPageChanged: (index) {
               setState(() => _currentPage = index);
+              _selectedLevel = _levels[index].level;
+              widget.onSelected(_selectedLevel!);
             },
             itemCount: _levels.length,
             itemBuilder: (context, index) {
@@ -114,6 +117,7 @@ class _ActivityLevelSelectorState extends State<ActivityLevelSelector> {
             },
           ),
         ),
+
         SizedBox(height: 24),
         // Page indicators
         Row(
@@ -149,9 +153,7 @@ class _ActivityLevelSelectorState extends State<ActivityLevelSelector> {
               ),
             ),
             child: Text(
-              _selectedLevel != null
-                  ? 'Selected: ${_levels[_levels.indexWhere((l) => l.level == _selectedLevel)].title}'
-                  : 'Swipe to select your activity level',
+              'Swipe to select your activity level',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -257,32 +259,6 @@ class _ActivityLevelSelectorState extends State<ActivityLevelSelector> {
               ),
               textAlign: TextAlign.center,
             ),
-            if (isSelected) ...[
-              SizedBox(height: 12),
-              // Selection indicator
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  color: DynamicStyling.getBlack(context),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.check, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
-                    Text(
-                      'Selected',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
           ],
         ),
       ),

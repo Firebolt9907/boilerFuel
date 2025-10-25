@@ -367,7 +367,7 @@ class User {
   MacroResult macros;
   final int age;
   final Gender gender;
-  final ActivityLevel activityLevel;
+  ActivityLevel activityLevel;
   final int mealsPerDay;
 
   User({
@@ -961,7 +961,40 @@ enum ActivityLevel {
   lightly, // Light exercise 1-3 days/week
   moderately, // Moderate exercise 3-5 days/week
   very, // Hard exercise 6-7 days/week
-  extremely, // Very hard exercise & physical job
+  extremely; // Very hard exercise & physical job
+
+  @override
+  String toString() {
+    switch (this) {
+      case ActivityLevel.sedentary:
+        return "sedentary";
+      case ActivityLevel.lightly:
+        return "lightly";
+      case ActivityLevel.moderately:
+        return "moderately";
+      case ActivityLevel.very:
+        return "very";
+      case ActivityLevel.extremely:
+        return "extremely";
+    }
+  }
+
+  static ActivityLevel fromString(String value) {
+    switch (value) {
+      case "sedentary":
+        return ActivityLevel.sedentary;
+      case "lightly":
+        return ActivityLevel.lightly;
+      case "moderately":
+        return ActivityLevel.moderately;
+      case "very":
+        return ActivityLevel.very;
+      case "extremely":
+        return ActivityLevel.extremely;
+      default:
+        throw ArgumentError('Invalid activity level: $value');
+    }
+  }
 }
 
 enum Goal {

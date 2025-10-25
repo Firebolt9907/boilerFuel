@@ -9,6 +9,7 @@ class SharedPrefs {
   static String averageResponseTokensKey = "AVERAGE_RESPONSE_TOKENS_KEY";
   static String totalPromptsKey = "TOTAL_PROMPTS_KEY";
   static String totalResponsesKey = "TOTAL_RESPONSES_KEY";
+  static String lastGeneratedAIMealKey = "LAST_GENERATED_AI_MEAL_KEY";
 
   static Future<int> getResetLocalData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -72,5 +73,28 @@ class SharedPrefs {
     await prefs.setInt(totalResponsesKey, totalResponsesCount);
     await prefs.setDouble(averagePromptTokensKey, averagePromptTokens);
     await prefs.setDouble(averageResponseTokensKey, averageResponseTokens);
+  }
+
+  static Future<void> setLastGeneratedAIMeal(DateTime? date) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (date == null) {
+      await prefs.remove(lastGeneratedAIMealKey);
+      return;
+    }
+    await prefs.setString(lastGeneratedAIMealKey, date.toIso8601String());
+  }
+
+  static Future<DateTime?> getLastGeneratedAIMeal() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? dateString = prefs.getString(lastGeneratedAIMealKey);
+    if (dateString != null) {
+      return DateTime.parse(dateString);
+    }
+    return null;
+  }
+
+  static Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 }

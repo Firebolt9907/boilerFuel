@@ -215,6 +215,7 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
     if (widget.user.useMealPlanning) {
       if (widget.isEditing) {
         await LocalDatabase().deleteCurrentAndFutureMeals();
+        await SharedPrefs.setLastGeneratedAIMeal(null);
       }
       MealPlanner.generateDayMealPlan(user: widget.user);
     }

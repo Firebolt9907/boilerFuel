@@ -89,6 +89,7 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
 
     Map<MealTime, Map<String, Meal>>? dayMeals = await LocalDatabase()
         .getAIDayMeals();
+    List<Meal> savedMeals = await LocalDatabase().getFavoritedMeals();
     print("Day Meals fetched: $dayMeals");
     if (dayMeals != null) {
       Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
@@ -149,7 +150,45 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
       });
     }
 
-    aiMealStream.stream.listen((meals) {
+    for (Meal meal in savedMeals) {
+      bool isAvailable = true;
+      for (var food in meal.foods) {
+        String? isFoodAvailable = await LocalDatabase().isFoodAvailable(
+          food.id,
+          m: meal.mealTime,
+        );
+        if (isFoodAvailable == null) {
+          isAvailable = false;
+          break;
+        }
+      }
+      if (isAvailable) {
+        if (!_availableMealTimes.contains(meal.mealTime)) {
+          _availableMealTimes.add(meal.mealTime!);
+        }
+        if (!_meals.containsKey(meal.mealTime)) {
+          _meals[meal.mealTime!] = [];
+        }
+        if (_meals[meal.mealTime!]!.any((m) => m.id == meal.id)) {
+          continue;
+        }
+        _meals[meal.mealTime!]!.add(meal);
+      }
+    }
+    for (MealTime mealTime in _meals.keys) {
+      _meals[mealTime]!.sort((a, b) {
+        if (a.isFavorited && !b.isFavorited) {
+          return -1;
+        } else if (!a.isFavorited && b.isFavorited) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    }
+    setState(() {});
+
+    aiMealStream.stream.listen((meals) async {
       if (!mounted) return;
       Map<MealTime, Map<String, Meal>> sortedSuggestions = {};
       for (MealTime mealTime in meals.keys) {
@@ -204,6 +243,44 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
           }
         }
       });
+      for (Meal meal in savedMeals) {
+        bool isAvailable = true;
+        for (var food in meal.foods) {
+          String? isFoodAvailable = await LocalDatabase().isFoodAvailable(
+            food.id,
+            m: meal.mealTime,
+          );
+          if (isFoodAvailable == null) {
+            isAvailable = false;
+            break;
+          }
+        }
+        if (isAvailable) {
+          if (!_availableMealTimes.contains(meal.mealTime)) {
+            _availableMealTimes.add(meal.mealTime!);
+          }
+          if (!_meals.containsKey(meal.mealTime)) {
+            _meals[meal.mealTime!] = [];
+          }
+          if (_meals[meal.mealTime!]!.any((m) => m.id == meal.id)) {
+            continue;
+          }
+          _meals[meal.mealTime!]!.add(meal);
+        }
+      }
+      //sort _meals based on if they are favorited
+      for (MealTime mealTime in _meals.keys) {
+        _meals[mealTime]!.sort((a, b) {
+          if (a.isFavorited && !b.isFavorited) {
+            return -1;
+          } else if (!a.isFavorited && b.isFavorited) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+      }
+      setState(() {});
     });
   }
 
@@ -400,58 +477,23 @@ class _SuggestedMealsScreenState extends State<SuggestedMealsScreen>
       //   color: Color(0xffececf0),
       //   borderRadius: BorderRadius.circular(20),
       // ),
-      child: _availableMealTimes.length >= 2
-          ? CupertinoSlidingSegmentedControl<MealTime>(
-              backgroundColor: DynamicStyling.getGrey(context),
-              thumbColor: DynamicStyling.getLightGrey(context),
-              groupValue: _selectedMealTime,
-              onValueChanged: (MealTime? value) {
-                if (value != null) {
-                  setState(() {
-                    _selectedMealTime = value;
-                  });
-                }
-              },
-              children: Map<MealTime, Widget>.fromEntries(
-                _availableMealTimes.map(
-                  (mealTime) => MapEntry(
-                    mealTime,
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        mealTime.toString(),
-                        style: TextStyle(
-                          color: DynamicStyling.getBlack(context),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
-          : Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                _selectedMealTime.toString(),
-                style: TextStyle(color: DynamicStyling.getBlack(context)),
-              ),
+      child: CustomTabs(
+        expand: true,
+        initialValue: _selectedMealTime.toString(),
+        onValueChanged: (value) {
+          print("Meal time changed to $value");
+          setState(() {
+            _selectedMealTime = MealTime.fromString(value);
+          });
+        },
+        tabs: [
+          for (MealTime mealTime in _availableMealTimes)
+            TabItem(
+              label: mealTime.toDisplayString(),
+              value: mealTime.toString(),
             ),
-      // child: CustomTabs(
-      //   initialValue: _selectedMealTime.toString(),
-      //   onValueChanged: (value) {
-      //     print("Meal time changed to $value");
-      //     setState(() {
-      //       _selectedMealTime = MealTime.fromString(value);
-      //     });
-      //   },
-      //   tabs: [
-      //     for (MealTime mealTime in _availableMealTimes)
-      //       TabItem(
-      //         label: mealTime.toDisplayString(),
-      //         value: mealTime.toString(),
-      //       ),
-      //   ],
-      // ),
+        ],
+      ),
     );
   }
 

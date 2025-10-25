@@ -333,7 +333,11 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
               child: IconButton(
                 splashColor: DynamicStyling.getDarkGrey(context),
                 icon: Icon(
-                  isCreatingMeal ? Icons.save : Icons.add,
+                  isCreatingMeal
+                      ? selectedFoods.isEmpty
+                            ? Icons.close
+                            : Icons.save
+                      : Icons.add,
                   color: DynamicStyling.getWhite(context),
                   // size: 32,
                 ),
@@ -341,13 +345,9 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                   HapticFeedback.mediumImpact();
                   if (isCreatingMeal) {
                     if (selectedFoods.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Please select at least one food item.',
-                          ),
-                        ),
-                      );
+                      setState(() {
+                        isCreatingMeal = false;
+                      });
                       return;
                     }
                     showDialog<bool>(
@@ -603,11 +603,13 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           Header(
             context: context,
             title: widget.diningHall,
-            trailingIcon: Icons.search,
-            trailingPage: DiningHallSearchScreen(
-              diningHall: widget.diningHall,
-              user: widget.user,
-            ),
+            trailingIcon: !isCreatingMeal ? Icons.search : null,
+            trailingPage: !isCreatingMeal
+                ? DiningHallSearchScreen(
+                    diningHall: widget.diningHall,
+                    user: widget.user,
+                  )
+                : null,
           ),
 
           // Content
@@ -949,22 +951,34 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   String _buildFoodSubtitle(FoodItem foodItem) {
     String subtitle = "";
     if (foodItem.firstFood.calories > 0) {
-      subtitle += "${foodItem.firstFood.calories.round()} cal";
+      String calString = foodItem.firstFood.calories < 1
+          ? foodItem.firstFood.calories.toStringAsFixed(2)
+          : foodItem.firstFood.calories.round().toString();
+      subtitle += "${calString} cal";
     }
     if (isCreatingMeal) {
       if (subtitle.isNotEmpty) subtitle += " • ";
       if (foodItem.firstFood.protein > 0) {
-        subtitle += "${foodItem.firstFood.protein.round()}g of protein";
+        String proteinString = foodItem.firstFood.protein < 1
+            ? foodItem.firstFood.protein.toStringAsFixed(2)
+            : foodItem.firstFood.protein.round().toString();
+        subtitle += "${proteinString}g of protein";
       }
 
       if (foodItem.firstFood.carbs > 0) {
         if (subtitle.isNotEmpty) subtitle += " • ";
-        subtitle += "${foodItem.firstFood.carbs.round()}g of carbs";
+        String carbsString = foodItem.firstFood.carbs < 1
+            ? foodItem.firstFood.carbs.toStringAsFixed(2)
+            : foodItem.firstFood.carbs.round().toString();
+        subtitle += "${carbsString}g of carbs";
       }
 
       if (foodItem.firstFood.fat > 0) {
         if (subtitle.isNotEmpty) subtitle += " • ";
-        subtitle += "${foodItem.firstFood.fat.round()}g of fat";
+        String fatString = foodItem.firstFood.fat < 1
+            ? foodItem.firstFood.fat.toStringAsFixed(2)
+            : foodItem.firstFood.fat.round().toString();
+        subtitle += "${fatString}g of fat";
       }
     }
     return subtitle;
@@ -1036,12 +1050,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
         },
         child: DefaultContainer(
           primaryColor: !foodItem.isCollection
-              ? foodItem.firstFood.isFavorited
+              ? isCreatingMeal && selectedFoods.contains(foodItem)
+                    ? Colors.green
+                    : foodItem.firstFood.isFavorited
                     ? Colors.yellow
                     : foodItem.firstFood.restricted
                     ? Colors.red
-                    : isCreatingMeal && selectedFoods.contains(foodItem)
-                    ? Colors.green
                     : null
               : null,
           child: Column(

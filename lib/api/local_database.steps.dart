@@ -761,9 +761,179 @@ i1.GeneratedColumn<double> _column_45(String aliasedName) =>
       type: i1.DriftSqlType.double,
       defaultValue: const CustomExpression('0.0'),
     );
+
+final class Schema5 extends i0.VersionedSchema {
+  Schema5({required super.database}) : super(version: 5);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    usersTable,
+    mealsTable,
+    foodsTable,
+    diningHallFoodsTable,
+    diningHallsTable,
+  ];
+  late final Shape6 usersTable = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'users_table',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+        _column_13,
+        _column_43,
+        _column_46,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 mealsTable = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'meals_table',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_2,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 foodsTable = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'foods_table',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_26,
+        _column_2,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_25,
+        _column_23,
+        _column_36,
+        _column_44,
+        _column_45,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 diningHallFoodsTable = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'dining_hall_foods_table',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_39,
+        _column_15,
+        _column_16,
+        _column_40,
+        _column_25,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 diningHallsTable = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'dining_halls_table',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_0, _column_41, _column_2, _column_42],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+}
+
+class Shape6 extends i0.VersionedTable {
+  Shape6({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get uid =>
+      columnsByName['uid']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get useDietary =>
+      columnsByName['use_dietary']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get useMealPlanning =>
+      columnsByName['use_meal_planning']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<String> get gender =>
+      columnsByName['gender']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get age =>
+      columnsByName['age']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get weight =>
+      columnsByName['weight']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get height =>
+      columnsByName['height']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get goal =>
+      columnsByName['goal']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get dietaryRestrictions =>
+      columnsByName['dietary_restrictions']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get mealPlan =>
+      columnsByName['meal_plan']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get diningCourtRanking =>
+      columnsByName['dining_court_ranking']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get macros =>
+      columnsByName['macros']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get mealsPerDay =>
+      columnsByName['meals_per_day']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get activityLevel =>
+      columnsByName['activity_level']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_46(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'activity_level',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      defaultValue: const CustomExpression('\'sedentary\''),
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
+  required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -777,6 +947,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from3To4(migrator, schema);
         return 4;
+      case 4:
+        final schema = Schema5(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from4To5(migrator, schema);
+        return 5;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -786,6 +961,11 @@ i0.MigrationStepWithVersion migrationSteps({
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
+  required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
 }) => i0.VersionedSchema.stepByStepHelper(
-  step: migrationSteps(from2To3: from2To3, from3To4: from3To4),
+  step: migrationSteps(
+    from2To3: from2To3,
+    from3To4: from3To4,
+    from4To5: from4To5,
+  ),
 );

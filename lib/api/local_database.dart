@@ -33,6 +33,8 @@ class UsersTable extends Table {
   TextColumn get diningCourtRanking => text()();
   TextColumn get macros => text()();
   IntColumn get mealsPerDay => integer().withDefault(const Constant(2))();
+  TextColumn get activityLevel =>
+      text().withDefault(const Constant("sedentary"))();
 }
 
 class MealsTable extends Table {
@@ -101,7 +103,7 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -113,6 +115,9 @@ class AppDb extends _$AppDb {
         },
         from3To4: (m, schema) async {
           await m.addColumn(usersTable, usersTable.mealsPerDay);
+        },
+        from4To5: (m, schema) async {
+          await m.addColumn(usersTable, usersTable.activityLevel);
         },
       ),
     );
@@ -128,7 +133,7 @@ LazyDatabase _openConnection() {
     // try {
     //   if (resetLocalDB <= 32) {
     //     print("Deleting old database to add new columns");
-    //     await file.delete();
+        // await file.delete();
     //     await SharedPrefs.setResetLocalData(33);
     //     print("Deleted old database - new schema will be created");
     //   }
@@ -215,6 +220,7 @@ class LocalDatabase {
         macros: MacroResult.fromMap(jsonDecode(usersRes.first.macros)),
         mealPlan: MealPlan.fromString(usersRes.first.mealPlan),
         diningHallRank: usersRes.first.diningCourtRanking.split(","),
+        activityLevel: ActivityLevel.fromString(usersRes.first.activityLevel),
       );
     } else {
       print("No user found.");
@@ -223,6 +229,9 @@ class LocalDatabase {
 
   Future<void> saveUser(User user) async {
     final usersRes = await (localDb.select(localDb.usersTable)).get();
+    print(
+      "Saving user: ${user.name} with activity level ${user.activityLevel}",
+    );
     if (usersRes.isNotEmpty) {
       // Update existing user
       await (localDb.update(
@@ -245,6 +254,7 @@ class LocalDatabase {
           ),
           mealPlan: Value(user.mealPlan.toString()),
           diningCourtRanking: Value(user.diningHallRank.join(",")),
+          activityLevel: Value(user.activityLevel.toString()),
         ),
       );
       print("User updated: ${user.name}");
@@ -270,6 +280,7 @@ class LocalDatabase {
               ),
               mealPlan: Value(user.mealPlan.toString()),
               diningCourtRanking: Value(user.diningHallRank.join(",")),
+              activityLevel: Value(user.activityLevel.toString()),
             ),
           );
       print("User inserted: ${user.name}");
@@ -411,9 +422,10 @@ class LocalDatabase {
     });
   }
 
-  Future<DateTime?> getLastMeal() async {
+  Future<DateTime?> getLastAIMeal() async {
     final mealsRes =
         await (localDb.select(localDb.mealsTable)
+              ..where((tbl) => tbl.isAIMeal)
               ..orderBy([
                 (tbl) =>
                     OrderingTerm(expression: tbl.date, mode: OrderingMode.desc),
@@ -757,9 +769,11 @@ class LocalDatabase {
     DateTime now = DateTime.now();
     String dateStr = "${now.year}-${now.month}-${now.day}";
 
-    await (localDb.delete(
-      localDb.mealsTable,
-    )..where((tbl) => tbl.date.isBiggerOrEqualValue(dateStr))).go();
+    await (localDb.delete(localDb.mealsTable)
+          ..where((tbl) => tbl.date.isBiggerOrEqualValue(dateStr))
+          ..where((tbl) => tbl.isAIMeal)
+          ..where((tbl) => tbl.isFavorited.equals(false)))
+        .go();
 
     print("Deleted current and future meals from local database.");
   }
@@ -835,12 +849,38 @@ class LocalDatabase {
     }
   }
 
-  Future<String?> isFoodAvailable(String foodId) async {
+  Future<String?> isFoodAvailable(String foodId, {MealTime? m}) async {
     String nowStr =
         "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-    final dhfRes = await (localDb.select(
-      localDb.diningHallFoodsTable,
-    )..where((tbl) => tbl.date.equals(nowStr))).get();
+    if (m == null) {
+      List<MealTime> availableMealTimes = [];
+      String foundAt = "";
+      for (MealTime mealTime in MealTime.values) {
+        final dhfRes =
+            await (localDb.select(localDb.diningHallFoodsTable)
+                  ..where((tbl) => tbl.date.equals(nowStr))
+                  ..where((tbl) => tbl.mealTime.equals(mealTime.toString())))
+                .get();
+        for (var row in dhfRes) {
+          MiniFood miniFood = MiniFood.fromMap(jsonDecode(row.miniFood));
+          if (miniFood.id == foodId) {
+            if (!availableMealTimes.contains(mealTime)) {
+              availableMealTimes.add(mealTime);
+            }
+            foundAt = row.diningHall + "-" + miniFood.station;
+          }
+        }
+      }
+      foundAt += availableMealTimes.isNotEmpty
+          ? ":" + availableMealTimes.map((e) => e.toString()).join(",")
+          : "";
+      return foundAt.isEmpty ? null : foundAt;
+    }
+    final dhfRes =
+        await (localDb.select(localDb.diningHallFoodsTable)
+              ..where((tbl) => tbl.date.equals(nowStr))
+              ..where((tbl) => tbl.mealTime.equals(m.toString())))
+            .get();
     for (var row in dhfRes) {
       MiniFood miniFood = MiniFood.fromMap(jsonDecode(row.miniFood));
       if (miniFood.id == foodId) {
