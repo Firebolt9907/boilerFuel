@@ -869,7 +869,8 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.all(0),
+      padding: const EdgeInsets.only(bottom: 240.0),
+      physics: ScrollPhysics(),
 
       itemCount: flatItems.length,
       itemBuilder: (context, index) {
