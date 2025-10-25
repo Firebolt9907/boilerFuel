@@ -708,7 +708,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
 
                         if (widget.user.useMealPlanning)
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 12),
 
                         Padding(
                           padding: EdgeInsets.only(bottom: 12),
@@ -735,12 +735,12 @@ class _HomeScreenState extends State<HomeScreen>
                                     Container(
                                       padding: EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: Color.fromARGB(20, 255, 0, 0),
+                                        color: Color.fromARGB(20, 255, 255, 0),
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Icon(
-                                        Icons.bookmark_outline,
-                                        color: Color(0xfffb2c35),
+                                        Icons.star_outline,
+                                        color: Colors.yellow,
                                         size: 24,
                                       ),
                                     ),

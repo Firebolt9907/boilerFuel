@@ -782,14 +782,14 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           children: [
             Icon(
               Icons.restaurant_menu,
-              color: DynamicStyling.getWhite(context).withOpacity(0.4),
+              color: DynamicStyling.getBlack(context).withOpacity(0.4),
               size: 64,
             ),
             SizedBox(height: 16),
             Text(
               'No menu available',
               style: TextStyle(
-                color: DynamicStyling.getWhite(context).withOpacity(0.6),
+                color: DynamicStyling.getBlack(context).withOpacity(0.6),
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
                 fontFamily: '.SF Pro Display',
@@ -798,9 +798,9 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             ),
             SizedBox(height: 8),
             Text(
-              'Check back later for today\'s menu',
+              'Check back later for tomorrow\'s menu',
               style: TextStyle(
-                color: DynamicStyling.getWhite(context).withOpacity(0.4),
+                color: DynamicStyling.getBlack(context).withOpacity(0.4),
                 fontSize: 14,
                 fontFamily: '.SF Pro Text',
                 decoration: TextDecoration.none,
@@ -1037,7 +1037,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
         child: DefaultContainer(
           primaryColor: !foodItem.isCollection
               ? foodItem.firstFood.isFavorited
-                    ? Colors.green
+                    ? Colors.yellow
                     : foodItem.firstFood.restricted
                     ? Colors.red
                     : isCreatingMeal && selectedFoods.contains(foodItem)

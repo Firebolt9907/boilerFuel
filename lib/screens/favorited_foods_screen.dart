@@ -19,21 +19,19 @@ import 'collection_screen.dart';
 // Wrapper class to handle both individual foods and collections
 class FoodItem {
   final String name;
-  final bool isCollection;
-  final List<Food>
-  foods; // Contains single food for individual items, multiple for collections
-  final String station;
-  final String? collection;
 
+  final Food
+  food; // Contains single food for individual items, multiple for collections
+  final String station;
+  bool isFoodAvailable;
+  String diningHall;
   FoodItem({
     required this.name,
-    required this.isCollection,
-    required this.foods,
+    required this.food,
     required this.station,
-    this.collection,
+    required this.isFoodAvailable,
+    required this.diningHall,
   });
-
-  Food get firstFood => foods.first;
 }
 
 class FavoritedFoodsScreen extends StatefulWidget {
@@ -50,7 +48,7 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
   bool _isLoading = true;
   List<MealTime> _availableMealTimes = [];
   MealTime _selectedMealTime = MealTime.dinner;
-  List<Food> _foods = [];
+  List<FoodItem> _foods = [];
 
   // Spacing between station items
 
@@ -64,10 +62,32 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
     try {
       // Fetch saved meals from the database
       List<Food> foods = await LocalDatabase().getFavoritedFoods();
-      print(foods);
+      _foods.clear();
+      for (var i = 0; i < foods.length; i++) {
+        print("Favorited food: ${foods[i].name}");
+        String? available = await LocalDatabase().isFoodAvailable(foods[i].id);
+        _foods.add(
+          FoodItem(
+            name: foods[i].name,
+            food: foods[i],
+            station: available != null ? available.split("-")[1] : "",
+            isFoodAvailable: available != null,
+            diningHall: available != null ? available.split("-")[0] : "",
+          ),
+        );
+      }
+      //sort foods if isFoodAvailable is true first
+      _foods.sort((a, b) {
+        if (a.isFoodAvailable && !b.isFoodAvailable) {
+          return -1;
+        } else if (!a.isFoodAvailable && b.isFoodAvailable) {
+          return 1;
+        } else {
+          return a.name.compareTo(b.name);
+        }
+      });
 
       setState(() {
-        _foods = foods;
         print(foods.map((e) => e.name).toList());
         _isLoading = false;
       });
@@ -270,100 +290,113 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
     );
   }
 
-  Widget _buildFoodItem(Food food, int index) {
+  Widget _buildFoodItem(FoodItem food, int index) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
-          _showFoodDetails(food);
+          _showFoodDetails(food.food);
         },
-        child: DefaultContainer(
-          primaryColor: food.restricted ? Colors.red : null,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                food.name,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: DynamicStyling.getBlack(context),
-                                  fontFamily: '.SF Pro Text',
-                                  decoration: TextDecoration.none,
+        child: Opacity(
+          opacity: food.isFoodAvailable ? 1.0 : 0.6,
+          child: DefaultContainer(
+            primaryColor: food.food.restricted ? Colors.red : null,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  food.name,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: DynamicStyling.getBlack(context),
+                                    fontFamily: '.SF Pro Text',
+                                    decoration: TextDecoration.none,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: DynamicStyling.getWhite(context).withOpacity(0.4),
+                      size: 20,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 6),
+                if (food.isFoodAvailable)
+                  Text(
+                    "Available at ${food.station} in ${food.diningHall}",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: DynamicStyling.getDarkGrey(context),
+                      fontFamily: '.SF Pro Text',
+                      decoration: TextDecoration.none,
                     ),
                   ),
-                  Icon(
-                    Icons.chevron_right,
-                    color: DynamicStyling.getWhite(context).withOpacity(0.4),
-                    size: 20,
+                // Nutrition info (show only for individual items)
+                if (food.food.calories > 0)
+                  Text(
+                    food.food.calories.round().toString() + " cal",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: DynamicStyling.getDarkGrey(context),
+                      fontFamily: '.SF Pro Text',
+                      decoration: TextDecoration.none,
+                    ),
                   ),
-                ],
-              ),
 
-              // Nutrition info (show only for individual items)
-              if (food.calories > 0)
-                Text(
-                  food.calories.round().toString() + " cal",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: DynamicStyling.getDarkGrey(context),
-                    fontFamily: '.SF Pro Text',
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-
-              // Labels/allergens
-              if (food.labels.isNotEmpty) ...[
-                SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: food.labels
-                      .take(4)
-                      .map(
-                        (label) => Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            color: DynamicStyling.getDarkGrey(
-                              context,
-                            ).withOpacity(0.1),
-                          ),
-                          child: Text(
-                            label,
-                            style: TextStyle(
-                              color: DynamicStyling.getDarkGrey(context),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: '.SF Pro Text',
-                              decoration: TextDecoration.none,
+                // Labels/allergens
+                if (food.food.labels.isNotEmpty) ...[
+                  SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: food.food.labels
+                        .take(4)
+                        .map(
+                          (label) => Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              color: DynamicStyling.getDarkGrey(
+                                context,
+                              ).withOpacity(0.1),
+                            ),
+                            child: Text(
+                              label,
+                              style: TextStyle(
+                                color: DynamicStyling.getDarkGrey(context),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: '.SF Pro Text',
+                                decoration: TextDecoration.none,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                      .toList(),
-                ),
+                        )
+                        .toList(),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

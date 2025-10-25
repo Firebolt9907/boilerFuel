@@ -834,4 +834,19 @@ class LocalDatabase {
       print("Dining hall inserted: ${diningHall.id}");
     }
   }
+
+  Future<String?> isFoodAvailable(String foodId) async {
+    String nowStr =
+        "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+    final dhfRes = await (localDb.select(
+      localDb.diningHallFoodsTable,
+    )..where((tbl) => tbl.date.equals(nowStr))).get();
+    for (var row in dhfRes) {
+      MiniFood miniFood = MiniFood.fromMap(jsonDecode(row.miniFood));
+      if (miniFood.id == foodId) {
+        return row.diningHall + "-" + miniFood.station;
+      }
+    }
+    return null;
+  }
 }

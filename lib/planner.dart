@@ -384,6 +384,7 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
       //       model: "gemini-2.0-flash-lite",
       //     ))!.output ??
       //     "{}";
+
       String response = await WebAPI().getGeminiResponse(
         "gemini-2.5-flash",
         geminiPrompt,

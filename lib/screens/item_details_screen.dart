@@ -12,11 +12,7 @@ class ItemDetailsScreen extends StatefulWidget {
   final Food food;
   final String? diningHall;
 
-  const ItemDetailsScreen({
-    Key? key,
-    required this.food,
-    this.diningHall,
-  });
+  const ItemDetailsScreen({Key? key, required this.food, this.diningHall});
 
   @override
   _ItemDetailsScreenState createState() => _ItemDetailsScreenState();
@@ -355,8 +351,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
-                    splashColor: Colors.red.withOpacity(0.15),
-                    highlightColor: Colors.red.withOpacity(0.08),
+                    splashColor: Colors.yellow.withOpacity(0.15),
+                    highlightColor: Colors.yellow.withOpacity(0.08),
                     onTap: () async {
                       HapticFeedback.mediumImpact();
                       await LocalDatabase().toggleFavoriteFood(widget.food);
@@ -375,11 +371,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                         ),
                       ),
                       child: Icon(
-                        isFavorited
-                            ? Icons.bookmark_added
-                            : Icons.bookmark_add_outlined,
+                        isFavorited ? Icons.star : Icons.star_outline,
                         color: isFavorited
-                            ? Colors.red
+                            ? Colors.yellow
                             : DynamicStyling.getBlack(context),
                         size: 20,
                       ),
