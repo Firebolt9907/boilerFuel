@@ -8,6 +8,7 @@ import 'package:boiler_fuel/widgets/custom_tabs.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -426,11 +427,9 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
       id: food.id,
     );
 
-    customCupertinoSheet
-        .showCupertinoSheet<void>(
-          context: context,
-          useNestedNavigation: true,
-          pageBuilder: (BuildContext context) => ItemDetailsScreen(food: food),
+    Navigator.of(context)
+        .push(
+          StupidSimpleCupertinoSheetRoute(child: ItemDetailsScreen(food: food)),
         )
         .then((e) {
           _fetchFavoritedFoods();

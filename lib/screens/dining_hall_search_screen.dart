@@ -9,6 +9,7 @@ import 'package:boiler_fuel/widgets/default_text_field.dart';
 import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:string_similarity/string_similarity.dart';
+import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -570,11 +571,13 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
   void _showFoodDetails(FoodItem food) {
     // Create a single-item meal for the food details screen
 
-    customCupertinoSheet.showCupertinoSheet<void>(
-      context: context,
-      useNestedNavigation: true,
-      pageBuilder: (BuildContext context) =>
-          ItemDetailsScreen(food: food.food, diningHall: food.diningHall),
+    Navigator.of(context).push(
+      StupidSimpleCupertinoSheetRoute(
+        child: ItemDetailsScreen(
+          food: food.food,
+          diningHall: widget.diningHall,
+        ),
+      ),
     );
   }
 }

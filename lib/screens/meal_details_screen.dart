@@ -8,6 +8,7 @@ import 'package:boiler_fuel/widgets/titanium_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import '../constants.dart';
 import '../styling.dart';
 import 'dart:math' as math;
@@ -650,11 +651,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
       id: food.id,
     );
 
-    customCupertinoSheet.showCupertinoSheet<void>(
-      context: context,
-      useNestedNavigation: true,
-      pageBuilder: (BuildContext context) =>
-          ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+    Navigator.of(context).push(
+      StupidSimpleCupertinoSheetRoute(
+        child: ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+      ),
     );
   }
 

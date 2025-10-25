@@ -10,6 +10,7 @@ import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 import '../constants.dart';
 import 'meal_details_screen.dart';
 import "../custom/cupertinoSheet.dart" as customCupertinoSheet;
@@ -414,11 +415,11 @@ class _CollectionScreenState extends State<CollectionScreen>
       isAIGenerated: false,
     );
 
-    customCupertinoSheet.showCupertinoSheet<void>(
-      context: context,
-      useNestedNavigation: true,
-      pageBuilder: (BuildContext context) =>
-          ItemDetailsScreen(food: food, diningHall: widget.diningHall),
-    );
+   Navigator.of(context)
+        .push(
+          StupidSimpleCupertinoSheetRoute(
+            child: ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+          ),
+        );
   }
 }
