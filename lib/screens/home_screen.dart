@@ -1,5 +1,6 @@
 import 'package:boiler_fuel/custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:boiler_fuel/screens/dining_hall_search_screen.dart';
+import 'package:boiler_fuel/screens/favorited_foods_screen.dart';
 import 'package:boiler_fuel/styling.dart';
 import 'dart:async';
 
@@ -568,6 +569,16 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  void onViewFavoritedFoods() {
+    HapticFeedback.mediumImpact();
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => FavoritedFoodsScreen(user: widget.user),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mealTime = MealTime.getCurrentMealTime();
@@ -696,6 +707,78 @@ class _HomeScreenState extends State<HomeScreen>
 
                         if (widget.user.useMealPlanning)
                           const SizedBox(height: 24),
+
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 12),
+                          child: Card(
+                            elevation: 0,
+                            color: DynamicStyling.getWhite(context),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                width: 2,
+                                color: DynamicStyling.getLightGrey(context),
+                              ),
+                            ),
+                            child: InkWell(
+                              onTap: onViewFavoritedFoods,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(12),
+                              ),
+                              splashColor: DynamicStyling.getLightGrey(context),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Color.fromARGB(20, 255, 0, 0),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        Icons.bookmark_outline,
+                                        color: Color(0xfffb2c35),
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Favorite Foods',
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'View and manage your favorited food items',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: DynamicStyling.getDarkGrey(
+                                                context,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: DynamicStyling.getGrey(context),
+                                      size: 24,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
 
                         // Dining Halls Section
                         Row(
