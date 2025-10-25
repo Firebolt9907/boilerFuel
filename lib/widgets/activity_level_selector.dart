@@ -101,20 +101,17 @@ class _ActivityLevelSelectorState extends State<ActivityLevelSelector> {
         // The page view with constrained height
         SizedBox(
           height: 450,
-          child: Flexible(
-            fit: FlexFit.loose,
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() => _currentPage = index);
-              },
-              itemCount: _levels.length,
-              itemBuilder: (context, index) {
-                return SingleChildScrollView(
-                  child: _buildActivityCard(_levels[index]),
-                );
-              },
-            ),
+          child: PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() => _currentPage = index);
+            },
+            itemCount: _levels.length,
+            itemBuilder: (context, index) {
+              return SingleChildScrollView(
+                child: _buildActivityCard(_levels[index]),
+              );
+            },
           ),
         ),
         SizedBox(height: 24),

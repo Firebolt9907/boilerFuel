@@ -77,7 +77,9 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
       _availableMealTimes = mealTimesList;
 
       if (!mealTimesList.contains(MealTime.getCurrentMealTime())) {
-        _selectedMealTime = mealTimesList.first;
+        _selectedMealTime = mealTimesList.isNotEmpty
+            ? mealTimesList.first
+            : null;
       }
       print(_selectedMealTime);
       _meals = meals;
@@ -195,7 +197,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
             ),
             SizedBox(height: 8),
             Text(
-              'Tap on the bookmark icon on any meal to save it here.',
+              'Tap on the bookmark icon on any meal to save it here. Or add meals from your dining hall menu!',
               style: TextStyle(
                 color: DynamicStyling.getDarkGrey(context),
                 fontSize: 14,

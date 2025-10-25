@@ -283,58 +283,27 @@ class LocalDatabase {
         .map((f) => f.toMap())
         .toList();
 
-    final mealsRes =
-        await (localDb.select(localDb.mealsTable)
-              ..where((tbl) => tbl.date.equals(dateStr))
-              ..where((tbl) => tbl.mealTime.equals(mealTime.toString()))
-              ..where((tbl) => tbl.diningCourt.equals(meal.diningHall)))
-            .get();
-
-    if (mealsRes.isNotEmpty) {
-      // Update existing meal
-      await (localDb.update(
-        localDb.mealsTable,
-      )..where((tbl) => tbl.id.equals(mealsRes.first.id))).write(
-        MealsTableCompanion(
-          diningCourt: Value(meal.diningHall),
-          date: Value(dateStr),
-          mealTime: Value(mealTime.toString()),
-          name: Value(meal.name),
-          foodItems: Value(jsonEncode(foodListMap)),
-          totalCalories: Value(meal.calories),
-          totalProtein: Value(meal.protein),
-          totalCarbs: Value(meal.carbs),
-          totalFats: Value(meal.fat),
-          lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
-          isFavorited: Value(meal.isFavorited),
-          mealId: Value(meal.id),
-          isAIMeal: Value(meal.isAIGenerated),
-        ),
-      );
-      print("Meal updated: ${meal.name} at ${meal.diningHall}");
-    } else {
-      // Insert new meal
-      await localDb
-          .into(localDb.mealsTable)
-          .insert(
-            MealsTableCompanion(
-              diningCourt: Value(meal.diningHall),
-              date: Value(dateStr),
-              mealTime: Value(mealTime.toString()),
-              name: Value(meal.name),
-              foodItems: Value(jsonEncode(foodListMap)),
-              totalCalories: Value(meal.calories),
-              totalProtein: Value(meal.protein),
-              totalCarbs: Value(meal.carbs),
-              totalFats: Value(meal.fat),
-              isFavorited: Value(meal.isFavorited),
-              lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
-              mealId: Value(meal.id),
-              isAIMeal: Value(meal.isAIGenerated),
-            ),
-          );
-      print("Meal inserted: ${meal.name} at ${meal.diningHall}");
-    }
+    // Insert new meal
+    await localDb
+        .into(localDb.mealsTable)
+        .insert(
+          MealsTableCompanion(
+            diningCourt: Value(meal.diningHall),
+            date: Value(dateStr),
+            mealTime: Value(mealTime.toString()),
+            name: Value(meal.name),
+            foodItems: Value(jsonEncode(foodListMap)),
+            totalCalories: Value(meal.calories),
+            totalProtein: Value(meal.protein),
+            totalCarbs: Value(meal.carbs),
+            totalFats: Value(meal.fat),
+            isFavorited: Value(meal.isFavorited),
+            lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+            mealId: Value(meal.id),
+            isAIMeal: Value(meal.isAIGenerated),
+          ),
+        );
+    print("Meal inserted: ${meal.name} at ${meal.diningHall}");
   }
 
   Future<Map<MealTime, Map<String, Meal>>?> getAIDayMeals() async {

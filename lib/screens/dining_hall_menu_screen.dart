@@ -317,188 +317,97 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DynamicStyling.getWhite(context),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          color: DynamicStyling.getBlack(context),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        width: 50,
-        height: 50,
-        child: IconButton(
-          splashColor: DynamicStyling.getDarkGrey(context),
-          icon: Icon(
-            isCreatingMeal ? Icons.save : Icons.add,
-            color: DynamicStyling.getWhite(context),
-            // size: 32,
-          ),
-          onPressed: () {
-            HapticFeedback.mediumImpact();
-            if (isCreatingMeal) {
-              showDialog<bool>(
-                context: context,
-                barrierDismissible: true,
-                builder: (BuildContext context) {
-                  TextEditingController controller = TextEditingController();
-                  bool loading = false;
-                  return StatefulBuilder(
-                    builder: (context, setState) {
-                      return Dialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+      floatingActionButton: widget.user.useMealPlanning
+          ? Container(
+              decoration: BoxDecoration(
+                color: DynamicStyling.getBlack(context),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              width: 50,
+              height: 50,
+              child: IconButton(
+                splashColor: DynamicStyling.getDarkGrey(context),
+                icon: Icon(
+                  isCreatingMeal ? Icons.save : Icons.add,
+                  color: DynamicStyling.getWhite(context),
+                  // size: 32,
+                ),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  if (isCreatingMeal) {
+                    if (selectedFoods.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Please select at least one food item.',
+                          ),
                         ),
-                        backgroundColor: DynamicStyling.getWhite(context),
-                        child: Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // Icon
-
-                              // Title
-                              Text(
-                                'Meal Name',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: DynamicStyling.getBlack(context),
-                                ),
-                                textAlign: TextAlign.center,
+                      );
+                      return;
+                    }
+                    showDialog<bool>(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        TextEditingController controller =
+                            TextEditingController();
+                        bool loading = false;
+                        return StatefulBuilder(
+                          builder: (context, setState) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              const SizedBox(height: 12),
+                              backgroundColor: DynamicStyling.getWhite(context),
+                              child: Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Icon
 
-                              // Description
-                              DefaultTextField(
-                                controller: controller,
-                                hint: "Meal Name",
-                              ),
-                              const SizedBox(height: 28),
-
-                              // Buttons
-                              Row(
-                                children: [
-                                  // Cancel Button
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: DynamicStyling.getGrey(
-                                            context,
-                                          ),
-                                          width: 1,
-                                        ),
+                                    // Title
+                                    Text(
+                                      'Meal Name',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                        color: DynamicStyling.getBlack(context),
                                       ),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: InkWell(
-                                          onTap: () {
-                                            HapticFeedback.lightImpact();
-                                            Navigator.of(context).pop();
-                                          },
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 12.0,
-                                            ),
-                                            child: Text(
-                                              'Cancel',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                                color: DynamicStyling.getBlack(
-                                                  context,
-                                                ),
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
+                                    const SizedBox(height: 12),
 
-                                  // Save Button
-                                  loading
-                                      ? CircularProgressIndicator(
-                                          color: Colors.green,
-                                        )
-                                      : Expanded(
+                                    // Description
+                                    DefaultTextField(
+                                      controller: controller,
+                                      hint: "Meal Name",
+                                    ),
+                                    const SizedBox(height: 28),
+
+                                    // Buttons
+                                    Row(
+                                      children: [
+                                        // Cancel Button
+                                        Expanded(
                                           child: Container(
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(12),
-                                              color: Colors.green,
+                                              border: Border.all(
+                                                color: DynamicStyling.getGrey(
+                                                  context,
+                                                ),
+                                                width: 1,
+                                              ),
                                             ),
                                             child: Material(
                                               color: Colors.transparent,
                                               child: InkWell(
-                                                onTap: () async {
-                                                  HapticFeedback.mediumImpact();
-                                                  if (controller.text.isEmpty) {
-                                                    // Show error
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          'Please enter a meal name.',
-                                                        ),
-                                                      ),
-                                                    );
-                                                    return;
-                                                  }
-                                                  setState(() {
-                                                    loading = true;
-                                                  });
-                                                  final id = UniqueKey()
-                                                      .toString();
-                                                  Meal meal = Meal(
-                                                    name: controller.text,
-                                                    foods: selectedFoods
-                                                        .map((e) => e.firstFood)
-                                                        .toList(),
-
-                                                    mealTime:
-                                                        _selectedMealTime!,
-                                                    calories: mealCalories,
-                                                    protein: mealProtein,
-                                                    carbs: mealCarbs,
-                                                    fat: mealFat,
-                                                    sugar: mealSugar,
-                                                    addedSugars:
-                                                        mealAddedSugars,
-                                                    saturatedFat:
-                                                        mealSaturatedFat,
-                                                    diningHall: "",
-                                                    isAIGenerated: false,
-                                                    isFavorited: true,
-                                                    id: id,
-                                                  );
-                                                  await LocalDatabase().addMeal(
-                                                    meal,
-                                                    _selectedMealTime!,
-                                                    DateTime.now(),
-                                                  );
-                                                  if (!mounted) return;
-                                                  setState(() {
-                                                    loading = false;
-                                                  });
+                                                onTap: () {
+                                                  HapticFeedback.lightImpact();
                                                   Navigator.of(context).pop();
-                                                  this.setState(() {
-                                                    isCreatingMeal = false;
-                                                    selectedFoods.clear();
-                                                    mealCalories = 0.0;
-                                                    mealProtein = 0.0;
-                                                    mealCarbs = 0.0;
-                                                    mealFat = 0.0;
-                                                    mealAddedSugars = 0.0;
-                                                    mealSaturatedFat = 0.0;
-                                                    mealSugar = 0.0;
-                                                  });
                                                 },
                                                 borderRadius:
                                                     BorderRadius.circular(12),
@@ -508,12 +417,15 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                                         vertical: 12.0,
                                                       ),
                                                   child: Text(
-                                                    'Save Meal',
+                                                    'Cancel',
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       fontWeight:
                                                           FontWeight.w600,
-                                                      color: Colors.white,
+                                                      color:
+                                                          DynamicStyling.getBlack(
+                                                            context,
+                                                          ),
                                                     ),
                                                     textAlign: TextAlign.center,
                                                   ),
@@ -522,32 +434,164 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                             ),
                                           ),
                                         ),
-                                ],
+                                        const SizedBox(width: 12),
+
+                                        // Save Button
+                                        loading
+                                            ? CircularProgressIndicator(
+                                                color: Colors.green,
+                                              )
+                                            : Expanded(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                    color: Colors.green,
+                                                  ),
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: InkWell(
+                                                      onTap: () async {
+                                                        HapticFeedback.mediumImpact();
+                                                        if (controller
+                                                            .text
+                                                            .isEmpty) {
+                                                          // Show error
+                                                          ScaffoldMessenger.of(
+                                                            context,
+                                                          ).showSnackBar(
+                                                            SnackBar(
+                                                              content: Text(
+                                                                'Please enter a meal name.',
+                                                              ),
+                                                            ),
+                                                          );
+                                                          return;
+                                                        }
+                                                        setState(() {
+                                                          loading = true;
+                                                        });
+                                                        final id = UniqueKey()
+                                                            .toString();
+                                                        Meal meal = Meal(
+                                                          name: controller.text,
+                                                          foods: selectedFoods
+                                                              .map(
+                                                                (e) =>
+                                                                    e.firstFood,
+                                                              )
+                                                              .toList(),
+
+                                                          mealTime:
+                                                              _selectedMealTime!,
+                                                          calories:
+                                                              mealCalories,
+                                                          protein: mealProtein,
+                                                          carbs: mealCarbs,
+                                                          fat: mealFat,
+                                                          sugar: mealSugar,
+                                                          addedSugars:
+                                                              mealAddedSugars,
+                                                          saturatedFat:
+                                                              mealSaturatedFat,
+                                                          diningHall:
+                                                              widget.diningHall,
+                                                          isAIGenerated: false,
+                                                          isFavorited: true,
+                                                          id: id,
+                                                        );
+                                                        await LocalDatabase()
+                                                            .addMeal(
+                                                              meal,
+                                                              _selectedMealTime!,
+                                                              DateTime.now(),
+                                                            );
+                                                        if (!mounted) return;
+                                                        setState(() {
+                                                          loading = false;
+                                                        });
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          SnackBar(
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                            content: Text(
+                                                              'Meal saved successfully! View it in Saved Meals.',
+                                                            ),
+                                                          ),
+                                                        );
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                        this.setState(() {
+                                                          isCreatingMeal =
+                                                              false;
+                                                          selectedFoods.clear();
+                                                          mealCalories = 0.0;
+                                                          mealProtein = 0.0;
+                                                          mealCarbs = 0.0;
+                                                          mealFat = 0.0;
+                                                          mealAddedSugars = 0.0;
+                                                          mealSaturatedFat =
+                                                              0.0;
+                                                          mealSugar = 0.0;
+                                                        });
+                                                      },
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 12.0,
+                                                            ),
+                                                        child: Text(
+                                                          'Save Meal',
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: Colors.white,
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
+                            );
+                          },
+                        );
+                      },
+                    );
+                  } else {
+                    selectedFoods.clear();
+                    mealCalories = 0.0;
+                    mealProtein = 0.0;
+                    mealCarbs = 0.0;
+                    mealFat = 0.0;
+                    mealAddedSugars = 0.0;
+                    mealSaturatedFat = 0.0;
+                    mealSugar = 0.0;
+                    setState(() {
+                      isCreatingMeal = true;
+                    });
+                  }
                 },
-              );
-            } else {
-              selectedFoods.clear();
-              mealCalories = 0.0;
-              mealProtein = 0.0;
-              mealCarbs = 0.0;
-              mealFat = 0.0;
-              mealAddedSugars = 0.0;
-              mealSaturatedFat = 0.0;
-              mealSugar = 0.0;
-              setState(() {
-                isCreatingMeal = true;
-              });
-            }
-          },
-        ),
-      ),
+              ),
+            )
+          : null,
       body: Column(
         children: [
           // Header
