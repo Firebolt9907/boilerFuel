@@ -55,13 +55,14 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
           _buildMealHeader(),
           Expanded(
             child: SingleChildScrollView(
+              padding: EdgeInsets.only(left: 24, right: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Meal Header
-
+                  SizedBox(height: 24),
                   // Nutritional Overview
-                  _buildNutritionalOverview(),
+                  _buildNutritionLabel(context),
 
                   // Detailed Macros
                   // _buildDetailedMacros(),
@@ -202,134 +203,410 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
     );
   }
 
-  Widget _buildNutritionalOverview() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Nutrition Information",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: DynamicStyling.getBlack(context),
+  Widget _buildNutritionLabel(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: DynamicStyling.getLightGrey(context),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: DefaultTextStyle.merge(
+        style: TextStyle(letterSpacing: -1),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Nutrition Facts",
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                color: DynamicStyling.getBlack(context),
+                fontFamily: '.SF Pro Display',
+                decoration: TextDecoration.none,
+                height: 0,
+              ),
             ),
-          ),
-          SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Calories",
-                  style: TextStyle(
-                    fontSize: 14,
 
-                    color: DynamicStyling.getBlack(context),
-                    fontFamily: '.SF Pro Text',
-                    decoration: TextDecoration.none,
-                  ),
+            Text(
+              "Serving size 1 serving",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: DynamicStyling.getBlack(context),
+                fontFamily: '.SF Pro Display',
+                decoration: TextDecoration.none,
+                height: 0,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 3),
+              child: Container(
+                color: DynamicStyling.getBlack(context),
+                height: 15,
+              ),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Amount Per Serving",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        color: DynamicStyling.getBlack(context),
+                        fontFamily: '.SF Pro Display',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    Text(
+                      "Calories",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: DynamicStyling.getBlack(context),
+                        fontFamily: '.SF Pro Display',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
-                  "${widget.meal.calories.round()} cal",
+                  ((widget.meal.calories / 10).floor() * 10).toString(),
                   style: TextStyle(
-                    fontSize: 16,
-                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
-                    fontFamily: '.SF Pro Text',
+                    fontSize: 40,
+                    fontWeight: FontWeight.w900,
+                    color: DynamicStyling.getBlack(context),
+                    fontFamily: '.SF Pro Display',
                     decoration: TextDecoration.none,
                   ),
                 ),
               ],
             ),
-          ),
-          Divider(color: Colors.grey[300]),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Protein",
-                  style: TextStyle(
-                    fontSize: 14,
 
+            Container(color: DynamicStyling.getBlack(context), height: 5),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Text(
+                  "% Daily Value*",
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                     color: DynamicStyling.getBlack(context),
-                    fontFamily: '.SF Pro Text',
+                    fontFamily: '.SF Pro Display',
                     decoration: TextDecoration.none,
                   ),
                 ),
+              ),
+            ),
+
+            Container(color: DynamicStyling.getGrey(context), height: 1),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Total Fat ',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Display',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '${widget.meal.fat.ceil()}g',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Text(
-                  "${widget.meal.protein.round()}g",
+                  "${(widget.meal.fat * 100 / 65).ceil()}%",
                   style: TextStyle(
-                    fontSize: 16,
-                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
-                    fontFamily: '.SF Pro Text',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: DynamicStyling.getBlack(context),
+                    fontFamily: '.SF Pro Display',
                     decoration: TextDecoration.none,
                   ),
                 ),
               ],
             ),
-          ),
-          Divider(color: Colors.grey[300]),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
+
+            Container(color: DynamicStyling.getGrey(context), height: 1),
+            if (widget.meal.saturatedFat != -1) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Saturated Fat ',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: DynamicStyling.getBlack(context),
+                              fontFamily: '.SF Pro Display',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${widget.meal.saturatedFat.ceil()}g',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: DynamicStyling.getBlack(context),
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      "${(widget.meal.saturatedFat * 100 / 50).ceil()}%",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: DynamicStyling.getBlack(context),
+                        fontFamily: '.SF Pro Display',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(color: DynamicStyling.getGrey(context), height: 1),
+            ],
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Carbs",
-                  style: TextStyle(
-                    fontSize: 14,
-
-                    color: DynamicStyling.getBlack(context),
-                    fontFamily: '.SF Pro Text',
-                    decoration: TextDecoration.none,
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Total Carbohydrate ',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Display',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '${widget.meal.carbs.ceil()}g',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Text(
-                  "${widget.meal.carbs.round()}g",
+                  "${(widget.meal.carbs * 100 / 130).ceil()}%",
                   style: TextStyle(
-                    fontSize: 16,
-                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
-                    fontFamily: '.SF Pro Text',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: DynamicStyling.getBlack(context),
+                    fontFamily: '.SF Pro Display',
                     decoration: TextDecoration.none,
                   ),
                 ),
               ],
             ),
-          ),
-          Divider(color: Colors.grey[300]),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
+
+            Container(color: DynamicStyling.getGrey(context), height: 1),
+
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Fat",
-                  style: TextStyle(
-                    fontSize: 14,
-
-                    color: DynamicStyling.getBlack(context),
-                    fontFamily: '.SF Pro Text',
-                    decoration: TextDecoration.none,
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Total Sugars ',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Display',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '${widget.meal.sugar.ceil()}g',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Text(
-                  "${widget.meal.fat.round()}g",
+                  "${(widget.meal.sugar * 100 / 50).ceil()}%",
                   style: TextStyle(
-                    fontSize: 16,
-                    color: DynamicStyling.getBlack(context).withOpacity(0.6),
-                    fontFamily: '.SF Pro Text',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: DynamicStyling.getBlack(context),
+                    fontFamily: '.SF Pro Display',
                     decoration: TextDecoration.none,
                   ),
                 ),
               ],
             ),
-          ),
-          Divider(color: Colors.grey[300]),
-        ],
+
+            Container(color: DynamicStyling.getGrey(context), height: 1),
+            if (widget.meal.addedSugars != -1) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Added Sugars ',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: DynamicStyling.getBlack(context),
+                              fontFamily: '.SF Pro Display',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${widget.meal.addedSugars.ceil()}g',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: DynamicStyling.getBlack(context),
+                              fontFamily: '.SF Pro Text',
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      "${(widget.meal.addedSugars * 100 / 50).ceil()}%",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        color: DynamicStyling.getBlack(context),
+                        fontFamily: '.SF Pro Display',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(color: DynamicStyling.getGrey(context), height: 1),
+            ],
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Protein ',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Display',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '${widget.meal.protein.ceil()}g',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: DynamicStyling.getBlack(context),
+                          fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  "${(widget.meal.protein * 100 / 50).ceil()}%",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    color: DynamicStyling.getBlack(context),
+                    fontFamily: '.SF Pro Display',
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ],
+            ),
+
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 5),
+              child: Container(
+                color: DynamicStyling.getBlack(context),
+                height: 15,
+              ),
+            ),
+
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  " * ",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: DynamicStyling.getBlack(context),
+                    fontFamily: '.SF Pro Display',
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    "The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet. 2,000 calories a day is used for general nutrition advice.",
+                    softWrap: true,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

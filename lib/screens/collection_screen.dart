@@ -1,4 +1,6 @@
 import 'package:boiler_fuel/main.dart';
+import 'package:boiler_fuel/screens/dining_hall_menu_screen.dart';
+
 import 'package:boiler_fuel/styling.dart';
 
 import 'package:boiler_fuel/screens/item_details_screen.dart';
@@ -17,6 +19,8 @@ class CollectionScreen extends StatefulWidget {
   final List<Food> foods;
   final String diningHall;
   final String station;
+  final bool isCreatingMeal;
+  final List<FoodItem> selectedFoods;
 
   const CollectionScreen({
     Key? key,
@@ -24,6 +28,9 @@ class CollectionScreen extends StatefulWidget {
     required this.foods,
     required this.diningHall,
     required this.station,
+    this.selectedFoods = const [],
+
+    this.isCreatingMeal = false,
   }) : super(key: key);
 
   @override
@@ -32,28 +39,17 @@ class CollectionScreen extends StatefulWidget {
 
 class _CollectionScreenState extends State<CollectionScreen>
     with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
+  List<FoodItem> selectedFoods = [];
 
   @override
   void initState() {
     super.initState();
-
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _animationController.forward();
+    selectedFoods = widget.selectedFoods;
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
     super.dispose();
   }
 
@@ -62,97 +58,42 @@ class _CollectionScreenState extends State<CollectionScreen>
     return Scaffold(
       backgroundColor: DynamicStyling.getWhite(context),
 
-      body: SingleChildScrollView(
-        physics: customCupertinoSheet.BottomSheetScrollPhysics(),
-        child: widget.foods.isEmpty
-            ? _buildEmptyView()
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //     color: DynamicStyling.getWhite(context),
-                  //     border: Border(
-                  //       bottom: BorderSide(
-                  //         color: DynamicStyling.getGrey(context),
-                  //       ),
-                  //     ),
-                  //   ),
-                  //   child: Column(
-                  //     children: [
-                  //       SizedBox(height: MediaQuery.of(context).padding.top),
-                  //       GestureDetector(
-                  //         onTap: () {
-                  //           HapticFeedback.lightImpact();
-                  //           Navigator.of(context).pop();
-                  //         },
-                  //         child: Row(
-                  //           children: [
-                  //             IconButton(
-                  //               icon: Icon(
-                  //                 Icons.arrow_back_ios_new,
-                  //                 color: styling.gray,
-                  //               ),
-                  //               onPressed: () {
-                  //                 HapticFeedback.lightImpact();
-                  //                 Navigator.of(context).pop();
-                  //               },
-                  //             ),
-
-                  //             Text(
-                  //               'Back',
-                  //               style: TextStyle(
-                  //                 fontSize: 14,
-                  //                 fontWeight: FontWeight.bold,
-                  //                 color: styling.gray,
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //       Padding(
-                  //         padding: const EdgeInsets.only(
-                  //           left: 24.0,
-                  //           bottom: 18,
-                  //         ),
-                  //         child: Row(
-                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //           children: [
-                  //             Column(
-                  //               crossAxisAlignment: CrossAxisAlignment.start,
-                  //               children: [
-                  //                 Text(
-                  //                   widget.collectionName,
-                  //                   style: TextStyle(
-                  //                     fontSize: 24,
-                  //                     color: DynamicStyling.getBlack(context),
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                  Header(context: context, title: widget.collectionName),
-                  // Collection info header
-                  // _buildCollectionHeader(),
-
-                  // Foods list
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      // Use a fraction of available height as an upper bound
-                      maxHeight: MediaQuery.of(context).size.height,
+      body: Column(
+        children: [
+          Header(
+            context: context,
+            title: widget.collectionName,
+            onBackButtonPressed: () {
+              Navigator.of(context).pop<List<FoodItem>>(selectedFoods);
+            },
+          ),
+          // Collection info header
+          // _buildCollectionHeader(),
+          widget.foods.isEmpty
+              ? _buildEmptyView()
+              :
+                // Foods list
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 8.0,
+                      right: 8.0,
+                      top: 8.0,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: _buildFoodsList(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [Expanded(child: _buildFoodsList())],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+        ],
       ),
     );
   }
@@ -261,15 +202,11 @@ class _CollectionScreenState extends State<CollectionScreen>
   }
 
   Widget _buildFoodsList() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (int index = 0; index < widget.foods.length; index++) ...[
-            _buildFoodItem(widget.foods[index], index),
-          ],
-        ],
-      ),
+    return ListView.builder(
+      itemCount: widget.foods.length,
+      padding: const EdgeInsets.all(0),
+      itemBuilder: (context, index) =>
+          _buildFoodItem(widget.foods[index], index),
     );
   }
 
@@ -279,10 +216,38 @@ class _CollectionScreenState extends State<CollectionScreen>
       child: GestureDetector(
         onTap: () {
           HapticFeedback.lightImpact();
-
-          _showFoodDetails(foodItem);
+          if (widget.isCreatingMeal) {
+            // Return the selected food item to the previous screen
+            setState(() {
+              if (selectedFoods.any(
+                (selected) => selected.firstFood.id == foodItem.id,
+              )) {
+                selectedFoods.removeWhere(
+                  (selected) => selected.firstFood.id == foodItem.id,
+                );
+                return;
+              }
+              selectedFoods.add(
+                FoodItem(
+                  name: foodItem.name,
+                  isCollection: false,
+                  foods: [foodItem],
+                  station: foodItem.station,
+                  collection: foodItem.collection,
+                ),
+              );
+            });
+          } else {
+            _showFoodDetails(foodItem);
+          }
         },
         child: DefaultContainer(
+          primaryColor:
+              selectedFoods.any(
+                (selected) => selected.firstFood.id == foodItem.id,
+              )
+              ? Colors.green
+              : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

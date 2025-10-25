@@ -49,7 +49,7 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
     with TickerProviderStateMixin {
   bool _isLoading = true;
   List<MealTime> _availableMealTimes = [];
-  MealTime _selectedMealTime = MealTime.dinner;
+  MealTime? _selectedMealTime;
   List<Meal> _meals = [];
 
   // Spacing between station items
@@ -61,34 +61,30 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
       _isLoading = true;
     });
 
-    try {
-      // Fetch saved meals from the database
-      List<Meal> meals = await LocalDatabase().getFavoritedMeals();
+    // Fetch saved meals from the database
+    List<Meal> meals = await LocalDatabase().getFavoritedMeals();
 
-      // Determine available meal times from fetched meals (filter out nulls)
-      Set<MealTime> mealTimesSet = meals
-          .map((meal) => meal.mealTime)
-          .whereType<MealTime>()
-          .toSet();
-      List<MealTime> mealTimesList = mealTimesSet.toList()
-        ..sort((a, b) => a.index.compareTo(b.index));
+    // Determine available meal times from fetched meals (filter out nulls)
+    Set<MealTime> mealTimesSet = meals
+        .map((meal) => meal.mealTime)
+        .whereType<MealTime>()
+        .toSet();
+    List<MealTime> mealTimesList = mealTimesSet.toList()
+      ..sort((a, b) => a.index.compareTo(b.index));
 
-      setState(() {
-        _meals = meals;
-        _availableMealTimes = mealTimesList;
-        print(meals.map((e) => e.mealTime).toList());
-        _selectedMealTime = MealTime.getCurrentMealTime();
-        if (!_availableMealTimes.contains(MealTime.getCurrentMealTime())) {
-          _selectedMealTime = _availableMealTimes.first;
-        }
-        _isLoading = false;
-      });
-    } catch (e) {
-      print("Error fetching saved meals: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    setState(() {
+      _selectedMealTime = MealTime.getCurrentMealTime();
+      _availableMealTimes = mealTimesList;
+
+      if (!mealTimesList.contains(MealTime.getCurrentMealTime())) {
+        _selectedMealTime = mealTimesList.first;
+      }
+      print(_selectedMealTime);
+      _meals = meals;
+      print(meals.map((e) => e.mealTime).toList());
+
+      _isLoading = false;
+    });
   }
 
   @override
@@ -110,69 +106,6 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
       backgroundColor: DynamicStyling.getWhite(context),
       body: Column(
         children: [
-          // Header
-          // Container(
-          //   decoration: BoxDecoration(
-          //     color: DynamicStyling.getWhite(context),
-          //     border: Border(
-          //       bottom: BorderSide(color: DynamicStyling.getGrey(context)),
-          //     ),
-          //   ),
-          //   child: Column(
-          //     children: [
-          //       SizedBox(height: MediaQuery.of(context).padding.top),
-          //       GestureDetector(
-          //         onTap: () {
-          //           HapticFeedback.lightImpact();
-          //           Navigator.of(context).pop();
-          //         },
-          //         child: Row(
-          //           children: [
-          //             IconButton(
-          //               icon: Icon(
-          //                 Icons.arrow_back_ios_new,
-          //                 color: styling.gray,
-          //               ),
-          //               onPressed: () {
-          //                 HapticFeedback.lightImpact();
-          //                 Navigator.of(context).pop();
-          //               },
-          //             ),
-
-          //             Text(
-          //               'Back',
-          //               style: TextStyle(
-          //                 fontSize: 14,
-          //                 fontWeight: FontWeight.bold,
-          //                 color: styling.gray,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       Padding(
-          //         padding: const EdgeInsets.only(left: 24.0, bottom: 18),
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //           children: [
-          //             Column(
-          //               crossAxisAlignment: CrossAxisAlignment.start,
-          //               children: [
-          //                 Text(
-          //                   "Saved Meals",
-          //                   style: TextStyle(
-          //                     fontSize: 24,
-          //                     color: DynamicStyling.getBlack(context),
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
           Header(context: context, title: "Saved Meals"),
 
           // Content
@@ -188,19 +121,19 @@ class _SavedMealsScreenState extends State<SavedMealsScreen>
                       : Expanded(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
-                            children: _availableMealTimes.isEmpty
+                            children: _meals.isEmpty
                                 ? [
                                     // No saved meals view
                                     _buildEmptyView(),
                                   ]
                                 : [
                                     // Meal time selector
-                                    _buildMealTimeSelector(),
+                                    if (_selectedMealTime != null)
+                                      _buildMealTimeSelector(),
 
                                     const SizedBox(height: 8),
-                                    // Station selector
 
-                                    // PageView for stations - give it a bounded max height
+                                    // Station selector
                                     Expanded(child: _buildMealsView()),
                                   ],
                           ),

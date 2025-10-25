@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/api/local_database.dart';
 import 'package:boiler_fuel/screens/dining_hall_search_screen.dart';
 import 'package:boiler_fuel/styling.dart';
 import 'package:boiler_fuel/api/database.dart';
@@ -6,6 +7,7 @@ import 'package:boiler_fuel/screens/item_details_screen.dart';
 import 'package:boiler_fuel/widgets/custom_app_bar.dart';
 import 'package:boiler_fuel/widgets/custom_tabs.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
+import 'package:boiler_fuel/widgets/default_text_field.dart';
 import 'package:boiler_fuel/widgets/header.dart';
 import 'package:flutter/cupertino.dart';
 import '../custom/cupertinoSheet.dart' as customCupertinoSheet;
@@ -80,6 +82,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     with TickerProviderStateMixin {
   Map<String, List<FoodItem>> _stationFoods = {};
   bool _isLoading = true;
+  bool isCreatingMeal = false;
 
   // Spacing between station items
   double _stationSpacing = 12.0;
@@ -100,12 +103,33 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       0.0; // 0.0 = fully expanded, 1.0 = fully collapsed
   double _lastScrollPosition = 0.0;
 
+  double mealCalories = 0.0;
+  double mealProtein = 0.0;
+  double mealCarbs = 0.0;
+  double mealFat = 0.0;
+  double mealSugar = 0.0;
+  double mealSaturatedFat = 0.0;
+  double mealAddedSugars = 0.0;
+
+  double targetCalories = 0.0;
+  double targetProtein = 0.0;
+  double targetCarbs = 0.0;
+  double targetFat = 0.0;
+
+  List<FoodItem> selectedFoods = [];
+
   @override
   void initState() {
     super.initState();
 
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+    setState(() {
+      targetCalories = widget.user.macros.calories / widget.user.mealsPerDay;
+      targetProtein = widget.user.macros.protein / widget.user.mealsPerDay;
+      targetCarbs = widget.user.macros.carbs / widget.user.mealsPerDay;
+      targetFat = widget.user.macros.fat / widget.user.mealsPerDay;
+    });
 
     _loadDiningHallMenu();
   }
@@ -293,6 +317,237 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DynamicStyling.getWhite(context),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          color: DynamicStyling.getBlack(context),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        width: 50,
+        height: 50,
+        child: IconButton(
+          splashColor: DynamicStyling.getDarkGrey(context),
+          icon: Icon(
+            isCreatingMeal ? Icons.save : Icons.add,
+            color: DynamicStyling.getWhite(context),
+            // size: 32,
+          ),
+          onPressed: () {
+            HapticFeedback.mediumImpact();
+            if (isCreatingMeal) {
+              showDialog<bool>(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) {
+                  TextEditingController controller = TextEditingController();
+                  bool loading = false;
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        backgroundColor: DynamicStyling.getWhite(context),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Icon
+
+                              // Title
+                              Text(
+                                'Meal Name',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: DynamicStyling.getBlack(context),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Description
+                              DefaultTextField(
+                                controller: controller,
+                                hint: "Meal Name",
+                              ),
+                              const SizedBox(height: 28),
+
+                              // Buttons
+                              Row(
+                                children: [
+                                  // Cancel Button
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: DynamicStyling.getGrey(
+                                            context,
+                                          ),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            HapticFeedback.lightImpact();
+                                            Navigator.of(context).pop();
+                                          },
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12.0,
+                                            ),
+                                            child: Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: DynamicStyling.getBlack(
+                                                  context,
+                                                ),
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+
+                                  // Save Button
+                                  loading
+                                      ? CircularProgressIndicator(
+                                          color: Colors.green,
+                                        )
+                                      : Expanded(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              color: Colors.green,
+                                            ),
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  HapticFeedback.mediumImpact();
+                                                  if (controller.text.isEmpty) {
+                                                    // Show error
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                          'Please enter a meal name.',
+                                                        ),
+                                                      ),
+                                                    );
+                                                    return;
+                                                  }
+                                                  setState(() {
+                                                    loading = true;
+                                                  });
+                                                  final id = UniqueKey()
+                                                      .toString();
+                                                  Meal meal = Meal(
+                                                    name: controller.text,
+                                                    foods: selectedFoods
+                                                        .map((e) => e.firstFood)
+                                                        .toList(),
+
+                                                    mealTime:
+                                                        _selectedMealTime!,
+                                                    calories: mealCalories,
+                                                    protein: mealProtein,
+                                                    carbs: mealCarbs,
+                                                    fat: mealFat,
+                                                    sugar: mealSugar,
+                                                    addedSugars:
+                                                        mealAddedSugars,
+                                                    saturatedFat:
+                                                        mealSaturatedFat,
+                                                    diningHall: "",
+                                                    isAIGenerated: false,
+                                                    isFavorited: true,
+                                                    id: id,
+                                                  );
+                                                  await LocalDatabase().addMeal(
+                                                    meal,
+                                                    _selectedMealTime!,
+                                                    DateTime.now(),
+                                                  );
+                                                  if (!mounted) return;
+                                                  setState(() {
+                                                    loading = false;
+                                                  });
+                                                  Navigator.of(context).pop();
+                                                  this.setState(() {
+                                                    isCreatingMeal = false;
+                                                    selectedFoods.clear();
+                                                    mealCalories = 0.0;
+                                                    mealProtein = 0.0;
+                                                    mealCarbs = 0.0;
+                                                    mealFat = 0.0;
+                                                    mealAddedSugars = 0.0;
+                                                    mealSaturatedFat = 0.0;
+                                                    mealSugar = 0.0;
+                                                  });
+                                                },
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 12.0,
+                                                      ),
+                                                  child: Text(
+                                                    'Save Meal',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.white,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            } else {
+              selectedFoods.clear();
+              mealCalories = 0.0;
+              mealProtein = 0.0;
+              mealCarbs = 0.0;
+              mealFat = 0.0;
+              mealAddedSugars = 0.0;
+              mealSaturatedFat = 0.0;
+              mealSugar = 0.0;
+              setState(() {
+                isCreatingMeal = true;
+              });
+            }
+          },
+        ),
+      ),
       body: Column(
         children: [
           // Header
@@ -331,14 +586,27 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                   return ClipRect(
                                     child: Align(
                                       alignment: Alignment.topCenter,
-                                      heightFactor: heightFactor,
+                                      heightFactor: isCreatingMeal
+                                          ? 1
+                                          : heightFactor,
                                       child: Opacity(
-                                        opacity: heightFactor,
+                                        opacity: isCreatingMeal
+                                            ? 1
+                                            : heightFactor,
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            _buildScheduleDiningHall(),
-                                            SizedBox(height: 8 * heightFactor),
+                                            if (isCreatingMeal)
+                                              _buildMealNutrition()
+                                            else
+                                              _buildScheduleDiningHall(),
+                                            SizedBox(
+                                              height:
+                                                  8 *
+                                                  (isCreatingMeal
+                                                      ? 1
+                                                      : heightFactor),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -346,8 +614,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                   );
                                 },
                               ),
-                              if (_allMealData.isEmpty)
-                                SizedBox()
+                              if (isCreatingMeal)
+                                Text(
+                                  "Select foods to add to your meal for ${_selectedMealTime?.toDisplayString()}",
+                                )
                               else
                                 _buildMealTimeSelector(),
 
@@ -366,6 +636,65 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMealNutrition() {
+    return DefaultContainer(
+      child: SizedBox(
+        width: double.infinity,
+        child: Wrap(
+          alignment: WrapAlignment.spaceAround,
+          spacing: 10,
+          runSpacing: 4,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Text(
+                'Calories: ${mealCalories.toStringAsFixed(0)} / ${targetCalories.toStringAsFixed(0)} cal',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: DynamicStyling.getDarkGrey(context),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Text(
+                'Protein: ${mealProtein.toStringAsFixed(0)} / ${targetProtein.toStringAsFixed(0)} g',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: DynamicStyling.getDarkGrey(context),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Text(
+                'Carbs: ${mealCarbs.toStringAsFixed(0)} / ${targetCarbs.toStringAsFixed(0)} g',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: DynamicStyling.getDarkGrey(context),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2.0),
+              child: Text(
+                'Fat: ${mealFat.toStringAsFixed(0)} / ${targetFat.toStringAsFixed(0)} g',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: DynamicStyling.getDarkGrey(context),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -567,6 +896,30 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     );
   }
 
+  String _buildFoodSubtitle(FoodItem foodItem) {
+    String subtitle = "";
+    if (foodItem.firstFood.calories > 0) {
+      subtitle += "${foodItem.firstFood.calories.round()} cal";
+    }
+    if (isCreatingMeal) {
+      if (subtitle.isNotEmpty) subtitle += " • ";
+      if (foodItem.firstFood.protein > 0) {
+        subtitle += "${foodItem.firstFood.protein.round()}g of protein";
+      }
+
+      if (foodItem.firstFood.carbs > 0) {
+        if (subtitle.isNotEmpty) subtitle += " • ";
+        subtitle += "${foodItem.firstFood.carbs.round()}g of carbs";
+      }
+
+      if (foodItem.firstFood.fat > 0) {
+        if (subtitle.isNotEmpty) subtitle += " • ";
+        subtitle += "${foodItem.firstFood.fat.round()}g of fat";
+      }
+    }
+    return subtitle;
+  }
+
   Widget _buildFoodItem(FoodItem foodItem, int index) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -576,12 +929,66 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           if (foodItem.isCollection) {
             _showCollectionDetails(foodItem);
           } else {
-            _showFoodDetails(foodItem.firstFood);
+            if (isCreatingMeal) {
+              setState(() {
+                if (selectedFoods.contains(foodItem)) {
+                  selectedFoods.remove(foodItem);
+                  mealCalories -= foodItem.firstFood.calories > 0
+                      ? foodItem.firstFood.calories
+                      : 0;
+                  mealProtein -= foodItem.firstFood.protein > 0
+                      ? foodItem.firstFood.protein
+                      : 0;
+                  mealCarbs -= foodItem.firstFood.carbs > 0
+                      ? foodItem.firstFood.carbs
+                      : 0;
+                  mealFat -= foodItem.firstFood.fat > 0
+                      ? foodItem.firstFood.fat
+                      : 0;
+                  mealAddedSugars -= foodItem.firstFood.addedSugars > 0
+                      ? foodItem.firstFood.addedSugars
+                      : 0;
+                  mealSaturatedFat -= foodItem.firstFood.saturatedFat > 0
+                      ? foodItem.firstFood.saturatedFat
+                      : 0;
+                  mealSugar -= foodItem.firstFood.sugar > 0
+                      ? foodItem.firstFood.sugar
+                      : 0;
+                  return;
+                }
+                selectedFoods.add(foodItem);
+                mealCalories += foodItem.firstFood.calories > 0
+                    ? foodItem.firstFood.calories
+                    : 0;
+                mealProtein += foodItem.firstFood.protein > 0
+                    ? foodItem.firstFood.protein
+                    : 0;
+                mealCarbs += foodItem.firstFood.carbs > 0
+                    ? foodItem.firstFood.carbs
+                    : 0;
+                mealFat += foodItem.firstFood.fat > 0
+                    ? foodItem.firstFood.fat
+                    : 0;
+                mealAddedSugars += foodItem.firstFood.addedSugars > 0
+                    ? foodItem.firstFood.addedSugars
+                    : 0;
+                mealSaturatedFat += foodItem.firstFood.saturatedFat > 0
+                    ? foodItem.firstFood.saturatedFat
+                    : 0;
+                mealSugar += foodItem.firstFood.sugar > 0
+                    ? foodItem.firstFood.sugar
+                    : 0;
+              });
+            } else {
+              _showFoodDetails(foodItem.firstFood);
+            }
           }
         },
         child: DefaultContainer(
           primaryColor: !foodItem.isCollection && foodItem.firstFood.restricted
               ? Colors.red
+              : isCreatingMeal && selectedFoods.contains(foodItem)
+              ? Colors.green
               : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -630,9 +1037,9 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
               // Nutrition info (show only for individual items)
               if (!foodItem.isCollection) ...[
-                if (foodItem.firstFood.calories > 0)
+                if (_buildFoodSubtitle(foodItem).isNotEmpty)
                   Text(
-                    foodItem.firstFood.calories.round().toString() + " cal",
+                    _buildFoodSubtitle(foodItem),
                     style: TextStyle(
                       fontSize: 14,
                       color: DynamicStyling.getDarkGrey(context),
@@ -745,17 +1152,49 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
     );
   }
 
-  void _showCollectionDetails(FoodItem foodItem) {
-    Navigator.of(context).push(
-      CupertinoPageRoute(
+  void _showCollectionDetails(FoodItem foodItem) async {
+    final result = await Navigator.of(context).push<List<FoodItem>>(
+      CupertinoPageRoute<List<FoodItem>>(
         builder: (context) => CollectionScreen(
           collectionName: foodItem.name,
           foods: foodItem.foods,
           diningHall: widget.diningHall,
           station: foodItem.station,
+          isCreatingMeal: isCreatingMeal,
+          selectedFoods: [...selectedFoods],
         ),
       ),
     );
+    if (isCreatingMeal && result != null) {
+      setState(() {
+        mealCalories = 0.0;
+        mealProtein = 0.0;
+        mealCarbs = 0.0;
+        mealFat = 0.0;
+        mealAddedSugars = 0.0;
+        mealSaturatedFat = 0.0;
+        mealSugar = 0.0;
+        selectedFoods.clear();
+        for (FoodItem item in result) {
+          selectedFoods.add(item);
+          mealCalories += item.firstFood.calories > 0
+              ? item.firstFood.calories
+              : 0;
+          mealProtein += item.firstFood.protein > 0
+              ? item.firstFood.protein
+              : 0;
+          mealCarbs += item.firstFood.carbs > 0 ? item.firstFood.carbs : 0;
+          mealFat += item.firstFood.fat > 0 ? item.firstFood.fat : 0;
+          mealAddedSugars += item.firstFood.addedSugars > 0
+              ? item.firstFood.addedSugars
+              : 0;
+          mealSaturatedFat += item.firstFood.saturatedFat > 0
+              ? item.firstFood.saturatedFat
+              : 0;
+          mealSugar += item.firstFood.sugar > 0 ? item.firstFood.sugar : 0;
+        }
+      });
+    }
   }
 }
 
