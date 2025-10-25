@@ -50,7 +50,7 @@ class FBDatabase {
           foodIDs = meals.dinner;
           break;
         case MealTime.lateLunch:
-          foodIDs = meals.lunch;
+          foodIDs = meals.lateLunch;
           break;
       }
       print("Found ${foodIDs.length} food items for $mealTime");

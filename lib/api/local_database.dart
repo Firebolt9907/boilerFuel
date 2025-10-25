@@ -49,6 +49,9 @@ class MealsTable extends Table {
   TextColumn get mealId => text()();
   RealColumn get totalCarbs => real()();
   RealColumn get totalFats => real()();
+  RealColumn get totalSugar => real().withDefault(const Constant(0))();
+  RealColumn get totalSaturatedFat => real().withDefault(const Constant(0))();
+  RealColumn get totalAddedSugars => real().withDefault(const Constant(0))();
   BoolColumn get isFavorited => boolean().withDefault(const Constant(false))();
   BoolColumn get isAIMeal => boolean().withDefault(const Constant(false))();
   IntColumn get lastUpdated => integer()();
@@ -103,7 +106,7 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -119,6 +122,11 @@ class AppDb extends _$AppDb {
         from4To5: (m, schema) async {
           await m.addColumn(usersTable, usersTable.activityLevel);
         },
+        from5To6: (m, schema) async {
+          await m.addColumn(mealsTable, mealsTable.totalSugar);
+          await m.addColumn(mealsTable, mealsTable.totalSaturatedFat);
+          await m.addColumn(mealsTable, mealsTable.totalAddedSugars);
+        },
       ),
     );
   }
@@ -133,7 +141,7 @@ LazyDatabase _openConnection() {
     // try {
     //   if (resetLocalDB <= 32) {
     //     print("Deleting old database to add new columns");
-        // await file.delete();
+    // await file.delete();
     //     await SharedPrefs.setResetLocalData(33);
     //     print("Deleted old database - new schema will be created");
     //   }
@@ -312,6 +320,9 @@ class LocalDatabase {
             lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
             mealId: Value(meal.id),
             isAIMeal: Value(meal.isAIGenerated),
+            totalSugar: Value(meal.sugar),
+            totalSaturatedFat: Value(meal.saturatedFat),
+            totalAddedSugars: Value(meal.addedSugars),
           ),
         );
     print("Meal inserted: ${meal.name} at ${meal.diningHall}");
@@ -358,6 +369,9 @@ class LocalDatabase {
         id: row.mealId,
         mealTime: mealTime,
         isAIGenerated: row.isAIMeal,
+        sugar: row.totalSugar,
+        saturatedFat: row.totalSaturatedFat,
+        addedSugars: row.totalAddedSugars,
       );
 
       meals.putIfAbsent(mealTime, () => {});
@@ -412,6 +426,9 @@ class LocalDatabase {
           id: row.mealId,
           isAIGenerated: row.isAIMeal,
           mealTime: mealTime,
+          sugar: row.totalSugar,
+          addedSugars: row.totalAddedSugars,
+          saturatedFat: row.totalSaturatedFat,
         );
 
         meals.putIfAbsent(mealTime, () => {});
@@ -474,6 +491,9 @@ class LocalDatabase {
           isFavorited: Value(meal.isFavorited),
           mealTime: Value(meal.mealTime.toString()),
           isAIMeal: Value(meal.isAIGenerated),
+          totalSugar: Value(meal.sugar),
+          totalSaturatedFat: Value(meal.saturatedFat),
+          totalAddedSugars: Value(meal.addedSugars),
         ),
       );
       print("Meal updated: ${meal.name} at ${meal.diningHall} with");
@@ -506,6 +526,9 @@ class LocalDatabase {
         isFavorited: row.isFavorited,
         id: row.mealId,
         isAIGenerated: row.isAIMeal,
+        saturatedFat: row.totalSaturatedFat,
+        addedSugars: row.totalAddedSugars,
+        sugar: row.totalSugar,
         mealTime: MealTime.fromString(
           row.mealTime != "null" ? row.mealTime : "breakfast",
         ),

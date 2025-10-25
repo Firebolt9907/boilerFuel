@@ -332,14 +332,18 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
               height: 50,
               child: IconButton(
                 splashColor: DynamicStyling.getDarkGrey(context),
-                icon: Icon(
-                  isCreatingMeal
-                      ? selectedFoods.isEmpty
-                            ? Icons.close
-                            : Icons.save
-                      : Icons.add,
-                  color: DynamicStyling.getWhite(context),
-                  // size: 32,
+                icon: Stack(
+                  children: [
+                    Icon(
+                      isCreatingMeal
+                          ? selectedFoods.isEmpty
+                                ? Icons.close
+                                : Icons.save
+                          : Icons.add,
+                      color: DynamicStyling.getWhite(context),
+                      // size: 32,
+                    ),
+                  ],
                 ),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
@@ -525,6 +529,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                                                 Colors.green,
                                                             content: Text(
                                                               'Meal saved successfully! View it in Saved Meals.',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
                                                             ),
                                                           ),
                                                         );

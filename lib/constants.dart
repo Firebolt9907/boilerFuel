@@ -859,12 +859,14 @@ class DiningHallMeals {
   final List<MiniFood> brunch;
   final List<MiniFood> lunch;
   final List<MiniFood> dinner;
+  final List<MiniFood> lateLunch;
 
   DiningHallMeals({
     required this.breakfast,
     required this.brunch,
     required this.lunch,
     required this.dinner,
+    required this.lateLunch,
   });
 
   Map<String, dynamic> toMap() {
@@ -873,6 +875,7 @@ class DiningHallMeals {
       'brunch': brunch.map((f) => f.toMap()).toList(),
       'lunch': lunch.map((f) => f.toMap()).toList(),
       'dinner': dinner.map((f) => f.toMap()).toList(),
+      'lateLunch': lateLunch.map((f) => f.toMap()).toList(),
     };
   }
 
@@ -895,6 +898,11 @@ class DiningHallMeals {
       ),
       dinner: List<MiniFood>.from(
         (map['Dinner'] as List<dynamic>).map(
+          (f) => MiniFood.fromMap(f as Map<String, dynamic>),
+        ),
+      ),
+      lateLunch: List<MiniFood>.from(
+        (map['Late Lunch'] as List<dynamic>).map(
           (f) => MiniFood.fromMap(f as Map<String, dynamic>),
         ),
       ),

@@ -449,6 +449,20 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
               protein: (mealData['totalProtein'] ?? 0).toDouble(),
               fat: (mealData['totalFat'] ?? 0).toDouble(),
               carbs: (mealData['totalCarbs'] ?? 0).toDouble(),
+              saturatedFat: foods.fold(
+                0,
+                (sum, item) =>
+                    sum + (item.saturatedFat < 0 ? 0 : item.saturatedFat),
+              ),
+              sugar: foods.fold(
+                0,
+                (sum, item) => sum + (item.sugar < 0 ? 0 : item.sugar),
+              ),
+              addedSugars: foods.fold(
+                0,
+                (sum, item) =>
+                    sum + (item.addedSugars < 0 ? 0 : item.addedSugars),
+              ),
               diningHall: diningHall, // Could be set based on food sources
               foods: foods,
               mealTime: mealTime,
