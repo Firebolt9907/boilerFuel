@@ -1041,7 +1041,8 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                     : foodItem.firstFood.restricted
                     ? Colors.red
                     : isCreatingMeal && selectedFoods.contains(foodItem)
-              ? Colors.green
+                    ? Colors.green
+                    : null
               : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

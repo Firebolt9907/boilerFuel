@@ -643,6 +643,8 @@ class LocalDatabase {
         station: row.station.isNotEmpty ? row.station : "",
         isFavorited: row.isFavorited,
         servingSize: row.servingSize,
+        saturatedFat: row.saturatedFat,
+        addedSugars: row.addedSugars,
       );
 
       foods.add(f);
