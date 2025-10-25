@@ -121,13 +121,13 @@ class Food {
           protein = (fact['value'] ?? 0).toDouble();
         } else if (fact['name'] == 'Total Carbohydrate') {
           carbs = (fact['value'] ?? 0).toDouble();
-        } else if (fact['name'] == 'Total Fat') {
+        } else if (fact['name'] == 'Total fat') {
           fat = (fact['value'] ?? 0).toDouble();
-        } else if (fact['name'] == 'Sugars') {
+        } else if (fact['name'] == 'Sugar') {
           sugar = (fact['value'] ?? 0).toDouble();
-        } else if (fact['name'] == 'Added Sugars') {
+        } else if (fact['name'] == 'Added Sugar') {
           addedSugars = (fact['value'] ?? 0).toDouble();
-        } else if (fact['name'] == 'Saturated Fat') {
+        } else if (fact['name'] == 'Saturated fat') {
           saturatedFat = (fact['value'] ?? 0).toDouble();
         } else if (fact['name'] == 'Serving Size') {
           servingSize = fact['label'] ?? "1 serving";
@@ -368,6 +368,7 @@ class User {
   final int age;
   final Gender gender;
   final ActivityLevel activityLevel;
+  final int mealsPerDay;
 
   User({
     required this.uid,
@@ -383,6 +384,7 @@ class User {
     required this.age,
     required this.gender,
     required this.macros,
+    required this.mealsPerDay,
     this.activityLevel = ActivityLevel.sedentary,
   });
 
@@ -402,6 +404,7 @@ class User {
       'gender': gender.toString(),
       'macros': macros.toMap(),
       'activityLevel': activityLevel.toString(),
+      'mealsPerDay': mealsPerDay,
     };
   }
 
@@ -423,6 +426,7 @@ class User {
       macros: MacroResult.fromMap(map['macros']),
       gender: Gender.fromString(map['gender']) ?? Gender.male,
       activityLevel: _parseActivityLevel(map['activityLevel'] as String?),
+      mealsPerDay: map['mealsPerDay'] ?? 2,
     );
   }
 
@@ -1207,6 +1211,10 @@ class Meal {
   final double protein;
   final double carbs;
   final double fat;
+  final double sugar;
+  final double addedSugars;
+  final double saturatedFat;
+
   final List<Food> foods;
   String diningHall;
   MealTime? mealTime;
@@ -1224,6 +1232,9 @@ class Meal {
     required this.diningHall,
     required this.id,
     required this.isAIGenerated,
+    this.addedSugars = -1,
+    this.saturatedFat = -1,
+    this.sugar = -1,
     this.mealTime,
     this.isFavorited = false,
   });
@@ -1253,6 +1264,9 @@ ${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}
       'isFavorited': isFavorited,
       'id': id,
       'isAIGenerated': isAIGenerated,
+      'addedSugars': addedSugars,
+      'saturatedFat': saturatedFat,
+      'sugar': sugar,
     };
   }
 
@@ -1275,6 +1289,9 @@ ${foods.map((f) => "- ${f.name} (${f.calories} kcal, ${f.protein}g P, ${f.carbs}
           ? MealTime.fromString(map['mealTime'])
           : null,
       isFavorited: map['isFavorited'] ?? false,
+      addedSugars: (map['addedSugars'] ?? -1) * 1.0,
+      saturatedFat: (map['saturatedFat'] ?? -1) * 1.0,
+      sugar: (map['sugar'] ?? -1) * 1.0,
     );
   }
 }

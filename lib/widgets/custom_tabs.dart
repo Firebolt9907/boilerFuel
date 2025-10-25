@@ -86,6 +86,35 @@ class _CustomTabsState extends State<CustomTabs> {
         },
       );
     } else if (widget.legacy != true) {
+      if (widget.tabs.length == 1) {
+        return Container(
+          decoration: BoxDecoration(
+            color: DynamicStyling.getLightGrey(context),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: DynamicStyling.getWhite(context),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.tabs.first.value,
+                    style: TextStyle(color: DynamicStyling.getBlack(context)),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
       return CupertinoSlidingSegmentedControl<String>(
         backgroundColor: DynamicStyling.getLightGrey(context),
         thumbColor: DynamicStyling.getWhite(context),

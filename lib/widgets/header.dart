@@ -13,13 +13,14 @@ class Header extends StatelessWidget {
     this.trailingIcon,
     this.trailingPage,
     this.showBackButton = true,
+    this.onBackButtonPressed,
   });
   final BuildContext context;
   final String title;
   final IconData? trailingIcon;
   final Widget? trailingPage;
   final bool showBackButton;
-
+  final void Function()? onBackButtonPressed;
   @override
   Widget build(BuildContext context2) {
     return Container(
@@ -39,6 +40,11 @@ class Header extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
+                if (onBackButtonPressed != null) {
+                  print("Custom back button pressed");
+                  onBackButtonPressed!();
+                  return;
+                }
                 Navigator.of(context).pop();
               },
               child: Align(
@@ -49,7 +55,13 @@ class Header extends StatelessWidget {
                     color: DynamicStyling.getBlack(context),
                     previousPageTitle: "Back",
                     onPressed: () {
+                      HapticFeedback.lightImpact();
                       if (Navigator.of(context).canPop()) {
+                        if (onBackButtonPressed != null) {
+                          print("Custom back button pressed");
+                          onBackButtonPressed!();
+                          return;
+                        }
                         Navigator.of(context).pop(context);
                       } else {
                         customCupertinoSheet.CupertinoSheetRoute.popSheet(

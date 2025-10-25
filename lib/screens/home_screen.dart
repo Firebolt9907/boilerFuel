@@ -1,3 +1,4 @@
+import 'package:boiler_fuel/api/web_api.dart';
 import 'package:boiler_fuel/custom/cupertinoSheet.dart' as customCupertinoSheet;
 import 'package:boiler_fuel/screens/dining_hall_search_screen.dart';
 import 'package:boiler_fuel/screens/favorited_foods_screen.dart';
@@ -11,6 +12,7 @@ import 'package:boiler_fuel/main.dart';
 import 'package:boiler_fuel/screens/saved_meals_screen.dart';
 import 'package:boiler_fuel/screens/suggested_meals_screen.dart';
 import 'package:boiler_fuel/screens/user_settings_screen.dart';
+import 'package:boiler_fuel/widgets/default_button.dart';
 import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:boiler_fuel/widgets/titanium_container.dart';
 import 'package:flutter/cupertino.dart';

@@ -44,6 +44,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
   final _heightController = TextEditingController();
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
+  final _mealsPerDayController = TextEditingController();
   Goal? _selectedGoal;
   Gender? _selectedGender;
   bool useDietary = true;
@@ -69,6 +70,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       _selectedActivityLevel = widget.user!.activityLevel;
       useDietary = widget.user!.useDietary;
       useMealPlanning = widget.user!.useMealPlanning;
+      _mealsPerDayController.text = checkNulls(
+        widget.user!.mealsPerDay.toString(),
+      );
     } else {
       useDietary = widget.useDietary ?? true;
       useMealPlanning = widget.useMealPlanning ?? true;
@@ -130,6 +134,7 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       useDietary: useDietary,
       useMealPlanning: useMealPlanning,
       macros: result,
+      mealsPerDay: int.tryParse(_mealsPerDayController.text) ?? 2,
       weight: int.tryParse(_weightController.text) ?? -1,
       height: int.tryParse(_heightController.text) ?? -1,
       goal: _selectedGoal ?? Goal.maintain,
@@ -335,6 +340,24 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                     DefaultTextField(
                       controller: _heightController,
                       hint: 'Enter your height (inches)',
+                      keyboardType: TextInputType.number,
+                      onChanged: (s) {
+                        setState(() {});
+                      },
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Meals Per Day (On Average)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: DynamicStyling.getBlack(context),
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    DefaultTextField(
+                      controller: _mealsPerDayController,
+                      hint: 'Enter number of meals per day',
                       keyboardType: TextInputType.number,
                       onChanged: (s) {
                         setState(() {});
@@ -553,7 +576,8 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                                     _selectedGoal != null &&
                                     _weightController.text.isNotEmpty &&
                                     _selectedGender != null &&
-                                    _ageController.text.isNotEmpty) ||
+                                    _ageController.text.isNotEmpty &&
+                                    _mealsPerDayController.text.isNotEmpty) ||
                                 !useMealPlanning)
                         ? widget.user == null
                               ? Text(
