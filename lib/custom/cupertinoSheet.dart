@@ -13,7 +13,7 @@ import 'package:flutter/services.dart';
 // to achieve a smoother end to the corner radius animation.  A value of 1.0 would use
 // the full top padding. Values less than 1.0 reduce the effective corner radius, improving
 // the animation's appearance.  Determined through empirical testing.
-const double _kDeviceCornerRadiusSmoothingFactor = 0.9;
+const double _kDeviceCornerRadiusSmoothingFactor = 0.8;
 
 // Threshold in logical pixels. If the calculated device corner radius (after applying
 // the smoothing factor) is below this value, the corner radius transition animation will

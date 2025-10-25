@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 import '../constants.dart';
 import 'meal_details_screen.dart';
 import 'collection_screen.dart';
+import 'package:stupid_simple_sheet/stupid_simple_sheet.dart';
 
 // Data structure for isolate communication
 class _MenuProcessingData {
@@ -1075,7 +1076,15 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: DynamicStyling.getBlack(context),
+                                  color:
+                                      isCreatingMeal &&
+                                          selectedFoods.contains(foodItem)
+                                      ? Colors.green
+                                      : foodItem.firstFood.isFavorited
+                                      ? Colors.yellow
+                                      : foodItem.firstFood.restricted
+                                      ? Colors.red
+                                      : DynamicStyling.getBlack(context),
                                   fontFamily: '.SF Pro Text',
                                   decoration: TextDecoration.none,
                                 ),
@@ -1110,7 +1119,15 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                     _buildFoodSubtitle(foodItem),
                     style: TextStyle(
                       fontSize: 14,
-                      color: DynamicStyling.getDarkGrey(context),
+                      color:
+                          (isCreatingMeal && selectedFoods.contains(foodItem)
+                                  ? Colors.green
+                                  : foodItem.firstFood.isFavorited
+                                  ? Colors.yellow
+                                  : foodItem.firstFood.restricted
+                                  ? Colors.red
+                                  : DynamicStyling.getDarkGrey(context))
+                              .withAlpha(140),
                       fontFamily: '.SF Pro Text',
                       decoration: TextDecoration.none,
                     ),
@@ -1188,7 +1205,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       child: Text(
         text,
         style: TextStyle(
-          color: DynamicStyling.getBlack(context),
+          color: color, // DynamicStyling.getBlack(context),
           fontSize: 11,
           fontWeight: FontWeight.w500,
           fontFamily: '.SF Pro Text',
@@ -1212,14 +1229,22 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       id: food.id,
     );
 
-    customCupertinoSheet
-        .showCupertinoSheet<void>(
-          context: context,
-          useNestedNavigation: true,
-          pageBuilder: (BuildContext context) =>
-              ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+    // customCupertinoSheet
+    //     .showCupertinoSheet<void>(
+    //       context: context,
+    //       pageBuilder: (BuildContext context) =>
+    //           ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+    //     )
+    //     .then((e) {
+    //       _loadDiningHallMenu(true);
+    //     });
+    Navigator.of(context)
+        .push(
+          StupidSimpleCupertinoSheetRoute(
+            child: ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+          ),
         )
-        .then((e) {
+        .then((u) {
           _loadDiningHallMenu(true);
         });
   }
