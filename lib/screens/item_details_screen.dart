@@ -44,7 +44,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.only(left: 24, right: 24),
-              physics: BottomSheetScrollPhysics(),
+              // physics: BottomSheetScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -297,6 +297,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                       ),
                     ),
                   ],
+
+                  SizedBox(height: MediaQuery.viewPaddingOf(context).bottom),
 
                   // Quick Actions
                   // _buildQuickActions(),
@@ -806,6 +808,13 @@ Widget _buildNutritionLabel(BuildContext context, Food food) {
                 child: Text(
                   "The % Daily Value (DV) tells you how much a nutrient in a serving of food contributes to a daily diet. 2,000 calories a day is used for general nutrition advice.",
                   softWrap: true,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: DynamicStyling.getBlack(context),
+                    fontFamily: '.SF Pro Display',
+                    decoration: TextDecoration.none,
+                  ),
                 ),
               ),
             ],

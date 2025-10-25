@@ -297,6 +297,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.1"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -544,6 +552,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  motor:
+    dependency: transitive
+    description:
+      name: motor
+      sha256: d6fd00496a2b934f8f54e660acc0d039d0e4bf8e667b6977b0480be97385779e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   package_config:
     dependency: transitive
     description:
@@ -680,6 +696,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.5"
+  scroll_drag_detector:
+    dependency: "direct main"
+    description:
+      name: scroll_drag_detector
+      sha256: c52c8fa529c51891f735660dccb2216e715a91ac4bf5627c5f216ff3bdaf0cc1
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -837,6 +861,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  stupid_simple_sheet:
+    dependency: "direct main"
+    description:
+      name: stupid_simple_sheet
+      sha256: d137bbf7ebc70c3885eb7672726fe90813bc7cac1aad30f5f2ef6d1dadb6c581
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0+1"
   term_glyph:
     dependency: transitive
     description:

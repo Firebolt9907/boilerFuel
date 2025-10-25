@@ -48,6 +48,8 @@ dependencies:
   rename_app: ^1.6.5
   bottom_sheet_scroll_physics: ^1.0.0
   dynamic_color: ^1.8.1
+  scroll_drag_detector: ^0.0.4
+  stupid_simple_sheet: ^0.6.0+1
 
 dev_dependencies:
   flutter_test:

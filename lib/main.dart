@@ -190,6 +190,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   brightness: MediaQuery.of(context).platformBrightness,
                 ),
             useMaterial3: true,
+            pageTransitionsTheme: const PageTransitionsTheme(
+      builders: <TargetPlatform, PageTransitionsBuilder>{
+        TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+      },
+    ),
           ),
           home: user == null ? WelcomeScreen() : HomeScreen(user: user!),
         );
