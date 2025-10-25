@@ -1136,6 +1136,13 @@ class DietaryRestrictions {
       if (food.name.toLowerCase().contains(ingredient.toLowerCase())) {
         bool falsePositive = false;
         if (ingredientAliasFalsePositives[ingredient] != null) {
+          for (String ing in ingredientAliasFalsePositives[ingredient]!) {
+            if (food.name.toLowerCase().contains(ing.toLowerCase())) {
+              falsePositive = true;
+            }
+          }
+        }
+        if (!falsePositive) {
           food.rejectedReason = ingredient;
           return false;
         }
@@ -1143,8 +1150,18 @@ class DietaryRestrictions {
 
       // Check ingredients list for restricted ingredients
       if (food.ingredients.toLowerCase().contains(ingredient.toLowerCase())) {
-        food.rejectedReason = ingredient;
-        return false;
+        bool falsePositive = false;
+        if (ingredientAliasFalsePositives[ingredient] != null) {
+          for (String ing in ingredientAliasFalsePositives[ingredient]!) {
+            if (food.ingredients.toLowerCase().contains(ing.toLowerCase())) {
+              falsePositive = true;
+            }
+          }
+        }
+        if (falsePositive == false) {
+          food.rejectedReason = ingredient;
+          return false;
+        }
       }
     }
 
@@ -1185,7 +1202,7 @@ var ingredientAliases = {
 };
 
 var ingredientAliasFalsePositives = {
-  "pork": ["bun", "graham"],
+  "ham": ["graham", "bun"],
 };
 
 class Meal {

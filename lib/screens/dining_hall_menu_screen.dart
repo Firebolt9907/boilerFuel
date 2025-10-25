@@ -131,7 +131,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       targetFat = widget.user.macros.fat / widget.user.mealsPerDay;
     });
 
-    _loadDiningHallMenu();
+    _loadDiningHallMenu(false);
   }
 
   @override
@@ -189,11 +189,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
 
   int menuCallCount = 0;
 
-  Future<void> _loadDiningHallMenu() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _loadDiningHallMenu(bool? silent) async {
+    if (silent != true) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
     DiningHall? hall = await Database().getDiningHallByName(widget.diningHall);
     diningHallInfo = hall;
     List<MealTime> availableTimes = [];
@@ -203,9 +204,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
         availableTimes.add(mealTime);
       }
     }
-    setState(() {
-      _availableMealTimes = availableTimes;
-    });
+    _availableMealTimes = availableTimes;
+    if (silent != true) {
+      setState(() {});
+    }
 
     // Get list of meal times to process
     List<MealTime> mealTimesToProcess = MealTime.values
@@ -266,9 +268,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             _updateStationFoods();
           } else {
             _updateStationFoods();
-            setState(() {
-              _selectedMealTime = result.availableTimes.first;
-            });
+
+            _selectedMealTime = result.availableTimes.first;
+
+            if (silent != true) {
+              setState(() {});
+            }
           }
         }
       });
@@ -1030,9 +1035,12 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
           }
         },
         child: DefaultContainer(
-          primaryColor: !foodItem.isCollection && foodItem.firstFood.restricted
-              ? Colors.red
-              : isCreatingMeal && selectedFoods.contains(foodItem)
+          primaryColor: !foodItem.isCollection
+              ? foodItem.firstFood.isFavorited
+                    ? Colors.green
+                    : foodItem.firstFood.restricted
+                    ? Colors.red
+                    : isCreatingMeal && selectedFoods.contains(foodItem)
               ? Colors.green
               : null,
           child: Column(
@@ -1074,7 +1082,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                   ),
                   Icon(
                     Icons.chevron_right,
-                    color: DynamicStyling.getWhite(context).withOpacity(0.4),
+                    color: DynamicStyling.getGrey(context),
                     size: 20,
                   ),
                 ],
@@ -1189,12 +1197,16 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
       id: food.id,
     );
 
-    customCupertinoSheet.showCupertinoSheet<void>(
-      context: context,
-      useNestedNavigation: true,
-      pageBuilder: (BuildContext context) =>
-          ItemDetailsScreen(food: food, diningHall: widget.diningHall),
-    );
+    customCupertinoSheet
+        .showCupertinoSheet<void>(
+          context: context,
+          useNestedNavigation: true,
+          pageBuilder: (BuildContext context) =>
+              ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+        )
+        .then((e) {
+          _loadDiningHallMenu(true);
+        });
   }
 
   void _showCollectionDetails(FoodItem foodItem) async {

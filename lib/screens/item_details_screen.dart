@@ -1,18 +1,21 @@
+import 'package:boiler_fuel/api/local_database.dart';
+import 'package:boiler_fuel/widgets/default_container.dart';
 import 'package:bottom_sheet_scroll_physics/bottom_sheet_scroll_physics.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../constants.dart';
 import '../styling.dart';
 
 class ItemDetailsScreen extends StatefulWidget {
   final Food food;
-  final String diningHall;
+  final String? diningHall;
 
   const ItemDetailsScreen({
     Key? key,
     required this.food,
-    required this.diningHall,
+    this.diningHall,
   });
 
   @override
@@ -21,9 +24,11 @@ class ItemDetailsScreen extends StatefulWidget {
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen>
     with TickerProviderStateMixin {
+  bool isFavorited = false;
   @override
   void initState() {
     super.initState();
+    isFavorited = widget.food.isFavorited;
   }
 
   @override
@@ -346,7 +351,41 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                     ),
                   ],
                 ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    splashColor: Colors.red.withOpacity(0.15),
+                    highlightColor: Colors.red.withOpacity(0.08),
+                    onTap: () async {
+                      HapticFeedback.mediumImpact();
+                      await LocalDatabase().toggleFavoriteFood(widget.food);
+                      setState(() {
+                        isFavorited = !isFavorited;
+                      });
+                    },
 
+                    child: DefaultContainer(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: DynamicStyling.getLightGrey(context),
+                          width: 1,
+                        ),
+                      ),
+                      child: Icon(
+                        isFavorited
+                            ? Icons.bookmark_added
+                            : Icons.bookmark_add_outlined,
+                        color: isFavorited
+                            ? Colors.red
+                            : DynamicStyling.getBlack(context),
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
                 // if (widget.user.useMealPlanning)
               ],
             ),
