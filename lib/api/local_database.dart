@@ -618,6 +618,64 @@ class LocalDatabase {
     }
   }
 
+  Future<void> toggleFavoriteFood(Food food) async {
+    final foodsRes = await (localDb.select(
+      localDb.foodsTable,
+    )..where((tbl) => tbl.foodId.equals(food.id))).get();
+
+    await (localDb.update(
+      localDb.foodsTable,
+    )..where((tbl) => tbl.id.equals(foodsRes.first.id))).write(
+      FoodsTableCompanion(
+        foodId: Value(food.id),
+        name: Value(food.name),
+        calories: Value(food.calories),
+        protein: Value(food.protein),
+        carbs: Value(food.carbs),
+        fats: Value(food.fat),
+        sugar: Value(food.sugar),
+        labels: Value(jsonEncode(food.labels)),
+        ingredients: Value(food.ingredients),
+        station: Value(food.station ?? ""),
+        collection: Value(food.collection),
+        lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
+        isFavorited: Value(!food.isFavorited),
+        servingSize: Value(food.servingSize),
+      ),
+    );
+  }
+
+  Future<List<Food>> getFavoritedFoods() async {
+    final mealsRes = await (localDb.select(
+      localDb.foodsTable,
+    )..where((tbl) => tbl.isFavorited.equals(true))).get();
+
+    List<Food> foods = [];
+
+    for (var row in mealsRes) {
+      Food f = Food(
+        id: row.foodId,
+        name: row.name,
+        calories: row.calories,
+        protein: row.protein,
+        fat: row.fats,
+        carbs: row.carbs,
+        sugar: row.sugar,
+        ingredients: row.ingredients,
+        collection: row.collection,
+        labels: (jsonDecode(row.labels) as List<dynamic>).cast<String>(),
+        station: row.station.isNotEmpty ? row.station : "",
+        isFavorited: row.isFavorited,
+        servingSize: row.servingSize,
+      );
+
+      foods.add(f);
+    }
+
+    print("Retrieved ${foods.length} favorited meals.");
+    return foods;
+  }
+
   Future<void> addDiningHallMeal(
     List<MiniFood> miniFoods,
     String diningHall,
