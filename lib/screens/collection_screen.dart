@@ -214,7 +214,10 @@ class _CollectionScreenState extends State<CollectionScreen>
   String _buildFoodSubtitle(Food foodItem) {
     String subtitle = "";
     if (foodItem.calories > 0) {
-      subtitle += "${foodItem.calories.toStringAsFixed(2)} cal";
+      String caloriesString = foodItem.calories < 1
+            ? foodItem.protein.toStringAsFixed(2)
+            : foodItem.protein.round().toString();
+      subtitle += "${caloriesString} cal";
     }
     if (widget.isCreatingMeal) {
       if (subtitle.isNotEmpty) subtitle += " • ";
