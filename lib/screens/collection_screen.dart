@@ -415,11 +415,10 @@ class _CollectionScreenState extends State<CollectionScreen>
       isAIGenerated: false,
     );
 
-   Navigator.of(context)
-        .push(
-          StupidSimpleCupertinoSheetRoute(
-            child: ItemDetailsScreen(food: food, diningHall: widget.diningHall),
-          ),
-        );
+    Navigator.of(context).push(
+      StupidSimpleCupertinoSheetRoute(
+        child: ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+      ),
+    );
   }
 }

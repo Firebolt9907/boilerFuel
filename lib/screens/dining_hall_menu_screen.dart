@@ -1258,8 +1258,8 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   }
 
   void _showCollectionDetails(FoodItem foodItem) async {
-    final result = await Navigator.of(context).push<List<FoodItem>>(
-      CupertinoPageRoute<List<FoodItem>>(
+    final result = await Navigator.of(context).push(
+      CupertinoPageRoute(
         builder: (context) => CollectionScreen(
           collectionName: foodItem.name,
           foods: foodItem.foods,
@@ -1270,15 +1270,16 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
         ),
       ),
     );
+    // print((result?[0]));
     if (isCreatingMeal && result != null) {
+      mealProtein = 0.0;
+      mealCarbs = 0.0;
+      mealFat = 0.0;
+      mealAddedSugars = 0.0;
+      mealSaturatedFat = 0.0;
+      mealSugar = 0.0;
+      mealCalories = 0.0;
       setState(() {
-        mealCalories = 0.0;
-        mealProtein = 0.0;
-        mealCarbs = 0.0;
-        mealFat = 0.0;
-        mealAddedSugars = 0.0;
-        mealSaturatedFat = 0.0;
-        mealSugar = 0.0;
         selectedFoods.clear();
         for (FoodItem item in result) {
           selectedFoods.add(item);
