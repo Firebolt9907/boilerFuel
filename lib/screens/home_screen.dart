@@ -1091,20 +1091,34 @@ class _HomeScreenState extends State<HomeScreen>
                     HapticFeedback.mediumImpact();
                     // Navigator.push(
                     //   context,
-                    customCupertinoSheet.showCupertinoSheet<void>(
-                      pageBuilder: (context) => UserSettingsScreen(
-                        user: widget.user,
-                        onUserUpdated: (updatedUser) {
-                          setState(() {
-                            _currentUser = updatedUser;
-                          });
-                          _loadHomeData(updatedUser);
-                        },
+                    // customCupertinoSheet.showCupertinoSheet<void>(
+                    // pageBuilder: (context) => UserSettingsScreen(
+                    //   user: widget.user,
+                    //   onUserUpdated: (updatedUser) {
+                    //     setState(() {
+                    //       _currentUser = updatedUser;
+                    //     });
+                    //     _loadHomeData(updatedUser);
+                    //   },
+                    // ),
+                    //   context: context,
+                    //   useNestedNavigation: true,
+                    //   // duration: Duration(milliseconds: 200),
+                    //   // ),
+                    // );
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => UserSettingsScreen(
+                          user: widget.user,
+                          onUserUpdated: (updatedUser) {
+                            setState(() {
+                              _currentUser = updatedUser;
+                            });
+                            _loadHomeData(updatedUser);
+                          },
+                        ),
                       ),
-                      context: context,
-                      useNestedNavigation: true,
-                      // duration: Duration(milliseconds: 200),
-                      // ),
                     );
                   },
                   padding: EdgeInsets.all(8),
