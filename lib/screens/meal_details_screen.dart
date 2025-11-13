@@ -252,6 +252,10 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
   }
 
   Widget _buildFoodItem(Food foodItem, int index) {
+    double caloriesPerServing = foodItem.quantity > 0
+        ? foodItem.calories / foodItem.quantity
+        : 0;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
@@ -300,6 +304,21 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
                             ),
                           ],
                         ),
+                        if (foodItem.quantity > 1)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "${foodItem.quantity} servings",
+                                  style: TextStyle(
+                                    fontSize: 14,
+
+                                    color: DynamicStyling.getDarkGrey(context),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ),
@@ -309,7 +328,7 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
               // Nutrition info (show only for individual items)
               if (foodItem.calories > 0)
                 Text(
-                  foodItem.calories.round().toString() + " cal",
+                  caloriesPerServing.round().toString() + " cal",
                   style: TextStyle(
                     fontSize: 14,
                     color: DynamicStyling.getDarkGrey(context),

@@ -18,6 +18,7 @@ class Food {
   String servingSize;
   double saturatedFat;
   double addedSugars;
+  int quantity;
 
   Food({
     required this.name,
@@ -37,6 +38,8 @@ class Food {
     required this.servingSize,
     required this.saturatedFat,
     required this.addedSugars,
+    this.quantity = 1,
+
   });
 
   Map<String, dynamic> toMap() {
@@ -58,6 +61,7 @@ class Food {
       'servingSize': servingSize,
       'saturatedFat': saturatedFat,
       'addedSugars': addedSugars,
+      'quantity': quantity,
     };
   }
 
@@ -91,6 +95,7 @@ class Food {
           : map['servingSize'],
       saturatedFat: (map['saturatedFat'] ?? -1) * 1.0,
       addedSugars: (map['addedSugars'] ?? -1) * 1.0,
+      quantity: map['quantity'] ?? 1,
     );
   }
 

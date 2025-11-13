@@ -331,9 +331,6 @@ DO NOT include any other text outside of the JSON block.
     String availableMealTimes = availableFoods.keys
         .map((e) => e.toString())
         .join(", ");
-    String availableMealTimesFormatted = availableFoods.keys
-        .map((e) => e.toJSONString())
-        .join(" | ");
 
     String mealTimeIngredients = "";
     for (MealTime mealTime in availableFoods.keys) {
@@ -350,33 +347,63 @@ DO NOT include any other text outside of the JSON block.
     if (availableFoods.keys.length == 0) {
       return {};
     }
-
+    print("TARGET CALORIES PER MEAL: ${targetCalories}");
+    print("TARGET PROTEIN PER MEAL: ${targetProtein}");
     String geminiPrompt =
-        """This is the food available at the meal time $availableMealTimes:
-  $mealTimeIngredients
+        """You are a nutrition expert creating optimal meal plans. 
 
-Create ${availableFoods.keys.length} meals with the nutrition goals for the day as follows :
-Calories: ${targetCalories}kcal
-Protein: ${targetProtein}g
-Carbs: ${targetCarbs}g
-Fat: ${targetFat}g
-The NAME of each meal should be related to the major ingredients used in the meal!
-Return as a JSON as formatted as 
+AVAILABLE FOODS BY MEAL TIME:
+$mealTimeIngredients
+
+NUTRITION TARGETS FOR EACH MEAL:
+- Total Calories: ${targetCalories.toStringAsFixed(0)}kcal (PRIORITY: Must reach 90-110% of target)
+- Total Protein: ${targetProtein.toStringAsFixed(1)}g (PRIORITY: Must reach 90-110% of target)
+- Total Carbs: ${targetCarbs.toStringAsFixed(1)}g (Target range: 85-115%)
+- Total Fat: ${targetFat.toStringAsFixed(1)}g (Target range: 85-115%)
+
+CRITICAL REQUIREMENTS:
+1. Create exactly ${availableFoods.keys.length} meals, one for each meal time: $availableMealTimes
+2. EACH meal MUST meet the targets above (prioritize calories and protein)
+4. Each meal MUST only use foods available at that specific meal time
+5. You can include multiple servings (quantity) of the same food item if needed to meet targets
+6. Meal names should describe the main ingredients (e.g., "Grilled Chicken with Rice and Broccoli") But keep them concise
+
+CALCULATION VERIFICATION:
+- Before finalizing, verify that the every meal macros meets the targets
+- If total is below target, increase quantities of high-protein or calorie-dense foods
+- If total exceeds target significantly, reduce quantities
+
+OUTPUT FORMAT (STRICT JSON - NO MARKDOWN, NO BACKTICKS, NO EXTRA TEXT):
 {
-  ${availableMealTimesFormatted}: {
-   mealName: string,
-   totalCals: number,
-   totalProtein: number,
-   totalFat: number,
-   totalCarbs: number,
-   foods: List[] formatted as {name: string, calories: number, protein: number, carbs: number, fats: number, id: string, sugar: number}
- }
- ...
+  "${availableFoods.keys.map((e) => e.toJSONString()).join('": {...}, "')}" : {
+    "mealName": "Descriptive Meal Name Here",
+    "foods": [
+      {"id": "food_id_from_available_list", "quantity": 1},
+      {"id": "another_food_id", "quantity": 2}
+    ]
+  }
 }
-DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS VALID! AND THAT THE MEALS ONLY CONTAIN FOODS FROM THE CORRECT MEALTIME!
-""";
 
-    // Call Gemini API with the prompt and parse response
+EXAMPLE OUTPUT STRUCTURE:
+{
+  "breakfast": {
+    "mealName": "Scrambled Eggs with Toast and Fruit",
+    "foods": [
+      {"id": "abc123", "quantity": 2},
+      {"id": "def456", "quantity": 1},
+      {"id": "ghi789", "quantity": 1}
+    ]
+  },
+  "lunch": {
+    "mealName": "Chicken Breast with Brown Rice",
+    "foods": [
+      {"id": "jkl012", "quantity": 2},
+      {"id": "mno345", "quantity": 2}
+    ]
+  }
+}
+
+RESPOND WITH ONLY THE JSON OBJECT. NO EXPLANATIONS. NO MARKDOWN FORMATTING."""; // Call Gemini API with the prompt and parse response
     try {
       // String response =
       //     (await Gemini.instance.prompt(
@@ -410,7 +437,7 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
             print("Decoding meal for $mealTime");
             var mealData = decoded[mealTime.toString().toLowerCase()] as Map;
             List<Food> foods = (mealData['foods'] as List).map((f) {
-              return availableFoods[mealTime]!.firstWhere(
+              Food newFood = availableFoods[mealTime]!.firstWhere(
                 (food) => food.id == f['id'],
                 orElse: () {
                   return Food(
@@ -430,6 +457,8 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
                   );
                 },
               );
+              newFood.quantity = f['quantity'] ?? 1;
+              return newFood;
             }).toList();
             //check if food contains ingredients "UNKNOWN", skip adding meal
             if (foods.any((f) => f.ingredients == "UNKNOWN")) {
@@ -445,23 +474,47 @@ DO NOT include any other text outside of the JSON block. MAKE SURE THE JSON IS V
 
             meals[mealTime] = Meal(
               name: mealData['mealName'] ?? 'Generated Meal',
-              calories: (mealData['totalCals'] ?? 0).toDouble(),
-              protein: (mealData['totalProtein'] ?? 0).toDouble(),
-              fat: (mealData['totalFat'] ?? 0).toDouble(),
-              carbs: (mealData['totalCarbs'] ?? 0).toDouble(),
+              calories: foods.fold(
+                0,
+                (sum, item) =>
+                    sum +
+                    (item.calories < 0 ? 0 : item.calories * item.quantity),
+              ),
+              protein: foods.fold(
+                0,
+                (sum, item) =>
+                    sum + (item.protein < 0 ? 0 : item.protein * item.quantity),
+              ),
+              fat: foods.fold(
+                0,
+                (sum, item) =>
+                    sum + (item.fat < 0 ? 0 : item.fat * item.quantity),
+              ),
+              carbs: foods.fold(
+                0,
+                (sum, item) =>
+                    sum + (item.carbs < 0 ? 0 : item.carbs * item.quantity),
+              ),
               saturatedFat: foods.fold(
                 0,
                 (sum, item) =>
-                    sum + (item.saturatedFat < 0 ? 0 : item.saturatedFat),
+                    sum +
+                    (item.saturatedFat < 0
+                        ? 0
+                        : item.saturatedFat * item.quantity),
               ),
               sugar: foods.fold(
                 0,
-                (sum, item) => sum + (item.sugar < 0 ? 0 : item.sugar),
+                (sum, item) =>
+                    sum + (item.sugar < 0 ? 0 : item.sugar * item.quantity),
               ),
               addedSugars: foods.fold(
                 0,
                 (sum, item) =>
-                    sum + (item.addedSugars < 0 ? 0 : item.addedSugars),
+                    sum +
+                    (item.addedSugars < 0
+                        ? 0
+                        : item.addedSugars * item.quantity),
               ),
               diningHall: diningHall, // Could be set based on food sources
               foods: foods,

@@ -322,19 +322,16 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
     return Container(
       decoration: BoxDecoration(
         color: DynamicStyling.getWhite(context),
-        // border: Border(
-        //   bottom: BorderSide(
-        //     color: Colors.,
-        //     width: 2,
-        //   ),
-        // ),
+        border: Border(
+          bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
           Padding(
-            padding: const EdgeInsets.all(24.0).copyWith(bottom: 0),
+            padding: const EdgeInsets.all(24.0).copyWith(bottom: 18),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -354,6 +351,17 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                         ),
                       ),
                     ),
+                    if (widget.food.quantity > 1) SizedBox(height: 6),
+                    if (widget.food.quantity > 1)
+                      Text(
+                        "${widget.food.quantity} servings",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: DynamicStyling.getDarkGrey(context),
+                          fontFamily: '.SF Pro Text',
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
                   ],
                 ),
                 Material(

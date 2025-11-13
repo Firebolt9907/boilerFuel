@@ -75,6 +75,7 @@ class FoodsTable extends Table {
   TextColumn get servingSize => text()();
   RealColumn get saturatedFat => real().withDefault(const Constant(0))();
   RealColumn get addedSugars => real().withDefault(const Constant(0))();
+  IntColumn get quantity => integer().withDefault(const Constant(1))();
 }
 
 class DiningHallFoodsTable extends Table {
@@ -106,7 +107,7 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -126,6 +127,9 @@ class AppDb extends _$AppDb {
           await m.addColumn(mealsTable, mealsTable.totalSugar);
           await m.addColumn(mealsTable, mealsTable.totalSaturatedFat);
           await m.addColumn(mealsTable, mealsTable.totalAddedSugars);
+        },
+        from6To7: (m, schema) async {
+          await m.addColumn(foodsTable, foodsTable.quantity);
         },
       ),
     );
@@ -568,6 +572,7 @@ class LocalDatabase {
           servingSize: Value(food.servingSize),
           saturatedFat: Value(food.saturatedFat),
           addedSugars: Value(food.addedSugars),
+          quantity: Value(food.quantity),
         ),
       );
       print("Food updated: ${food.name}");
@@ -593,6 +598,7 @@ class LocalDatabase {
               servingSize: Value(food.servingSize),
               saturatedFat: Value(food.saturatedFat),
               addedSugars: Value(food.addedSugars),
+              quantity: Value(food.quantity),
             ),
           );
       print("Food inserted: ${food.name}");
@@ -622,6 +628,7 @@ class LocalDatabase {
         servingSize: row.servingSize,
         saturatedFat: row.saturatedFat,
         addedSugars: row.addedSugars,
+        quantity: row.quantity,
       );
     } else {
       print("No food found with ID: $foodId");
@@ -652,6 +659,9 @@ class LocalDatabase {
         lastUpdated: Value(DateTime.now().millisecondsSinceEpoch),
         isFavorited: Value(!food.isFavorited),
         servingSize: Value(food.servingSize),
+        saturatedFat: Value(food.saturatedFat),
+        addedSugars: Value(food.addedSugars),
+        quantity: Value(food.quantity),
       ),
     );
   }
@@ -680,6 +690,7 @@ class LocalDatabase {
         servingSize: row.servingSize,
         saturatedFat: row.saturatedFat,
         addedSugars: row.addedSugars,
+        quantity: row.quantity,
       );
 
       foods.add(f);
