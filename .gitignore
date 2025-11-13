@@ -48,4 +48,4 @@ lib/api_keys.dart
 lib/api_key.dart
 lib/firebase_options.dart
 
-lib/UPlateServiceWorker.json
+assets/UPlateServiceWorker.json
