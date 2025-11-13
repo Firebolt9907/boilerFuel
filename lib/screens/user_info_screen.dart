@@ -75,6 +75,26 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       _mealsPerDayController.text = checkNulls(
         widget.user!.mealsPerDay.toString(),
       );
+      _weeklyChangeLbs = widget.weeklyChangeLbs;
+      _pacePageController = PageController(initialPage: 0);
+      if (widget.user!.goal == Goal.lose) {
+        if (widget.weeklyChangeLbs != null && widget.weeklyChangeLbs == -1.0) {
+          _paceIndex = 1;
+        } else {
+          _paceIndex = 0;
+        }
+      } else if (widget.user!.goal == Goal.gain) {
+        if (widget.weeklyChangeLbs != null && widget.weeklyChangeLbs == 1.0) {
+          _paceIndex = 1;
+        } else {
+          _paceIndex = 0;
+        }
+      }
+      if (widget.user!.goal == Goal.lose) {
+        _weeklyChangeLbs = -0.5;
+      } else if (widget.user!.goal == Goal.gain) {
+        _weeklyChangeLbs = 0.5;
+      }
       print(
         "Loaded user: ${widget.user!.name} with activity level ${widget.user!.activityLevel}",
       );
@@ -83,8 +103,6 @@ class _UserInfoScreenState extends State<UserInfoScreen>
       useMealPlanning = widget.useMealPlanning ?? true;
       _selectedActivityLevel = widget.activityLevel ?? ActivityLevel.sedentary;
     }
-
-    _weeklyChangeLbs = widget.weeklyChangeLbs;
   }
 
   String checkNulls(String input) {
