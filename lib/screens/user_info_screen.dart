@@ -42,6 +42,8 @@ class _UserInfoScreenState extends State<UserInfoScreen>
     with TickerProviderStateMixin {
   final _weightController = TextEditingController();
   final _heightController = TextEditingController();
+  final _heightFTController = TextEditingController();
+  final _heightINController = TextEditingController();
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
   final _mealsPerDayController = TextEditingController();
@@ -327,8 +329,9 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                     ),
                     DefaultTextField(
                       controller: _weightController,
-                      hint: 'Enter your weight (lbs)',
+                      hint: 'Enter your weight',
                       keyboardType: TextInputType.number,
+                      trailingText: "lb",
                       onChanged: (s) {
                         setState(() {});
                       },
@@ -343,13 +346,76 @@ class _UserInfoScreenState extends State<UserInfoScreen>
                         letterSpacing: 0.5,
                       ),
                     ),
-                    DefaultTextField(
-                      controller: _heightController,
-                      hint: 'Enter your height (inches)',
-                      keyboardType: TextInputType.number,
-                      onChanged: (s) {
-                        setState(() {});
-                      },
+                    // DefaultTextField(
+                    //   controller: _heightController,
+                    //   hint: 'Enter your height (inches)',
+                    //   keyboardType: TextInputType.number,
+                    //   onChanged: (s) {
+                    //     setState(() {});
+                    //   },
+                    // ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: (MediaQuery.sizeOf(context).width - 58) / 2,
+                          child: DefaultTextField(
+                            controller: _heightFTController,
+                            hint: 'Feet',
+                            keyboardType: TextInputType.number,
+                            trailingText: "ft",
+                            onChanged: (s) {
+                              if (int.tryParse(s) == null) {
+                                _heightFTController.text = "";
+                                return;
+                              }
+                              if (int.parse(s) < 0) {
+                                _heightFTController.text = "0";
+                              }
+                              _heightController.text =
+                                  ((int.tryParse(_heightFTController.text) ??
+                                                  0) *
+                                              12 +
+                                          (int.tryParse(
+                                                _heightINController.text,
+                                              ) ??
+                                              0))
+                                      .toString();
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        SizedBox(
+                          width: (MediaQuery.sizeOf(context).width - 58) / 2,
+                          child: DefaultTextField(
+                            controller: _heightINController,
+                            hint: 'Inches',
+                            keyboardType: TextInputType.number,
+                            trailingText: "in",
+                            onChanged: (s) {
+                              if (int.tryParse(s) == null) {
+                                _heightINController.text = "";
+                                return;
+                              }
+                              if (int.parse(s) < 0) {
+                                _heightINController.text = "0";
+                              } else if (int.parse(s) > 11) {
+                                _heightINController.text = "11";
+                              }
+                              _heightController.text =
+                                  ((int.tryParse(_heightFTController.text) ??
+                                                  0) *
+                                              12 +
+                                          (int.tryParse(
+                                                _heightINController.text,
+                                              ) ??
+                                              0))
+                                      .toString();
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 12),
                     Text(

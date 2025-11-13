@@ -7,6 +7,7 @@ class DefaultTextField extends StatefulWidget {
   final String? label;
   final String? hint;
   final int? maxLines;
+  final String? trailingText;
   final TextInputType keyboardType;
   final Function(String)? onChanged;
 
@@ -17,6 +18,7 @@ class DefaultTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.maxLines = 1,
+    this.trailingText,
   });
 
   @override
@@ -50,6 +52,7 @@ class _DefaultTextFieldState extends State<DefaultTextField>
         style: TextStyle(color: DynamicStyling.getBlack(context), fontSize: 16),
         onChanged: widget.onChanged,
         decoration: InputDecoration(
+          suffixText: widget.trailingText,
           labelText: widget.label,
           hintText: widget.hint,
           labelStyle: TextStyle(color: DynamicStyling.getDarkGrey(context)),

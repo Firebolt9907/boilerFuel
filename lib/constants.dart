@@ -1243,7 +1243,7 @@ var ingredientAliases = {
 };
 
 var ingredientAliasFalsePositives = {
-  "ham": ["graham", "bun"],
+  "ham": ["graham", "bun", 'rhamnosus'],
 };
 
 class Meal {

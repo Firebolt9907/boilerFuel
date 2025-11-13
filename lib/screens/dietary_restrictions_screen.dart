@@ -350,7 +350,13 @@ class _DietaryRestrictionsScreenState extends State<DietaryRestrictionsScreen>
             // Start journey button
             DefaultButton(
               text: Text(
-                widget.isEditing ? 'Save Changes' : 'Continue',
+                widget.isEditing
+                    ? 'Save Changes'
+                    : _selectedAllergies.isEmpty &&
+                          _customIngredients.isEmpty &&
+                          _selectedPreferences.isEmpty
+                    ? "Skip"
+                    : 'Continue',
                 style: TextStyle(
                   color: DynamicStyling.getWhite(context),
                   fontSize: 16,
