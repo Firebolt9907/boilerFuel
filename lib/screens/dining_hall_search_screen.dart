@@ -169,55 +169,61 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
   }
 
   void searchFoods(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        filteredFoods = [];
+      });
+      return;
+    }
+
+    final queryLower = query.toLowerCase();
+
     setState(() {
-      filteredFoods = _allMealData[_selectedMealTime]!
-          .where(
-            (foodItem) =>
-                foodItem.name.toLowerCase().similarityTo(query.toLowerCase()) >=
-                0.1,
-          )
-          .toList();
-      filteredFoods = filteredFoods.sublist(
-        0,
-        filteredFoods.length.clamp(0, 5),
-      );
-      //sort by similarity
+      filteredFoods = _allMealData[_selectedMealTime]!.where((foodItem) {
+        final nameLower = foodItem.name.toLowerCase();
+        // Accept if contains substring OR has decent similarity
+        return nameLower.contains(queryLower) ||
+            nameLower.similarityTo(queryLower) >= 0.3;
+      }).toList();
+
+      //sort by relevance: exact match > starts with > contains > similarity
       filteredFoods.sort((a, b) {
-        double simA = a.name.toLowerCase().similarityTo(query.toLowerCase());
-        double simB = b.name.toLowerCase().similarityTo(query.toLowerCase());
+        final aLower = a.name.toLowerCase();
+        final bLower = b.name.toLowerCase();
+
+        // Check exact match
+        if (aLower == queryLower) return -1;
+        if (bLower == queryLower) return 1;
+
+        // Check starts with
+        final aStartsWith = aLower.startsWith(queryLower);
+        final bStartsWith = bLower.startsWith(queryLower);
+        if (aStartsWith && !bStartsWith) return -1;
+        if (!aStartsWith && bStartsWith) return 1;
+
+        // Check contains
+        final aContains = aLower.contains(queryLower);
+        final bContains = bLower.contains(queryLower);
+        if (aContains && !bContains) return -1;
+        if (!aContains && bContains) return 1;
+
+        // Fall back to similarity score
+        double simA = aLower.similarityTo(queryLower);
+        double simB = bLower.similarityTo(queryLower);
         return simB.compareTo(simA);
       });
+
+      // Limit to top 10 results
+      filteredFoods = filteredFoods.sublist(
+        0,
+        filteredFoods.length.clamp(0, 10),
+      );
     });
   }
 
   void updateFilteredFoods() {
     if (_selectedMealTime != null) {
-      setState(() {
-        filteredFoods = _allMealData[_selectedMealTime]!
-            .where(
-              (foodItem) =>
-                  foodItem.name.toLowerCase().similarityTo(
-                        searchController.text.toLowerCase(),
-                      ) >=
-                      0.1 &&
-                  foodItem.mealTime == _selectedMealTime!,
-            )
-            .toList();
-        filteredFoods = filteredFoods.sublist(
-          0,
-          filteredFoods.length.clamp(0, 5),
-        );
-        //sort by similarity
-        filteredFoods.sort((a, b) {
-          double simA = a.name.toLowerCase().similarityTo(
-            searchController.text.toLowerCase(),
-          );
-          double simB = b.name.toLowerCase().similarityTo(
-            searchController.text.toLowerCase(),
-          );
-          return simB.compareTo(simA);
-        });
-      });
+      searchFoods(searchController.text);
     }
   }
 
@@ -229,6 +235,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
       backgroundColor: DynamicStyling.getWhite(context),
       body: Column(
         children: [
+          const SizedBox(height: 12),
           // Header
           Header(
             context: context,
@@ -420,6 +427,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
   }
 
   Widget _buildFoodItem(FoodItem foodItem, int index) {
+    String calString = ((foodItem.food.calories / 10).ceil() * 10).toString();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
@@ -432,9 +440,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
           // }
         },
         child: DefaultContainer(
-          primaryColor: foodItem.food.isFavorited
-              ? Colors.yellow
-              : DynamicStyling.getWhite(context),
+          primaryColor: foodItem.food.isFavorited ? Colors.yellow : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -496,7 +502,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
               // Nutrition info (show only for individual items)
               if (foodItem.food.calories > 0)
                 Text(
-                  foodItem.food.calories.round().toString() + " cal",
+                  calString + " cal",
                   style: TextStyle(
                     fontSize: 12,
                     color: DynamicStyling.getDarkGrey(context),
@@ -576,6 +582,22 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
         child: ItemDetailsScreen(
           food: food.food,
           diningHall: widget.diningHall,
+          onFoodUpdated: (updatedFood) {
+            FoodItem fItem = FoodItem(
+              name: food.name,
+              food: updatedFood,
+              station: food.station,
+              collection: food.collection,
+              diningHall: food.diningHall,
+              mealTime: food.mealTime,
+            );
+            setState(() {
+              filteredFoods[filteredFoods.indexWhere(
+                    (f) => f.food.id == updatedFood.id,
+                  )] =
+                  fItem;
+            });
+          },
         ),
       ),
     );

@@ -52,6 +52,7 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
   List<MealTime> _availableMealTimes = [];
   MealTime _selectedMealTime = MealTime.dinner;
   List<FoodItem> _foods = [];
+  List<FoodItem> _displayedFoods = [];
 
   // Spacing between station items
 
@@ -69,6 +70,18 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
       for (var i = 0; i < foods.length; i++) {
         print("Favorited food: ${foods[i].name}");
         String? available = await LocalDatabase().isFoodAvailable(foods[i].id);
+        //Add available meal times
+        List<MealTime> mealTimes = available != null
+            ? available.split(":")[1].split(",").map((e) {
+                return MealTime.fromString(e);
+              }).toList()
+            : [];
+        //Add to available meal times if not already present
+        for (var mealTime in mealTimes) {
+          if (!_availableMealTimes.contains(mealTime)) {
+            _availableMealTimes.add(mealTime);
+          }
+        }
         _foods.add(
           FoodItem(
             name: foods[i].name,
@@ -86,6 +99,8 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
           ),
         );
       }
+      //Sort available meal times
+      _availableMealTimes.sort((a, b) => a.index.compareTo(b.index));
       //sort foods if isFoodAvailable is true first
       _foods.sort((a, b) {
         if (a.isFoodAvailable && !b.isFoodAvailable) {
@@ -96,7 +111,16 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
           return a.name.compareTo(b.name);
         }
       });
-
+      List<FoodItem> updatedFoods = [];
+      for (var food in _foods) {
+        if (food.mealTimes.contains(_selectedMealTime) ||
+            !food.isFoodAvailable) {
+          updatedFoods.add(food);
+        }
+      }
+      setState(() {
+        _displayedFoods = updatedFoods;
+      });
       setState(() {
         print(foods.map((e) => e.name).toList());
         _isLoading = false;
@@ -107,6 +131,18 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
         _isLoading = false;
       });
     }
+  }
+
+  void _updateFavoriteFoods() {
+    List<FoodItem> updatedFoods = [];
+    for (var food in _foods) {
+      if (food.mealTimes.contains(_selectedMealTime) || !food.isFoodAvailable) {
+        updatedFoods.add(food);
+      }
+    }
+    setState(() {
+      _displayedFoods = updatedFoods;
+    });
   }
 
   @override
@@ -128,69 +164,6 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
       backgroundColor: DynamicStyling.getWhite(context),
       body: Column(
         children: [
-          // Header
-          // Container(
-          //   decoration: BoxDecoration(
-          //     color: DynamicStyling.getWhite(context),
-          //     border: Border(
-          //       bottom: BorderSide(color: DynamicStyling.getGrey(context)),
-          //     ),
-          //   ),
-          //   child: Column(
-          //     children: [
-          //       SizedBox(height: MediaQuery.of(context).padding.top),
-          //       GestureDetector(
-          //         onTap: () {
-          //           HapticFeedback.lightImpact();
-          //           Navigator.of(context).pop();
-          //         },
-          //         child: Row(
-          //           children: [
-          //             IconButton(
-          //               icon: Icon(
-          //                 Icons.arrow_back_ios_new,
-          //                 color: styling.gray,
-          //               ),
-          //               onPressed: () {
-          //                 HapticFeedback.lightImpact();
-          //                 Navigator.of(context).pop();
-          //               },
-          //             ),
-
-          //             Text(
-          //               'Back',
-          //               style: TextStyle(
-          //                 fontSize: 14,
-          //                 fontWeight: FontWeight.bold,
-          //                 color: styling.gray,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       Padding(
-          //         padding: const EdgeInsets.only(left: 24.0, bottom: 18),
-          //         child: Row(
-          //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //           children: [
-          //             Column(
-          //               crossAxisAlignment: CrossAxisAlignment.start,
-          //               children: [
-          //                 Text(
-          //                   "Saved Meals",
-          //                   style: TextStyle(
-          //                     fontSize: 24,
-          //                     color: DynamicStyling.getBlack(context),
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
           Header(context: context, title: "Favorited Food Items"),
 
           // Content
@@ -212,6 +185,9 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
                                     _buildEmptyView(),
                                   ]
                                 : [
+                                    // Meal time selector
+                                    _buildMealTimeSelector(),
+                                    const SizedBox(height: 16),
                                     // PageView for stations - give it a bounded max height
                                     Expanded(child: _buildFoodsView()),
                                   ],
@@ -244,6 +220,32 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
               decoration: TextDecoration.none,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMealTimeSelector() {
+    if (_availableMealTimes.isEmpty) return SizedBox.shrink();
+
+    return Container(
+      // height: 84,
+      child: CustomTabs(
+        expand: true,
+        initialValue: _selectedMealTime.toString(),
+        onValueChanged: (value) {
+          print("Meal time changed to $value");
+          setState(() {
+            _selectedMealTime = MealTime.fromString(value);
+            _updateFavoriteFoods();
+          });
+        },
+        tabs: [
+          for (MealTime mealTime in _availableMealTimes)
+            TabItem(
+              label: mealTime.toDisplayString(),
+              value: mealTime.toString(),
+            ),
         ],
       ),
     );
@@ -292,9 +294,9 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
   Widget _buildFoodsView() {
     return ListView.builder(
       padding: EdgeInsets.all(0),
-      itemCount: _foods.length,
+      itemCount: _displayedFoods.length,
       itemBuilder: (context, index) {
-        final food = _foods.toList()[index];
+        final food = _displayedFoods.toList()[index];
         return _buildFoodItem(food, index);
       },
     );
@@ -350,7 +352,7 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
                 SizedBox(height: 6),
                 if (food.isFoodAvailable)
                   Text(
-                    "Available at ${food.station} in ${food.diningHall} for ${food.mealTimes.map((e) => e.toDisplayString()).join(", ")}",
+                    "${food.station.trim()} at ${food.diningHall}",
                     style: TextStyle(
                       fontSize: 14,
                       color: DynamicStyling.getDarkGrey(context),
@@ -361,7 +363,8 @@ class _FavoritedFoodsScreenState extends State<FavoritedFoodsScreen>
                 // Nutrition info (show only for individual items)
                 if (food.food.calories > 0)
                   Text(
-                    food.food.calories.round().toString() + " cal",
+                    ((food.food.calories.round() / 10).ceil() * 10).toString() +
+                        " cal",
                     style: TextStyle(
                       fontSize: 14,
                       color: DynamicStyling.getDarkGrey(context),

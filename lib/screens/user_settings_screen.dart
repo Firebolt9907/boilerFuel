@@ -226,6 +226,8 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                           "Help us improve UPlate by submitting your feedback.",
                       icon: Icons.feedback,
                       onTap: () async {
+                        TextEditingController feedbackController =
+                            TextEditingController();
                         HapticFeedback.mediumImpact();
                         // Show sleek confirmation dialog
                         showDialog<bool>(
@@ -233,8 +235,6 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                           barrierDismissible: true,
                           builder: (BuildContext context) {
                             bool isSubmitting = false;
-                            TextEditingController feedbackController =
-                                TextEditingController();
 
                             return StatefulBuilder(
                               builder: (context, setState) {
@@ -245,207 +245,211 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                                   backgroundColor: DynamicStyling.getWhite(
                                     context,
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(24.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        // Icon
-                                        Container(
-                                          width: 64,
-                                          height: 64,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.green.withOpacity(
-                                              0.1,
+                                  child: SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // Icon
+                                          Container(
+                                            width: 64,
+                                            height: 64,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.green.withOpacity(
+                                                0.1,
+                                              ),
+                                            ),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.feedback_rounded,
+                                                color: Colors.green,
+                                                size: 32,
+                                              ),
                                             ),
                                           ),
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.feedback_rounded,
-                                              color: Colors.green,
-                                              size: 32,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 20),
+                                          const SizedBox(height: 20),
 
-                                        // Title
-                                        Text(
-                                          'Submit Feedback',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                            color: DynamicStyling.getBlack(
-                                              context,
+                                          // Title
+                                          Text(
+                                            'Submit Feedback',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600,
+                                              color: DynamicStyling.getBlack(
+                                                context,
+                                              ),
                                             ),
+                                            textAlign: TextAlign.center,
                                           ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 12),
+                                          const SizedBox(height: 12),
 
-                                        // Description
-                                        Text(
-                                          'We value your feedback! Please let us know your thoughts or any issues you\'ve encountered.',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: DynamicStyling.getDarkGrey(
-                                              context,
+                                          // Description
+                                          Text(
+                                            'We value your feedback! Please let us know your thoughts or any issues you\'ve encountered.',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: DynamicStyling.getDarkGrey(
+                                                context,
+                                              ),
+                                              height: 1.5,
                                             ),
-                                            height: 1.5,
+                                            textAlign: TextAlign.center,
                                           ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 16),
-                                        DefaultTextField(
-                                          controller: feedbackController,
-                                          maxLines: 6,
-                                          hint: 'Enter your feedback here...',
-                                        ),
-                                        const SizedBox(height: 28),
+                                          const SizedBox(height: 16),
+                                          DefaultTextField(
+                                            controller: feedbackController,
+                                            maxLines: 6,
+                                            hint: 'Enter your feedback here...',
+                                          ),
+                                          const SizedBox(height: 28),
 
-                                        // Buttons
-                                        Row(
-                                          children: [
-                                            // Cancel Button
-                                            Expanded(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  border: Border.all(
-                                                    color:
-                                                        DynamicStyling.getGrey(
-                                                          context,
-                                                        ),
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      HapticFeedback.lightImpact();
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop();
-                                                    },
+                                          // Buttons
+                                          Row(
+                                            children: [
+                                              // Cancel Button
+                                              Expanded(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           12,
                                                         ),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                            vertical: 12.0,
+                                                    border: Border.all(
+                                                      color:
+                                                          DynamicStyling.getGrey(
+                                                            context,
                                                           ),
-                                                      child: Text(
-                                                        'Cancel',
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color:
-                                                              DynamicStyling.getBlack(
-                                                                context,
-                                                              ),
+                                                      width: 1,
+                                                    ),
+                                                  ),
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        HapticFeedback.lightImpact();
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                      },
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 12.0,
+                                                            ),
+                                                        child: Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color:
+                                                                DynamicStyling.getBlack(
+                                                                  context,
+                                                                ),
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.center,
                                                         ),
-                                                        textAlign:
-                                                            TextAlign.center,
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
-                                            // Delete Button
-                                            isSubmitting
-                                                ? CircularProgressIndicator(
-                                                    color: Colors.green,
-                                                  )
-                                                : Expanded(
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              12,
-                                                            ),
-                                                        color: Colors.green,
-                                                      ),
-                                                      child: Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        child: InkWell(
-                                                          onTap: () async {
-                                                            HapticFeedback.mediumImpact();
-                                                            setState(() {
-                                                              isSubmitting =
-                                                                  true;
-                                                            });
-                                                            await FBDatabase()
-                                                                .submitFeedback(
-                                                                  feedbackController
-                                                                      .text,
-                                                                );
-
-                                                            if (mounted) {
-                                                              ScaffoldMessenger.of(
-                                                                context,
-                                                              ).showSnackBar(
-                                                                SnackBar(
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .green,
-                                                                  content: Text(
-                                                                    'Thank you for your feedback!',
-                                                                    style: TextStyle(
-                                                                      color: Colors
-                                                                          .white,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop();
-                                                            }
-                                                          },
+                                              // Delete Button
+                                              isSubmitting
+                                                  ? CircularProgressIndicator(
+                                                      color: Colors.green,
+                                                    )
+                                                  : Expanded(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
                                                           borderRadius:
                                                               BorderRadius.circular(
                                                                 12,
                                                               ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  vertical:
-                                                                      12.0,
+                                                          color: Colors.green,
+                                                        ),
+                                                        child: Material(
+                                                          color: Colors
+                                                              .transparent,
+                                                          child: InkWell(
+                                                            onTap: () async {
+                                                              HapticFeedback.mediumImpact();
+                                                              setState(() {
+                                                                isSubmitting =
+                                                                    true;
+                                                              });
+                                                              await FBDatabase()
+                                                                  .submitFeedback(
+                                                                    feedbackController
+                                                                        .text,
+                                                                  );
+
+                                                              if (mounted) {
+                                                                ScaffoldMessenger.of(
+                                                                  context,
+                                                                ).showSnackBar(
+                                                                  SnackBar(
+                                                                    backgroundColor:
+                                                                        Colors
+                                                                            .green,
+                                                                    content: Text(
+                                                                      'Thank you for your feedback!',
+                                                                      style: TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop();
+                                                              }
+                                                            },
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
                                                                 ),
-                                                            child: Text(
-                                                              'Submit',
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: Colors
-                                                                    .white,
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets.symmetric(
+                                                                    vertical:
+                                                                        12.0,
+                                                                  ),
+                                                              child: Text(
+                                                                'Submit',
+                                                                style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
                                                               ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -481,198 +485,207 @@ class _UserSettingsScreenState extends State<UserSettingsScreen>
                                   backgroundColor: DynamicStyling.getWhite(
                                     context,
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(24.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        // Icon
-                                        Container(
-                                          width: 64,
-                                          height: 64,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.red.withOpacity(0.1),
-                                          ),
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.warning_rounded,
-                                              color: Colors.red,
-                                              size: 32,
+                                  child: SingleChildScrollView(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // Icon
+                                          Container(
+                                            width: 64,
+                                            height: 64,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.red.withOpacity(
+                                                0.1,
+                                              ),
+                                            ),
+                                            child: Center(
+                                              child: Icon(
+                                                Icons.warning_rounded,
+                                                color: Colors.red,
+                                                size: 32,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(height: 20),
+                                          const SizedBox(height: 20),
 
-                                        // Title
-                                        Text(
-                                          'Delete User Data?',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                            color: DynamicStyling.getBlack(
-                                              context,
+                                          // Title
+                                          Text(
+                                            'Delete User Data?',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600,
+                                              color: DynamicStyling.getBlack(
+                                                context,
+                                              ),
                                             ),
+                                            textAlign: TextAlign.center,
                                           ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 12),
+                                          const SizedBox(height: 12),
 
-                                        // Description
-                                        Text(
-                                          'This action cannot be undone. All your profile data, preferences, and saved meals will be permanently deleted.',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: DynamicStyling.getDarkGrey(
-                                              context,
+                                          // Description
+                                          Text(
+                                            'This action cannot be undone. All your profile data, preferences, and saved meals will be permanently deleted.',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: DynamicStyling.getDarkGrey(
+                                                context,
+                                              ),
+                                              height: 1.5,
                                             ),
-                                            height: 1.5,
+                                            textAlign: TextAlign.center,
                                           ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 28),
+                                          const SizedBox(height: 28),
 
-                                        // Buttons
-                                        Row(
-                                          children: [
-                                            // Cancel Button
-                                            Expanded(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  border: Border.all(
-                                                    color:
-                                                        DynamicStyling.getGrey(
-                                                          context,
-                                                        ),
-                                                    width: 1,
-                                                  ),
-                                                ),
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      HapticFeedback.lightImpact();
-                                                      Navigator.of(
-                                                        context,
-                                                      ).pop(false);
-                                                    },
+                                          // Buttons
+                                          Row(
+                                            children: [
+                                              // Cancel Button
+                                              Expanded(
+                                                child: Container(
+                                                  decoration: BoxDecoration(
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           12,
                                                         ),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.symmetric(
-                                                            vertical: 12.0,
+                                                    border: Border.all(
+                                                      color:
+                                                          DynamicStyling.getGrey(
+                                                            context,
                                                           ),
-                                                      child: Text(
-                                                        'Cancel',
-                                                        style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                          color:
-                                                              DynamicStyling.getBlack(
-                                                                context,
-                                                              ),
+                                                      width: 1,
+                                                    ),
+                                                  ),
+                                                  child: Material(
+                                                    color: Colors.transparent,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        HapticFeedback.lightImpact();
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop(false);
+                                                      },
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 12.0,
+                                                            ),
+                                                        child: Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color:
+                                                                DynamicStyling.getBlack(
+                                                                  context,
+                                                                ),
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.center,
                                                         ),
-                                                        textAlign:
-                                                            TextAlign.center,
                                                       ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            const SizedBox(width: 12),
+                                              const SizedBox(width: 12),
 
-                                            // Delete Button
-                                            isDeleting
-                                                ? CircularProgressIndicator(
-                                                    color: Colors.red,
-                                                  )
-                                                : Expanded(
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              12,
-                                                            ),
-                                                        color: Colors.red,
-                                                      ),
-                                                      child: Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        child: InkWell(
-                                                          onTap: () async {
-                                                            HapticFeedback.mediumImpact();
-                                                            setState(() {
-                                                              isDeleting = true;
-                                                            });
-                                                            aiMealStream
-                                                                .close();
-                                                            await LocalDatabase()
-                                                                .deleteDB(true);
-                                                            await SharedPrefs.clearAll();
-                                                            aiMealStream =
-                                                                StreamController<
-                                                                  Map<
-                                                                    MealTime,
-                                                                    Map<
-                                                                      String,
-                                                                      Meal
-                                                                    >
-                                                                  >
-                                                                >.broadcast();
-                                                            if (mounted) {
-                                                              Navigator.push(
-                                                                context,
-                                                                CupertinoPageRoute(
-                                                                  builder:
-                                                                      (
-                                                                        context,
-                                                                      ) =>
-                                                                          WelcomeScreen(),
-                                                                ),
-                                                              );
-                                                            }
-                                                          },
+                                              // Delete Button
+                                              isDeleting
+                                                  ? CircularProgressIndicator(
+                                                      color: Colors.red,
+                                                    )
+                                                  : Expanded(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
                                                           borderRadius:
                                                               BorderRadius.circular(
                                                                 12,
                                                               ),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  vertical:
-                                                                      12.0,
+                                                          color: Colors.red,
+                                                        ),
+                                                        child: Material(
+                                                          color: Colors
+                                                              .transparent,
+                                                          child: InkWell(
+                                                            onTap: () async {
+                                                              HapticFeedback.mediumImpact();
+                                                              setState(() {
+                                                                isDeleting =
+                                                                    true;
+                                                              });
+                                                              aiMealStream
+                                                                  .close();
+                                                              await LocalDatabase()
+                                                                  .deleteDB(
+                                                                    true,
+                                                                  );
+                                                              await SharedPrefs.clearAll();
+                                                              aiMealStream =
+                                                                  StreamController<
+                                                                    Map<
+                                                                      MealTime,
+                                                                      Map<
+                                                                        String,
+                                                                        Meal
+                                                                      >
+                                                                    >
+                                                                  >.broadcast();
+                                                              if (mounted) {
+                                                                Navigator.push(
+                                                                  context,
+                                                                  CupertinoPageRoute(
+                                                                    builder:
+                                                                        (
+                                                                          context,
+                                                                        ) =>
+                                                                            WelcomeScreen(),
+                                                                  ),
+                                                                );
+                                                              }
+                                                            },
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
                                                                 ),
-                                                            child: Text(
-                                                              'Delete',
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                                color: Colors
-                                                                    .white,
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets.symmetric(
+                                                                    vertical:
+                                                                        12.0,
+                                                                  ),
+                                                              child: Text(
+                                                                'Delete',
+                                                                style: TextStyle(
+                                                                  fontSize: 16,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
                                                               ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );

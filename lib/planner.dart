@@ -474,12 +474,18 @@ RESPOND WITH ONLY THE JSON OBJECT. NO EXPLANATIONS. NO MARKDOWN FORMATTING."""; 
 
             meals[mealTime] = Meal(
               name: mealData['mealName'] ?? 'Generated Meal',
-              calories: foods.fold(
-                0,
-                (sum, item) =>
-                    sum +
-                    (item.calories < 0 ? 0 : item.calories * item.quantity),
-              ),
+              calories:
+                  ((foods.fold(
+                            0.0,
+                            (sum, item) =>
+                                sum +
+                                (item.calories < 0
+                                    ? 0
+                                    : item.calories * item.quantity),
+                          )) /
+                          10)
+                      .ceil() *
+                  10,
               protein: foods.fold(
                 0,
                 (sum, item) =>

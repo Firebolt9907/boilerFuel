@@ -13,12 +13,14 @@ class ItemDetailsScreen extends StatefulWidget {
   final Food food;
   final String? diningHall;
   final User? user;
+  final Function(Food)? onFoodUpdated;
 
   const ItemDetailsScreen({
     Key? key,
     required this.food,
     this.diningHall,
     this.user,
+    this.onFoodUpdated,
   });
 
   @override
@@ -376,6 +378,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
                       setState(() {
                         isFavorited = !isFavorited;
                       });
+                      if (widget.onFoodUpdated != null) {
+                        widget.food.isFavorited = !widget.food.isFavorited;
+                        widget.onFoodUpdated!(widget.food);
+                      }
                     },
 
                     child: DefaultContainer(

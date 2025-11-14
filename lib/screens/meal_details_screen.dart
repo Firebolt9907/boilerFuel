@@ -253,8 +253,9 @@ class _MealDetailsScreenState extends State<MealDetailsScreen>
 
   Widget _buildFoodItem(Food foodItem, int index) {
     double caloriesPerServing = foodItem.quantity > 0
-        ? foodItem.calories / foodItem.quantity
+        ? foodItem.calories * foodItem.quantity
         : 0;
+    caloriesPerServing = (caloriesPerServing / 10).ceil() * 10;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),

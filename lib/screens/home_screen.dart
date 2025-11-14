@@ -589,7 +589,7 @@ class _HomeScreenState extends State<HomeScreen>
               padding: const EdgeInsets.only(
                 left: 24.0,
                 right: 24.0,
-                top: 12.0,
+                top: 16.0,
                 bottom: 12.0,
               ),
               child: Column(

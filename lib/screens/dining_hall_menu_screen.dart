@@ -960,9 +960,9 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
   String _buildFoodSubtitle(FoodItem foodItem) {
     String subtitle = "";
     if (foodItem.firstFood.calories > 0) {
-      String calString = foodItem.firstFood.calories < 1
-          ? foodItem.firstFood.calories.toStringAsFixed(2)
-          : foodItem.firstFood.calories.round().toString();
+      String calString = ((foodItem.firstFood.calories / 10).ceil() * 10)
+          .toString();
+
       subtitle += "${calString} cal";
     }
     if (isCreatingMeal) {
@@ -1084,9 +1084,10 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color:
-                                      isCreatingMeal &&
-                                          selectedFoods.contains(foodItem)
+                                  color: foodItem.isCollection
+                                      ? DynamicStyling.getBlack(context)
+                                      : isCreatingMeal &&
+                                            selectedFoods.contains(foodItem)
                                       ? Colors.green
                                       : foodItem.firstFood.isFavorited
                                       ? Colors.yellow

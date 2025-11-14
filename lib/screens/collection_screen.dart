@@ -214,10 +214,8 @@ class _CollectionScreenState extends State<CollectionScreen>
   String _buildFoodSubtitle(Food foodItem) {
     String subtitle = "";
     if (foodItem.calories > 0) {
-      String caloriesString = foodItem.calories < 1
-            ? foodItem.protein.toStringAsFixed(2)
-            : foodItem.protein.round().toString();
-      subtitle += "${caloriesString} cal";
+      String calString = ((foodItem.calories / 10).ceil() * 10).toString();
+      subtitle += "${calString} cal";
     }
     if (widget.isCreatingMeal) {
       if (subtitle.isNotEmpty) subtitle += " • ";
@@ -284,6 +282,10 @@ class _CollectionScreenState extends State<CollectionScreen>
                 (selected) => selected.firstFood.id == foodItem.id,
               )
               ? Colors.green
+              : foodItem.isFavorited
+              ? Colors.yellow
+              : foodItem.restricted
+              ? Colors.red
               : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,7 +422,18 @@ class _CollectionScreenState extends State<CollectionScreen>
 
     Navigator.of(context).push(
       StupidSimpleCupertinoSheetRoute(
-        child: ItemDetailsScreen(food: food, diningHall: widget.diningHall),
+        child: ItemDetailsScreen(
+          food: food,
+          diningHall: widget.diningHall,
+          onFoodUpdated: (food) {
+            print("Food updated callback called");
+            setState(() {
+              int index = widget.foods.indexWhere((f) => f.id == food.id);
+
+              widget.foods[index] = food;
+            });
+          },
+        ),
       ),
     );
   }
