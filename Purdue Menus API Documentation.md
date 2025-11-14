@@ -149,4 +149,5 @@ with the body:
 }
 ```
 
-Something interesting I found when looking at some items is that it can show the appearances of an item up to a few days in the future, **even at other dining courts**. It remains to be seen as to how we can make a POST request to the v3 api inside flutter, especially since its very unlikely that we can generate a cookie inside an app. A possibility to bypass that might be to generate many different cookies on a computer by clearing cookies, copying down every cookie generated, and randomly choose from those to reduce the likelihood of rate limiting issues. 
+~~Something interesting I found when looking at some items is that it can show the appearances of an item up to a few days in the future, **even at other dining courts**. It remains to be seen as to how we can make a POST request to the v3 api inside flutter, especially since its very unlikely that we can generate a cookie inside an app. A possibility to bypass that might be to generate many different cookies on a computer by clearing cookies, copying down every cookie generated, and randomly choose from those to reduce the likelihood of rate limiting issues.~~
+Update after the hackathon: No cookies were needed to make this work, and we just ended up making a copy on our own server that UPlate makes requests to. 
