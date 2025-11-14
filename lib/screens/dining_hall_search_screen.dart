@@ -235,7 +235,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
       backgroundColor: DynamicStyling.getWhite(context),
       body: Column(
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           // Header
           Header(
             context: context,
@@ -248,7 +248,7 @@ class _DiningHallSearchScreenState extends State<DiningHallSearchScreen>
           // Content
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 4.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

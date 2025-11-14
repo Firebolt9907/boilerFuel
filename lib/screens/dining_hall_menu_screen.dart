@@ -712,7 +712,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Text(
-                'Calories: ${mealCalories.toStringAsFixed(0)} / ${targetCalories.toStringAsFixed(0)} cal',
+                'Calories: ${mealCalories.round().toStringAsFixed(0)} / ${targetCalories.toStringAsFixed(0)} cal',
                 style: TextStyle(
                   fontSize: 14,
                   color: DynamicStyling.getDarkGrey(context),
@@ -723,7 +723,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Text(
-                'Protein: ${mealProtein.toStringAsFixed(0)} / ${targetProtein.toStringAsFixed(0)} g',
+                'Protein: ${mealProtein.round().toStringAsFixed(0)} / ${targetProtein.toStringAsFixed(0)} g',
                 style: TextStyle(
                   fontSize: 14,
                   color: DynamicStyling.getDarkGrey(context),
@@ -734,7 +734,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Text(
-                'Carbs: ${mealCarbs.toStringAsFixed(0)} / ${targetCarbs.toStringAsFixed(0)} g',
+                'Carbs: ${mealCarbs.round().toStringAsFixed(0)} / ${targetCarbs.toStringAsFixed(0)} g',
                 style: TextStyle(
                   fontSize: 14,
                   color: DynamicStyling.getDarkGrey(context),
@@ -745,7 +745,7 @@ class _DiningHallMenuScreenState extends State<DiningHallMenuScreen>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2.0),
               child: Text(
-                'Fat: ${mealFat.toStringAsFixed(0)} / ${targetFat.toStringAsFixed(0)} g',
+                'Fat: ${mealFat.round().toStringAsFixed(0)} / ${targetFat.toStringAsFixed(0)} g',
                 style: TextStyle(
                   fontSize: 14,
                   color: DynamicStyling.getDarkGrey(context),

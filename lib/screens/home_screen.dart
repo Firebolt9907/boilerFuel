@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen>
   Map<MealTime, Map<String, Meal>> _suggestedMeals = {};
   List<Meal> _savedMeals = [];
   bool _isLoading = true;
+  bool _isGeneratingMeals = true;
 
   Meal? displayMeal;
   MealTime _selectedMealTime = MealTime.lunch;
@@ -293,6 +294,9 @@ class _HomeScreenState extends State<HomeScreen>
         print("No meal found for displayMeal");
       }
     }
+    setState(() {
+      _isGeneratingMeals = false;
+    });
   }
 
   Future<void> _loadHomeData(User user) async {
@@ -306,6 +310,9 @@ class _HomeScreenState extends State<HomeScreen>
       if (indexA == -1) indexA = _rankedDiningHalls.length;
       if (indexB == -1) indexB = _rankedDiningHalls.length;
       return indexA.compareTo(indexB);
+    });
+    setState(() {
+      _isGeneratingMeals = true;
     });
     List<Meal> savedMeals = await LocalDatabase().getFavoritedMeals();
     setState(() {
@@ -586,10 +593,12 @@ class _HomeScreenState extends State<HomeScreen>
           // Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(
+              padding: EdgeInsets.only(
                 left: 24.0,
                 right: 24.0,
-                top: 16.0,
+                top: (widget.user.useMealPlanning && displayMeal == null)
+                    ? 8.0
+                    : 16.0,
                 bottom: 12.0,
               ),
               child: Column(
@@ -604,7 +613,8 @@ class _HomeScreenState extends State<HomeScreen>
                       ]
                     : [
                         // Suggested Meals Section
-                        if (widget.user.useMealPlanning)
+                        if (widget.user.useMealPlanning &&
+                            (!_isGeneratingMeals && displayMeal != null))
                           Row(
                             children: [
                               Icon(
@@ -1154,7 +1164,7 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       child: Column(
         children: [
-          if (displayMeal == null) ...[
+          if (displayMeal == null && _isGeneratingMeals) ...[
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -1166,6 +1176,24 @@ class _HomeScreenState extends State<HomeScreen>
                   const SizedBox(height: 8),
                   Text(
                     'UPlate is working to find the best meal for you based on your preferences and dining hall hours. This may take a moment.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ] else if (displayMeal == null && !_isGeneratingMeals) ...[
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Text(
+                    'No Meal Suggestions Available',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'UPlate was unable to find a suitable meal suggestion. This most likely means that all the dining halls are currently closed.',
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     textAlign: TextAlign.center,
                   ),
@@ -1294,43 +1322,45 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ),
             ),
-          Divider(height: 2, color: DynamicStyling.getLightGrey(context)),
-          InkWell(
-            onTap: onViewSuggestedMeals,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(12),
-              bottomRight: Radius.circular(12),
-            ),
-            splashColor: DynamicStyling.getLightGrey(context),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'View all suggested meals',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: DynamicStyling.getGrey(context),
-                            fontWeight: FontWeight.w500,
+          if (displayMeal != null)
+            Divider(height: 2, color: DynamicStyling.getLightGrey(context)),
+          if (displayMeal != null)
+            InkWell(
+              onTap: onViewSuggestedMeals,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
+              splashColor: DynamicStyling.getLightGrey(context),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'View all suggested meals',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: DynamicStyling.getGrey(context),
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: DynamicStyling.getGrey(context),
-                          size: 20,
-                        ),
-                      ],
+                          Icon(
+                            Icons.chevron_right,
+                            color: DynamicStyling.getGrey(context),
+                            size: 20,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
