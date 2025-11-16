@@ -1,9 +1,10 @@
+import 'package:boiler_fuel/api/cloud_db_interface.dart';
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class FBDatabase {
+class FBDatabase implements CloudDbInterface {
   final String? uid;
   FBDatabase({this.uid});
 
@@ -12,6 +13,7 @@ class FBDatabase {
   final CollectionReference diningHallsCollection = FirebaseFirestore.instance
       .collection("dining-halls");
 
+  @override
   Future<List<MiniFood>?> getFoodIDsMeal(
     String diningCourt,
     DateTime date,
@@ -77,6 +79,7 @@ class FBDatabase {
     return null;
   }
 
+  @override
   Future<Food?> getFoodByID(String foodID) async {
     String document = foodID;
 
@@ -554,6 +557,7 @@ class FBDatabase {
     });
   }
 
+  @override
   Future<List<DiningHall>> getAllDiningHalls() async {
     QuerySnapshot snapshot = await diningHallsCollection.get();
     List<DiningHall> diningHalls = snapshot.docs.map((doc) {
@@ -562,6 +566,7 @@ class FBDatabase {
     return diningHalls;
   }
 
+  @override
   Future<DiningHall?> getDiningHallByName(String diningHallID) async {
     // try {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
