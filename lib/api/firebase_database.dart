@@ -1,9 +1,10 @@
+import 'package:boiler_fuel/api/cloud_db_interface.dart';
 import 'package:boiler_fuel/api/database.dart';
 import 'package:boiler_fuel/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class FBDatabase {
+class FBDatabase implements CloudDbInterface {
   final String? uid;
   FBDatabase({this.uid});
 
