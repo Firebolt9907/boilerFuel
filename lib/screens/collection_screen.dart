@@ -304,7 +304,9 @@ class _CollectionScreenState extends State<CollectionScreen>
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: DynamicStyling.getBlack(context),
+                                  color: foodItem.restricted
+                                      ? Colors.red
+                                      : DynamicStyling.getBlack(context),
                                   fontFamily: '.SF Pro Text',
                                   decoration: TextDecoration.none,
                                 ),
@@ -396,7 +398,7 @@ class _CollectionScreenState extends State<CollectionScreen>
       child: Text(
         text,
         style: TextStyle(
-          color: DynamicStyling.getWhite(context),
+          color: color, // DynamicStyling.getBlack(context),
           fontSize: 11,
           fontWeight: FontWeight.w500,
           fontFamily: '.SF Pro Text',

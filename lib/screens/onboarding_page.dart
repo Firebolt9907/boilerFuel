@@ -229,12 +229,12 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
             textAlign: TextAlign.center,
           ),
           if (body != null) ...[const SizedBox(height: 28), ...body],
-          if (lastPage) Spacer(),
-          if (lastPage)
-            DefaultButton(
-              isEnabled: useDietary || useMealPlanning,
-              onTap: () async {
-                HapticFeedback.mediumImpact();
+          Spacer(),
+          DefaultButton(
+            isEnabled: useDietary || useMealPlanning,
+            onTap: () async {
+              HapticFeedback.mediumImpact();
+              if (lastPage) {
                 Navigator.push(
                   context,
                   CupertinoPageRoute(
@@ -245,17 +245,24 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
                     ),
                   ),
                 );
-              },
+              } else {
+                _pageController.animateToPage(
+                  (_pageController.page ?? 0).round() + 1,
+                  duration: Duration(milliseconds: 400),
+                  curve: Curves.easeOutCubic,
+                );
+              }
+            },
 
-              text: Text(
-                'Get Started',
-                style: TextStyle(
-                  color: DynamicStyling.getWhite(context),
-                  fontSize: 15,
-                ),
+            text: Text(
+              lastPage ? 'Get Started' : "Next",
+              style: TextStyle(
+                color: DynamicStyling.getWhite(context),
+                fontSize: 15,
               ),
             ),
-          if (lastPage) SizedBox(height: 60),
+          ),
+          SizedBox(height: 60),
         ],
       ),
     );

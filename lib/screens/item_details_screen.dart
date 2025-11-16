@@ -325,7 +325,10 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen>
       decoration: BoxDecoration(
         color: DynamicStyling.getWhite(context),
         border: Border(
-          bottom: BorderSide(color: DynamicStyling.getGrey(context)),
+          bottom: BorderSide(
+            color: DynamicStyling.getLightGrey(context),
+            width: 2,
+          ),
         ),
       ),
       child: Column(

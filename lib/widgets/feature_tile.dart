@@ -18,21 +18,18 @@ class FeatureTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border.all(
-          color: DynamicStyling.getBlack(context).withOpacity(0.08),
-          width: 1,
-        ),
+        border: Border.all(color: DynamicStyling.getWhite(context), width: 0),
         borderRadius: BorderRadius.circular(16),
         color: DynamicStyling.getWhite(context),
       ),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(5),
             decoration: BoxDecoration(
-              color: DynamicStyling.getBlack(context).withOpacity(0.05),
+              color: DynamicStyling.getWhite(context),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(

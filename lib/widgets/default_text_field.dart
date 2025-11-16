@@ -55,6 +55,9 @@ class _DefaultTextFieldState extends State<DefaultTextField>
           suffixText: widget.trailingText,
           labelText: widget.label,
           hintText: widget.hint,
+          hintStyle: TextStyle(
+            color: DynamicStyling.getGrey(context).withAlpha(80), 
+          ),
           labelStyle: TextStyle(color: DynamicStyling.getDarkGrey(context)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
